@@ -1,0 +1,67 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.1
+    container_name: elasticsearch
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+#      - discovery.seed_hosts=pi0.wee,pi1.wee
+#      - cluster.initial_master_nodes=pi0.wee,pi1.wee
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+#    volumes:
+#      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    networks:
+      - elastic
+    restart: always
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1gb
+        reservations:
+          memory: 256mb
+
+  cassandra:
+    image: cassandra:3.11.9
+    container_name: cassanddra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=webit
+    ports:
+      - 7000:7000 # Cassandra inter-node cluster communication.
+      - 7001:7001 # Cassandra SSL inter-node cluster communication.
+      - 7199:7199 # Cassandra JMX monitoring port.
+      - 9042:9042 # Cassandra client port.
+      - 9160:9160 # Cassandra Thrift client port.
+      - 9404:9404 # Prometheus plugin port.
+    networks:
+      - cassandra
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 500M
+#    volumes:
+#      - cassandra:/var/lib/cassandra
+
+#volumes:
+#  esdata:
+#    driver: local
+#  cassandra:
+#    driver: local
+
+networks:
+  elastic:
+    driver: bridge
+  cassandra:
+    driver: bridge
