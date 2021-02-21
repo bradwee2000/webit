@@ -26,6 +26,7 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
     private final TrackNumSortStrategy trackNumSortStrategy;
     private final ShuffleSortStrategy shuffleSortStrategy;
     private final GetTrackQueueStrategy getTrackQueueStrategy;
+    private final RandomIdGenerator idGenerator;
 
     @Autowired
     public MusicUserService(final AuthenticationService authenticationService,
@@ -33,7 +34,8 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
                             final TrackDbService trackDbService,
                             final TrackNumSortStrategy trackNumSortStrategy,
                             final ShuffleSortStrategy shuffleSortStrategy,
-                            final GetTrackQueueStrategy getTrackQueueStrategy) {
+                            final GetTrackQueueStrategy getTrackQueueStrategy,
+                            final RandomIdGenerator idGenerator) {
         super(userDbService);
         this.authenticationService = authenticationService;
         this.userDbService = userDbService;
@@ -41,11 +43,22 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
         this.trackNumSortStrategy = trackNumSortStrategy;
         this.shuffleSortStrategy = shuffleSortStrategy;
         this.getTrackQueueStrategy = getTrackQueueStrategy;
+        this.idGenerator = idGenerator;
     }
 
     @Override
     public MusicUser findByIdStrict(final String id) {
         return findById(id).orElseThrow(() -> new MusicUserNotFoundException(id));
+    }
+
+    public MusicUser insertNewUser(final MusicUser user) {
+        user.setId(idGenerator.generateId(user));
+        save(user);
+        return user;
+    }
+
+    public MusicUser getLoginUser() {
+        return findByIdStrict(authenticationService.getLoginUserId());
     }
 
     public List<Track> getQueue() {
@@ -57,13 +70,17 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
     public Optional<Track> nextTrack() {
         final MusicUser user = findByIdStrict(authenticationService.getLoginUserId());
 
+        if (user.getTrackIdQueue().isEmpty()) {
+            return Optional.empty();
+        }
+
         int nextTrackNum = user.isLoop() ?
                 (user.getCurrentTrackIndex() + 1) % user.getTrackIdQueue().size() :
                 Math.min(user.getCurrentTrackIndex() + 1, user.getTrackIdQueue().size() - 1);
 
         // Update if there's a difference
         if (user.getCurrentTrackIndex() != nextTrackNum) {
-            userDbService.updateCurrentTrackNum(user.setCurrentTrackIndex(nextTrackNum));
+            userDbService.updateCurrentTrackIndex(user.setCurrentTrackIndex(nextTrackNum));
         }
 
         return trackDbService.findById(user.getTrackIdQueue().get(nextTrackNum));
@@ -72,21 +89,26 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
     public Optional<Track> prevTrack() {
         final MusicUser user = findByIdStrict(authenticationService.getLoginUserId());
 
-        int prevTrackNum = Math.min(user.getCurrentTrackIndex() - 1, user.getTrackIdQueue().size() - 1);
+        if (user.getTrackIdQueue().isEmpty()) {
+            return Optional.empty();
+        }
+
+        final int prevTrackNum = Math.max(0,
+                Math.min(user.getCurrentTrackIndex() - 1, user.getTrackIdQueue().size() - 1));
 
         // Update if there's a difference
         if (user.getCurrentTrackIndex() != prevTrackNum) {
-            userDbService.updateCurrentTrackNum(user.setCurrentTrackIndex(prevTrackNum));
+            userDbService.updateCurrentTrackIndex(user.setCurrentTrackIndex(prevTrackNum));
         }
 
         return trackDbService.findById(user.getTrackIdQueue().get(prevTrackNum));
     }
 
-    public void updateShuffle(final boolean isShuffle) {
+    public MusicUser updateShuffle(final boolean isShuffle) {
         final MusicUser user = findByIdStrict(authenticationService.getLoginUserId());
 
         if (user.isShuffle() == isShuffle) {
-            return;
+            return user;
         }
 
         final MusicUser updatedUser = isShuffle ?
@@ -94,5 +116,25 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
                 trackNumSortStrategy.apply(user);
 
         userDbService.updateShuffle(updatedUser);
+
+        return updatedUser;
+    }
+
+    public MusicUser updateLoop(final boolean isLoop) {
+        final MusicUser user = findByIdStrict(authenticationService.getLoginUserId());
+        if (user.isLoop() == isLoop) {
+            return user;
+        }
+        user.setLoop(isLoop);
+        userDbService.updateLoop(user);
+        return user;
+    }
+
+    public MusicUser updateTrackQueue(final List<String> trackIds) {
+        final MusicUser user = findByIdStrict(authenticationService.getLoginUserId())
+                .setTrackIdQueue(trackIds)
+                .setCurrentTrackIndex(0);
+        userDbService.updateTrackIds(user);
+        return user;
     }
 }

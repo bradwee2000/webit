@@ -8,6 +8,7 @@ import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -60,7 +61,7 @@ public class YoutubeService implements SearchableCrudService<YoutubeVideo> {
     }
 
     @Override
-    public List<YoutubeVideo> findAll(final Pageable pageable) {
+    public Slice<YoutubeVideo> findAll(final Pageable pageable) {
         return db.findAll(pageable);
     }
 

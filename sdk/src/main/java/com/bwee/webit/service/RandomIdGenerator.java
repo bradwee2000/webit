@@ -1,8 +1,11 @@
 package com.bwee.webit.service;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.annotation.Primary;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.stereotype.Service;
 
+@Primary
 @Service
 public class RandomIdGenerator implements IdGenerator {
 

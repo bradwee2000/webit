@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class QueueUpdateReq {
+public class UpdateQueueReq {
 
     private List<String> trackIds = Collections.emptyList();
 }

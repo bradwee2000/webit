@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Data
-public class UpdateQueueReq {
+public class UpdateLoopReq {
 
-    private List<String> trackIds = Collections.emptyList();
+    private Boolean isEnabled = Boolean.FALSE;
 }

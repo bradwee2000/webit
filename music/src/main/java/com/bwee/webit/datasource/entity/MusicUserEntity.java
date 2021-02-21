@@ -9,6 +9,7 @@ import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -57,7 +58,7 @@ public class MusicUserEntity implements Entity<MusicUserEntity> {
         return new MusicUser()
                 .setId(id)
                 .setName(name)
-                .setTrackIdQueue(trackIdQueue)
+                .setTrackIdQueue(trackIdQueue == null ? Collections.emptyList() : trackIdQueue)
                 .setCurrentTrackIndex(currentTrackIndex)
                 .setShuffle(isShuffle)
                 .setLoop(isLoop)

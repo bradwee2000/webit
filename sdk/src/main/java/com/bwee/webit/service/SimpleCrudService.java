@@ -4,9 +4,9 @@ import com.bwee.webit.datasource.DbService;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -44,7 +44,7 @@ public abstract class SimpleCrudService<T> implements CrudService<T> {
     }
 
     @Override
-    public List<T> findAll(Pageable pageable) {
+    public Slice<T> findAll(final Pageable pageable) {
         return dbService.findAll(pageable);
     }
 }

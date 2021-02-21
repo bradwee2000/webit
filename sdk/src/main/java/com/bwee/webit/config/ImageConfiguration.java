@@ -18,7 +18,7 @@ public class ImageConfiguration {
     @Value("${image.host:}")
     private String imageHost;
 
-    @Bean
+    @Bean("imageIdGenerator")
     public IdGenerator imageIdGenerator() {
         return new RandomIdGenerator(IMAGE_ID_SIZE);
     }

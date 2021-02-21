@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 
+import static com.datastax.oss.driver.api.core.config.DefaultDriverOption.*;
+
 @Slf4j
 @Configuration
 @EnableCassandraRepositories(basePackageClasses = { Entity.class })
@@ -73,7 +75,7 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
-        CreateKeyspaceSpecification keyspace = CreateKeyspaceSpecification.createKeyspace(keyspaceName);
+        CreateKeyspaceSpecification keyspace = CreateKeyspaceSpecification.createKeyspace(getKeyspaceName());
         DataCenterReplication dcr = DataCenterReplication.of(dataCenter, replicationFactor);
         keyspace.ifNotExists(true).withNetworkReplication(dcr);
         return Collections.singletonList(keyspace);
@@ -90,7 +92,9 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
     protected SessionBuilderConfigurer getSessionBuilderConfigurer() {
         return cqlSessionBuilder -> cqlSessionBuilder
                 .withConfigLoader(DriverConfigLoader.programmaticBuilder()
-                        .withDuration(DefaultDriverOption.REQUEST_TIMEOUT, Duration.ofMillis(requestTimeoutMillis))
+                        .withDuration(REQUEST_TIMEOUT, Duration.ofMillis(requestTimeoutMillis))
+                        .withDuration(CONNECTION_INIT_QUERY_TIMEOUT, Duration.ofMillis(requestTimeoutMillis))
+                        .withDuration(CONNECTION_CONNECT_TIMEOUT, Duration.ofMillis(requestTimeoutMillis))
                         .build());
     }
 
@@ -98,39 +102,4 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
     protected String getLocalDataCenter() {
         return dataCenter;
     }
-
-    //    @Bean
-//    public CqlSessionFactoryBean cqlSessionFactoryBean() {
-//        CqlSessionFactoryBean session = new CqlSessionFactoryBean();
-//        session.setContactPoints("localhost");
-//        session.setKeyspaceName("webit");
-//        return session;
-//    }
-
-//    @Bean
-//    public SessionFactoryFactoryBean sessionFactory(CqlSession session, CassandraConverter converter) {
-//        final SessionFactoryFactoryBean sessionFactory = new SessionFactoryFactoryBean();
-//        sessionFactory.setSession(session);
-//        sessionFactory.setConverter(converter);
-//        sessionFactory.setSchemaAction(SchemaAction.CREATE_IF_NOT_EXISTS);
-//        return sessionFactory;
-//    }
-
-//    @Bean
-//    public CassandraMappingContext mappingContext(CqlSession cqlSession) {
-//        final CassandraMappingContext mappingContext = new CassandraMappingContext();
-//        return mappingContext;
-//    }
-
-//    @Bean
-//    public CassandraConverter converter(CqlSession cqlSession, CassandraMappingContext mappingContext) {
-//        MappingCassandraConverter converter = new MappingCassandraConverter(mappingContext);
-//        converter.setUserTypeResolver(new SimpleUserTypeResolver(cqlSession));
-//        return converter;
-//    }
-//
-//    @Bean
-//    public CassandraOperations cassandraTemplate(SessionFactory sessionFactory, CassandraConverter converter) {
-//        return new CassandraTemplate(sessionFactory, converter);
-//    }
 }

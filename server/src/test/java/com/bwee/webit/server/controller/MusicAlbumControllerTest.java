@@ -14,14 +14,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static com.bwee.webit.server.util.TestUtils.om;
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -57,10 +61,9 @@ class MusicAlbumControllerTest {
                 .setTags(List.of("Children", "Happy"))
                 .setTracks(List.of(alphabet, littleLamb));
 
-
         when(albumService.findByIdStrict("ABC")).thenReturn(album);
         when(albumService.findById("ABC")).thenReturn(Optional.of(album));
-        when(albumService.findAll(any())).thenReturn(List.of(album));
+        when(albumService.findAll(any())).thenReturn(new SliceImpl<>(singletonList(album)));
     }
 
     @Test

@@ -4,8 +4,9 @@ import com.bwee.webit.datasource.entity.Entity;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.cassandra.core.query.Query;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.util.StringUtils;
 
 import java.util.Collection;
@@ -26,6 +27,7 @@ public abstract class AbstractDbService<T, E extends Entity<E>> implements DbSer
 
     private final CassandraOperations cassandra;
     private final Class<E> clazz;
+    private final int defaultPageSize = 20;
 
     public AbstractDbService(final CassandraOperations cassandra,
                              final Class<E> clazz) {
@@ -125,19 +127,29 @@ public abstract class AbstractDbService<T, E extends Entity<E>> implements DbSer
                 .collect(toList());
     }
 
-    public List<T> findAll(final Pageable pageable) {
-        final Query query = query().pageRequest(pageable);
-        return cassandra.select(query, clazz).stream()
-                .map(o -> toModel(o))
-                .collect(toList());
+    public Slice<T> findAll() {
+        return findAll(defaultPageSize);
+    }
+
+    public Slice<T> findAll(int size) {
+        return findAll(CassandraPageRequest.first(size));
+    }
+
+    @Override
+    public Slice<T> findAll(final Pageable pageable) {
+        final CassandraPageRequest req = pageable instanceof CassandraPageRequest ? (CassandraPageRequest) pageable : CassandraPageRequest.first(2);
+        final Query query = query().pageRequest(req);
+
+        final Slice<T> slice =  cassandra.slice(query, clazz).map(e -> toModel(e));
+
+        return slice;
     }
 
     public boolean deleteById(final String id) {
         if (StringUtils.isEmpty(id)) {
             return false;
         }
-
-        return cassandra.delete(Query.query(where("id").is(id)), clazz);
+        return cassandra.deleteById(id, clazz);
     }
 
     public void updateColumn(final String id,

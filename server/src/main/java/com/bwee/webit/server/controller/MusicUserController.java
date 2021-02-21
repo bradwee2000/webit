@@ -1,107 +1,37 @@
 package com.bwee.webit.server.controller;
 
-import com.bwee.webit.auth.AuthenticationService;
-import com.bwee.webit.datasource.MusicUserDbService;
-import com.bwee.webit.model.Album;
 import com.bwee.webit.model.MusicUser;
 import com.bwee.webit.model.Track;
-import com.bwee.webit.server.model.ImportAlbum;
-import com.bwee.webit.server.model.music.QueueUpdateReq;
-import com.bwee.webit.server.model.music.SearchAlbumResp;
-import com.bwee.webit.server.model.music.SearchMusicAllResp;
-import com.bwee.webit.server.model.music.SearchTrackResp;
-import com.bwee.webit.service.*;
+import com.bwee.webit.server.model.music.SaveMusicUserReq;
+import com.bwee.webit.server.model.music.UpdateQueueReq;
+import com.bwee.webit.service.MusicUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-import java.nio.file.Path;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.bwee.webit.util.Constants.DEFAULT_PAGE_NUM;
-import static com.bwee.webit.util.Constants.DEFAULT_PAGE_SIZE;
 
 @Slf4j
 @Controller
-@RequestMapping("/music")
-public class MusicController {
-
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private AlbumService albumService;
-
-    @Autowired
-    private MusicAlbumImporter musicAlbumImporter;
-
-    @Autowired
-    private HttpServletRequest request;
-
-    @Autowired
-    private TrackService trackService;
+@RequestMapping("/music/user")
+public class MusicUserController {
 
     @Autowired
     private MusicUserService userService;
 
-    @GetMapping("/search/{query}")
-    public ResponseEntity searchAll(@PathVariable final String query) {
-        final Pageable pageable = PageRequest.of(0, 5);
-        final List<Track> tracks = trackService.search(query, pageable);
-        final List<Album> albums = albumService.search(query, pageable);
-
-        return ResponseEntity.ok(new SearchMusicAllResp().setTracks(tracks).setAlbums(albums));
+    @GetMapping
+    public ResponseEntity getMusicUser() {
+        final MusicUser user = userService.getLoginUser();
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/search/{query}/tracks")
-    public ResponseEntity searchTracks(@PathVariable final String query) {
-        final List<Track> tracks = trackService.search(query);
-        return ResponseEntity.ok(new SearchTrackResp(tracks));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity search(@RequestParam final String keywords,
-                                 @RequestParam final Optional<Integer> page,
-                                 @RequestParam final Optional<Integer> size) {
-        final Pageable pageable = PageRequest.of(page.orElse(DEFAULT_PAGE_NUM), size.orElse(DEFAULT_PAGE_SIZE));
-
-        final List<SearchAlbumResp> resp = albumService.search(keywords, pageable).stream()
-                .map(SearchAlbumResp::new)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(resp);
-    }
-
-    @PostMapping("/import")
-    public ResponseEntity importAlbum(@RequestBody final ImportAlbum req) {
-        final Mp3Reader.Config config = Mp3Reader.Config.defaults()
-                .tags(req.getTags())
-                .useFileNameAsTrackNum(req.isUserFilenameAsTrackNum());
-        log.info("Request: {} {}", req.getPath(), config);
-
-        final Album album = musicAlbumImporter.importAlbumFromPath(
-                Path.of(req.getPath()),
-                req.getName(),
-                req.getTags(),
-                req.getYear(),
-                req.isUserFilenameAsTrackNum(),
-                req.isCopyFiles());
-
-        final URI uri = UriComponentsBuilder.fromUriString(request.getRequestURI())
-                .replacePath("/music/albums")
-                .pathSegment(album.getId())
-                .build()
-                .toUri();
-        return ResponseEntity.created(uri).body(album);
+    @PostMapping
+    public ResponseEntity saveMusicUser(@RequestBody SaveMusicUserReq req) {
+        final MusicUser user = new MusicUser().setName(req.getName());
+        userService.insertNewUser(user);
+        return ResponseEntity.ok(user);
     }
 
     @PostMapping("/shuffle")
@@ -128,14 +58,8 @@ public class MusicController {
         return ResponseEntity.ok(track.orElse(null));
     }
 
-    @GetMapping("/user")
-    public ResponseEntity getMusicUser() {
-        final MusicUser user = userService.getLoginUser();
-        return ResponseEntity.ok(user);
-    }
-
     @PostMapping("/queue")
-    public ResponseEntity queue(@RequestBody QueueUpdateReq req) {
+    public ResponseEntity updateQueue(@RequestBody final UpdateQueueReq req) {
         final MusicUser user = userService.updateTrackQueue(req.getTrackIds());
         return ResponseEntity.ok(user);
     }

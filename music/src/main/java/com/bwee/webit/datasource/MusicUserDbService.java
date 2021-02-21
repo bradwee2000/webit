@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.List;
+
 import static org.springframework.data.cassandra.core.query.Criteria.where;
 import static org.springframework.data.cassandra.core.query.Query.query;
 
@@ -20,19 +23,21 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
         this.cassandra = cassandra;
     }
 
-    public void updateCurrentTrackNum(final MusicUser model) {
-        updateColumn(model.getId(), "currentTrackNum", model.getCurrentTrackIndex());
+    public void updateCurrentTrackIndex(final MusicUser model) {
+        updateColumn(model.getId(), "currentTrackIndex", model.getCurrentTrackIndex());
     }
 
     public void updateTrackIds(final MusicUser model) {
-        updateColumn(model.getId(), "trackIdQueue", model.getTrackIdQueue());
+        updateColumns(model.getId(),
+                "trackIdQueue", model.getTrackIdQueue(),
+                "currentTrackIndex", model.getCurrentTrackIndex());
     }
 
     public void updateShuffle(final MusicUser model) {
         updateColumns(model.getId(),
                 "isShuffle", model.isShuffle(),
                 "trackIdQueue", model.getTrackIdQueue(),
-                "currentTrackNum", model.getCurrentTrackIndex()
+                "currentTrackIndex", model.getCurrentTrackIndex()
                 );
     }
 

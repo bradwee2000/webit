@@ -5,8 +5,10 @@ import lombok.Data;
 import java.util.Collections;
 import java.util.List;
 
-@Data
-public class QueueUpdateReq {
+import static java.util.Collections.emptyList;
 
-    private List<String> trackIds = Collections.emptyList();
+@Data
+public class SaveMusicUserReq {
+
+    private String name;
 }
