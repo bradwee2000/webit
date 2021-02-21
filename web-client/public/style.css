@@ -1,0 +1,231 @@
+button:active, button:focus {
+  box-shadow: none !important;
+}
+
+.search-bar .search-icon,
+.search-bar .clear-btn,
+.search-bar .clear-btn:focus {
+  border-radius: 1.5rem;
+  border: none;
+  background-color: white;
+  outline: none;
+}
+
+.search-bar input,
+.search-bar input:focus {
+  border: none;
+  box-shadow: none;
+}
+
+.link {
+  text-decoration: none;
+  cursor:pointer;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.track {
+
+}
+
+.album {
+  background-color: #25292d;
+}
+
+.album-list {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.track:hover,
+.album:hover {
+  background-color: #363A3E;
+}
+
+.album .title-container {
+  max-width:10em;
+}
+
+.album .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track.selected {
+  background-color: #474B4F;
+}
+
+.track .btn.play,
+.album .btn.play,
+.track .btn.pause,
+.album .btn.pause {
+  display: none;
+}
+
+.track.selected .btn,
+.album.selected .btn,
+.track:hover .btn.play,
+.album:hover .btn.play,
+.track:hover .btn.pause,
+.album:hover .btn.pause {
+  display: block;
+}
+
+.btn.play,
+.btn.pause {
+  width: 40px;
+  height: 40px;
+}
+
+.btn.play .icon {
+  width: 12px;
+  height: 12px;
+  border-style: solid;
+  border-width: 6px 0px 6px 12px;
+  border-color: transparent transparent transparent #fff;
+  box-sizing: border-box;
+  margin:0 auto 0 2px;
+}
+
+.btn.pause .icon {
+  height: 12px;
+  border-style: double;
+  border-width: 0px 0 0px 10px;
+  border-color: #fff;
+  margin: 0 0 0 2px;
+}
+
+.track .btn {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: none;
+}
+
+.album .btn.play,
+.album .btn.pause {
+  border-radius:40px;
+  background-color: #1db954;
+}
+
+.album .btn.play:hover,
+.album .btn.pause:hover {
+  background-color: #3FDB66;
+}
+
+.thumbnail-sm {
+  width: 40px;
+  height: 40px;
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+}
+
+.player {
+  border-top: 1px solid #3a3a3a;
+  min-height: 80px;
+  max-height: 80px;
+  background-color: #181818;
+}
+
+.player .control button svg {
+  fill: #AAA;
+}
+
+.player .control button:hover svg {
+  fill: #EEE;
+}
+
+.player .thumbnail {
+  max-height: 60px;
+  max-width: 60px;
+}
+
+.progress-wrapper {
+  height: 1rem;
+  width: 100%;
+}
+
+.progress {
+  background-color: #666 !important;
+}
+
+.progress.thin {
+  width: 100%;
+  height: 0.2rem;
+}
+
+.progress-bar.no-transition {
+  transition: none;
+}
+
+.progress-bar {
+  background-color:#aaa !important;
+  border-radius: 10px;
+}
+
+.progress-wrapper:hover .progress-bar {
+  background-color: #1db954 !important;
+}
+
+.progress-wrapper:hover .progress-btn {
+  display: block !important;
+}
+
+.progress-btn {
+  width: 10px;
+  height: 10px;
+  background-color: #fff !important;
+}
+
+.toggle-btn .indicator {
+  width: 4px;
+  height: 4px;
+  border-radius: 10px;
+  margin: 0 auto;
+}
+.toggle-btn.active .indicator {
+  background-color: #1db954;
+}
+.toggle-btn.active button svg {
+  fill: #1db954;
+}
+.toggle-btn.active:hover .indicator {
+  background-color: #3FED98;
+}
+.toggle-btn.active:hover button svg {
+  fill: #3FED98;
+}
+
+@media (min-width: 576px) {
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) {
+  .album-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) {
+  .album-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* X-Large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) {
+  .album-list {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* XX-Large devices (larger desktops, 1400px and up) */
+@media (min-width: 1400px) {
+  .album-list {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
