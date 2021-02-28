@@ -1,4 +1,4 @@
-package com.bwee.webit.heos;
+package com.bwee.webit.heos.model;
 
 public class Song {
     private final String title;

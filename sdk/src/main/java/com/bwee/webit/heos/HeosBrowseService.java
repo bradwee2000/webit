@@ -1,7 +1,9 @@
 package com.bwee.webit.heos;
 
-import com.bwee.webit.heos.sddp.HeosClient;
-import com.bwee.webit.heos.sddp.Response;
+import com.bwee.webit.heos.commands.BrowseCommands;
+import com.bwee.webit.heos.model.MusicSource;
+import com.bwee.webit.heos.connect.HeosClient;
+import com.bwee.webit.heos.connect.Response;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,6 @@
-package com.bwee.webit.heos;
+package com.bwee.webit.heos.commands;
+
+import com.bwee.webit.heos.model.AddCriteria;
 
 public class BrowseCommands {
 

@@ -1,7 +1,7 @@
 package com.bwee.webit.heos;
 
-import com.bwee.webit.heos.sddp.HeosClient;
-import com.bwee.webit.heos.sddp.HeosListener;
+import com.bwee.webit.heos.connect.HeosClient;
+import com.bwee.webit.heos.connect.HeosListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

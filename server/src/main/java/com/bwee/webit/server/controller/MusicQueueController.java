@@ -1,7 +1,5 @@
 package com.bwee.webit.server.controller;
 
-import com.bwee.webit.auth.AuthenticationService;
-import com.bwee.webit.heos.sddp.Response;
 import com.bwee.webit.model.MusicUser;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.server.model.music.UpdateLoopReq;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j

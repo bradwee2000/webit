@@ -1,4 +1,4 @@
-package com.bwee.webit.heos.sddp;
+package com.bwee.webit.heos.connect;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

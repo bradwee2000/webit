@@ -1,4 +1,4 @@
-package com.bwee.webit.heos;
+package com.bwee.webit.heos.model;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

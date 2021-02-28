@@ -1,4 +1,4 @@
-package com.bwee.webit.heos.sddp;
+package com.bwee.webit.heos.connect;
 
 public class Events {
     public static final String PLAYER_VOLUME_CHANGED = "event/player_volume_changed";

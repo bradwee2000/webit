@@ -1,18 +1,12 @@
-package com.bwee.webit.heos.sddp;
+package com.bwee.webit.heos.connect;
 
 import com.bwee.webit.heos.HeosUtil;
-import com.bwee.webit.heos.Results;
-import com.google.common.base.Splitter;
-import com.google.common.collect.Streams;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.bwee.webit.heos.model.Results;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class Response<T> {

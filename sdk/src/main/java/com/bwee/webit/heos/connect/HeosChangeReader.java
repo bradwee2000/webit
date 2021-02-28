@@ -1,19 +1,19 @@
-package com.bwee.webit.heos.sddp;
+package com.bwee.webit.heos.connect;
 
 import com.google.gson.Gson;
 
 import java.util.Map;
 import java.util.Scanner;
 
-public class ChangeListenerRunnable implements Runnable {
+public class HeosChangeReader implements Runnable {
 
     private final Scanner in;
     private final Gson gson;
-    private final ChangeListener listener;
+    private final HeosChangeListener listener;
 
     private boolean isStop = false;
 
-    public ChangeListenerRunnable(final Scanner in, final Gson gson, final ChangeListener listener) {
+    public HeosChangeReader(final Scanner in, final Gson gson, final HeosChangeListener listener) {
         this.in = in;
         this.gson = gson;
         this.listener = listener;

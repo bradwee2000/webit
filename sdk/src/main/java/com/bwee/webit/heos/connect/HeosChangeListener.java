@@ -1,6 +1,6 @@
-package com.bwee.webit.heos.sddp;
+package com.bwee.webit.heos.connect;
 
-public interface ChangeListener {
+public interface HeosChangeListener {
     void playerStateChanged(String pid, String state);
     void playerVolumeChanged(String pid, int level);
     void playerNowPlayingChanged(String pid);

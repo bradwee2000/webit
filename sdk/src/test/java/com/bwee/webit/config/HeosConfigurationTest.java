@@ -1,7 +1,10 @@
 package com.bwee.webit.config;
 
 import com.bwee.webit.heos.*;
-import com.bwee.webit.heos.sddp.HeosClient;
+import com.bwee.webit.heos.model.MusicSource;
+import com.bwee.webit.heos.model.PlayState;
+import com.bwee.webit.heos.model.Player;
+import com.bwee.webit.heos.connect.HeosClient;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

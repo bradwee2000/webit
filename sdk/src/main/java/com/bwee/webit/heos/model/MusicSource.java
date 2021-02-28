@@ -1,4 +1,4 @@
-package com.bwee.webit.heos;
+package com.bwee.webit.heos.model;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

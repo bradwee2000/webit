@@ -1,7 +1,6 @@
 package com.bwee.webit.server.exception;
 
 import com.bwee.webit.exception.NotFoundException;
-import com.bwee.webit.heos.sddp.Response;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.http.HttpStatus;
