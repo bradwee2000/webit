@@ -1,7 +1,7 @@
-package com.bwee.webit.config;
+package com.bwee.webit.heos;
 
-import com.bwee.webit.heos.HeosDiscoveryService;
 import com.bwee.webit.heos.sddp.HeosClient;
+import com.bwee.webit.heos.sddp.HeosListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,8 +11,13 @@ import org.springframework.context.annotation.Configuration;
 public class HeosConfiguration {
 
     @Bean
-    public HeosClient heosClient(HeosDiscoveryService heosDiscoveryService) {
+    public HeosClient heosClient(final HeosDiscoveryService heosDiscoveryService) {
         return new HeosClient(() -> heosDiscoveryService.discoverHeosDeviceIp());
+    }
+
+    @Bean
+    public HeosListener heosListener(final HeosDiscoveryService heosDiscoveryService) {
+        return new HeosListener(() -> heosDiscoveryService.discoverHeosDeviceIp());
     }
 
 //    @SneakyThrows

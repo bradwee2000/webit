@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -19,13 +20,13 @@ public class HeosPlayerService {
     @Autowired
     private HeosClient heosClient;
 
-    public String getPlayState(String playerId){
-        Response response = heosClient.write(PlayerCommands.GET_PLAY_STATE(playerId));
-        if(response.isSuccess()){
-            if(response.getMessage().contains("state=")){
-                String state = response.getMessage().substring(response.getMessage().indexOf("state=") + 6);
-                return state;
-            }
+    @Autowired
+    private HeosSystemService systemService;
+
+    public PlayState getPlayState(String playerId){
+        final Response response = heosClient.execute(PlayerCommands.GET_PLAY_STATE(playerId));
+        if(response.isSuccess()) {
+            return PlayState.valueOf(response.getMessageParam("state"));
         }
         return null;
     }
@@ -36,13 +37,10 @@ public class HeosPlayerService {
      * @return the newly set state, a String that is either "start", "stop", or "pause".
      */
     public String setPlayState(String playerId, PlayState state){
-        Response response = heosClient.write(PlayerCommands.SET_PLAY_STATE(playerId, state));
+        final Response response = heosClient.execute(PlayerCommands.SET_PLAY_STATE(playerId, state));
 
         if(response.isSuccess()){
-            if(response.getMessage().contains("state=")){
-                String currentState = response.getMessage().substring(response.getMessage().indexOf("state=") + 6);
-                return currentState;
-            }
+            return response.getMessageParam("state");
         }
         return null;
     }
@@ -51,15 +49,11 @@ public class HeosPlayerService {
      * Gets this player's volume.
      * @return the volume (0-100). -1 if operation failed.
      */
-    public int getVolume(String playerId) {
-        Response response = heosClient.write(PlayerCommands.GET_VOLUME(playerId));
+    public int getVolume(final String playerId) {
+        final Response response = heosClient.execute(PlayerCommands.GET_VOLUME(playerId));
 
-        if(response.isSuccess()){
-            if(response.getMessage().contains("level=")){
-                String currentVolumeString = response.getMessage().substring(response.getMessage().indexOf("level=") + 6);
-                int currentVolume = Integer.parseInt(currentVolumeString);
-                return currentVolume;
-            }
+        if (response.isSuccess()){
+            return Integer.parseInt(response.getMessageParam("level"));
         }
         return -1;
     }
@@ -70,14 +64,10 @@ public class HeosPlayerService {
      * @return The volume after setting it. -1 if operation failed.
      */
     public int setVolume(String playerId, int newVolume){
-        Response response = heosClient.write(PlayerCommands.SET_VOLUME(playerId, newVolume));
+        final Response response = heosClient.execute(PlayerCommands.SET_VOLUME(playerId, newVolume));
 
         if(response.isSuccess()){
-            if(response.getMessage().contains("level=")){
-                String currentVolumeString = response.getMessage().substring(response.getMessage().indexOf("level=") + 6);
-                int currentVolume = Integer.parseInt(currentVolumeString);
-                return currentVolume;
-            }
+            return Integer.parseInt(response.getMessageParam("level"));
         }
         return -1;
     }
@@ -88,7 +78,7 @@ public class HeosPlayerService {
      * @return boolean indicating a successful operation.
      */
     public boolean volumeUp(String playerId, int step){
-        Response response = heosClient.write(PlayerCommands.VOLUME_UP(playerId, step));
+        Response response = heosClient.execute(PlayerCommands.VOLUME_UP(playerId, step));
         return response.isSuccess();
     }
 
@@ -98,7 +88,7 @@ public class HeosPlayerService {
      * @return boolean indicating a successful operation.
      */
     public boolean volumeDown(String playerId, int step){
-        Response response = heosClient.write(PlayerCommands.VOLUME_DOWN(playerId, step));
+        Response response = heosClient.execute(PlayerCommands.VOLUME_DOWN(playerId, step));
         return response.isSuccess();
     }
 
@@ -108,7 +98,7 @@ public class HeosPlayerService {
      * @return Now playing media in a formatted String.
      */
     public String getNowPlayingMedia(String playerId){
-        Response response = heosClient.write(PlayerCommands.GET_NOW_PLAYING_MEDIA(playerId));
+        Response response = heosClient.execute(PlayerCommands.GET_NOW_PLAYING_MEDIA(playerId));
 
         if(response.isSuccess()){
             Map<String, Object> map = (Map<String, Object>) response.getPayload();
@@ -131,17 +121,28 @@ public class HeosPlayerService {
     }
 
     public boolean playNext(String playerId) {
-        Response response = heosClient.write(PlayerCommands.PLAY_NEXT(playerId));
+        final Response response = heosClient.execute(PlayerCommands.PLAY_NEXT(playerId));
         return response.isSuccess();
     }
 
     public boolean playPrevious(String playerId) {
-        Response response = heosClient.write(PlayerCommands.PLAY_PREVIOUS(playerId));
+        final Response response = heosClient.execute(PlayerCommands.PLAY_PREVIOUS(playerId));
         return response.isSuccess();
     }
 
     public boolean playUrl(String playerId, final String url) {
-        Response response = heosClient.write(BrowseCommands.PLAY_URL(playerId, url));
+        final Response response = heosClient.execute(BrowseCommands.PLAY_URL(playerId, url));
+        return response.isSuccess();
+    }
+
+    public boolean addContainerToQueue(String playerId, String sourceId, String containerId, AddCriteria addCriteria) {
+        final Response response = heosClient.execute(BrowseCommands.ADD_CONTAINER_TO_QUEUE(
+                playerId, sourceId, containerId, addCriteria));
+        return response.isSuccess();
+    }
+
+    public boolean playUrl(final String playerId, final URL url) {
+        final Response response = heosClient.execute(BrowseCommands.PLAY_URL(playerId, url.toString()));
         return response.isSuccess();
     }
 }

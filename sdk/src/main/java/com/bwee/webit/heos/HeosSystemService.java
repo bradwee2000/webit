@@ -17,17 +17,17 @@ public class HeosSystemService {
     private HeosClient heosClient;
 
     public boolean accountSignIn(final String username, final String password) {
-        final Response response = heosClient.write(SystemCommands.ACCOUNT_SIGN_IN(username, password));
+        final Response response = heosClient.execute(SystemCommands.ACCOUNT_SIGN_IN(username, password));
         return response.isSuccess();
     }
 
     public boolean accountSignOut(){
-        final Response response = heosClient.write(SystemCommands.ACCOUNT_SIGN_OUT);
+        final Response response = heosClient.execute(SystemCommands.ACCOUNT_SIGN_OUT);
         return response.isSuccess() && response.getMessage().equals("signed_out");
     }
 
     public Optional<Account> accountCheck(){
-        final Response response = heosClient.write(SystemCommands.ACCOUNT_CHECK);
+        final Response response = heosClient.execute(SystemCommands.ACCOUNT_CHECK);
 
         if(response.isSuccess()){
             if(response.getMessage().contains("signed_in")){
@@ -39,16 +39,16 @@ public class HeosSystemService {
     }
 
     public boolean systemHeartBeat(){
-        final Response response = heosClient.write(SystemCommands.HEARTBEAT);
+        final Response response = heosClient.execute(SystemCommands.HEARTBEAT);
         return response.isSuccess();
     }
 
     public List<Player> getPlayers(){
-        Response response = heosClient.write(SystemCommands.GET_PLAYERS);
+        Response response = heosClient.execute(SystemCommands.GET_PLAYERS);
 
         if(response.isSuccess()){
             List<Player> players = new ArrayList<>();
-            for (Map<String, Object> map : (List<Map<String, Object>>) response.getPayload() ) {
+            for (final Map<String, Object> map : (List<Map<String, Object>>) response.getPayload() ) {
                 players.add(new Player(map));
             }
             return players;

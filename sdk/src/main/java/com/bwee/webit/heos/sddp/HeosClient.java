@@ -21,10 +21,9 @@ public class HeosClient {
     private Gson gson;
     private Supplier<String> deviceIp;
 
-    public HeosClient(Supplier<String> deviceIp) {
+    public HeosClient(final Supplier<String> deviceIp) {
         this.deviceIp = deviceIp;
     }
-
 
     /**
      * Connect to a Heos System that is located at a certain ip.
@@ -47,23 +46,12 @@ public class HeosClient {
      * @param command a String describing the command (see Constants package)
      * @return a Response
      */
-    public Response write(final String command) {
-        if (socket == null || out == null || in == null || gson == null) {
-            connect();
-        }
-
-        new Thread(() -> {
-            out.println(command);
-            out.flush();
-        }).start();
-
-        final String json = in.next();
-        log.info("Response: {}", json);
-        return gson.fromJson(json, Response.class);
+    public Response execute(final String command) {
+        return execute(command, Response.class);
     }
 
     public <T> Response<T> execute(final String command, Type type) {
-        if (socket == null || out == null || in == null || gson == null) {
+        if (!isConnected()) {
             connect();
         }
 
@@ -76,5 +64,17 @@ public class HeosClient {
         log.info("Response: {}", json);
 
         return gson.fromJson(json, type);
+    }
+
+    public boolean isConnected() {
+        return socket != null && out != null && in != null && gson != null;
+    }
+
+    protected Scanner getIn() {
+        return in;
+    }
+
+    protected Gson getGson() {
+        return gson;
     }
 }

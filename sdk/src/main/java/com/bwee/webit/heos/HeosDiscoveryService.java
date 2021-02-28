@@ -1,15 +1,16 @@
 package com.bwee.webit.heos;
 
 import com.bwee.webit.heos.sddp.HeosClient;
-import com.bwee.webit.heos.sddp.TelnetConnection;
 import com.google.common.base.Charsets;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+@Slf4j
 @Service
 public class HeosDiscoveryService {
 
@@ -56,7 +57,7 @@ public class HeosDiscoveryService {
 
                 /* get the response as a string */
                 String response = new String(receivePacket.getData());
-
+                log.info("Found HEOS device: {}", response);
                 if (response.contains(SSDP_ST) && !heosAddress.equals(InetAddress.getLocalHost().getHostAddress())) {
                     return heosAddress;
                 }
