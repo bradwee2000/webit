@@ -1,7 +1,16 @@
+import SecurityContext from './../security/SecurityContext'
+
 const AlbumApi = {
 
   get: function(albumId, successCallback, errorCallback) {
-    fetch("http://localhost:8080/music/albums/" + albumId)
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Authorization": SecurityContext.getToken()
+        }
+    };
+
+    fetch("http://localhost:8080/music/albums/" + albumId, requestOptions)
       .then(res => res.json())
       .then(
         (result) => {

@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header';
-import AlbumApi from './api/AlbumApi';
-import SearchApi from './api/SearchApi';
-import TrackApi from './api/TrackApi';
+import { AlbumApi, SearchApi, TrackApi } from './api/Apis';
 import SearchBar from './components/search/SearchBar';
 import AlbumSection from './components/album/AlbumSection';
 import PlayerSection from './components/player/PlayerSection';
 import TrackSection from './components/track/TrackSection';
 import TrackPlayList from './components/common/TrackPlayList';
+import LoginButton from './components/security/LoginButton';
 
 function App() {
   const testTracks = [
@@ -196,6 +195,7 @@ function App() {
 
   return (
     <>
+      <LoginButton/>
       <div className="h-100 overflow-auto">
         <div className="container">
           <Header/>

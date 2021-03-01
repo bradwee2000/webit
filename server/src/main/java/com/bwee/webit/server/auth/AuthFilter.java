@@ -28,11 +28,11 @@ public class AuthFilter extends OncePerRequestFilter {
         final String token = req.getHeader(HttpHeaders.AUTHORIZATION);
         log.info("Accessing {} {} using {}", req.getMethod(), req.getRequestURI(), token);
 
-        final Enumeration<String> enumeration = req.getHeaderNames();
-        while(enumeration.hasMoreElements()) {
-            final String key = enumeration.nextElement();
-            log.info(" -- HEADER: {}={}", key, req.getHeader(key));
-        }
+//        final Enumeration<String> enumeration = req.getHeaderNames();
+//        while(enumeration.hasMoreElements()) {
+//            final String key = enumeration.nextElement();
+//            log.info(" -- HEADER: {}={}", key, req.getHeader(key));
+//        }
 
         final SecurityContext securityContext = SecurityContextHolder.getContext();
 

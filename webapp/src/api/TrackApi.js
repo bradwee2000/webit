@@ -1,12 +1,24 @@
+import SecurityContext from './../security/SecurityContext'
+
 const TrackApi = {
 
   get: function(trackId, successCallback, errorCallback) {
-    fetch("http://localhost:8080/music/tracks/" + trackId)
+
+    const requestOptions = {
+        method: "GET",
+        headers: {
+          "Authorization": SecurityContext.getToken()
+        }
+    };
+
+    fetch("http://localhost:8080/music/tracks/" + trackId, requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
           console.log(result);
-          successCallback(result);
+          if (successCallback) {
+            successCallback(result);
+          }
         },
         (error) => {
           if (errorCallback) {
