@@ -66,9 +66,10 @@ public class HeosController {
         return ResponseEntity.ok(playerService.setVolume(pid, volume));
     }
 
-    @GetMapping("/signin")
-    public ResponseEntity signin() {
-        return ResponseEntity.ok(systemService.accountSignIn("bradwee2000", "Sh@dow2355"));
+    @PostMapping("/signin")
+    public ResponseEntity signin(@RequestHeader final String username,
+                                 @RequestHeader final String password) {
+        return ResponseEntity.ok(systemService.accountSignIn(username, password));
     }
 
     @GetMapping("/sources")
