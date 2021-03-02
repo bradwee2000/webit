@@ -9,7 +9,6 @@
         <module>server</module>
         <module>youtube</module>
         <module>music</module>
-        <module>web-client</module>
     </modules>
 
     <parent>

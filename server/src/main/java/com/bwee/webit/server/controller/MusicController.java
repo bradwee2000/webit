@@ -2,7 +2,9 @@ package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
+import com.bwee.webit.server.auth.PlayTrackAuthService;
 import com.bwee.webit.server.model.ImportAlbum;
+import com.bwee.webit.server.model.music.PlayCodeRes;
 import com.bwee.webit.server.model.music.SearchAlbumResp;
 import com.bwee.webit.server.model.music.SearchMusicAllResp;
 import com.bwee.webit.server.model.music.SearchTrackResp;
@@ -46,6 +48,9 @@ public class MusicController {
     @Autowired
     private TrackService trackService;
 
+    @Autowired
+    private PlayTrackAuthService playTrackAuthService;
+
     @GetMapping("/search/{query}")
     public ResponseEntity searchAll(@PathVariable final String query) {
         final Pageable pageable = PageRequest.of(0, 5);
@@ -72,6 +77,11 @@ public class MusicController {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(resp);
+    }
+
+    @GetMapping("/play-code")
+    public ResponseEntity getPlayCode() {
+        return ResponseEntity.ok(new PlayCodeRes().setPlayCode(playTrackAuthService.getPlayCode()));
     }
 
     @PostMapping("/import")

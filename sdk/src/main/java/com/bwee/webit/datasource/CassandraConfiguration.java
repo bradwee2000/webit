@@ -1,4 +1,4 @@
-package com.bwee.webit.config;
+package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.Entity;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;

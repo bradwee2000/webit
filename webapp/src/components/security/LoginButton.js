@@ -1,4 +1,4 @@
-import LoginApi from './../../api/LoginApi'
+import { LoginApi, PlayCodeApi } from './../../api/Apis'
 
 const LoginButton = ({playingTrack, eventHandler}) => {
 
@@ -11,7 +11,8 @@ const LoginButton = ({playingTrack, eventHandler}) => {
   };
 
   const handleClick = () => {
-    LoginApi.login("DeezNuts", "Hulala")
+    const successCallback = PlayCodeApi.get;
+    LoginApi.login("DeezNuts", "Hulala", successCallback);
   };
 
   return (

@@ -1,4 +1,4 @@
-package com.bwee.webit.service;
+package com.bwee.webit.core;
 
 public interface IdGenerator<T> {
 

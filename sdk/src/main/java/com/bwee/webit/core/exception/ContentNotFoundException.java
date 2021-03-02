@@ -1,4 +1,4 @@
-package com.bwee.webit.exception;
+package com.bwee.webit.core.exception;
 
 public class ContentNotFoundException extends NotFoundException {
 

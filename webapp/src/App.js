@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header';
-import { AlbumApi, SearchApi, TrackApi } from './api/Apis';
+import { AlbumApi, SearchApi, TrackApi, PlayCodeApi } from './api/Apis';
 import SearchBar from './components/search/SearchBar';
 import AlbumSection from './components/album/AlbumSection';
 import PlayerSection from './components/player/PlayerSection';
@@ -16,7 +16,7 @@ function App() {
       title: "Rolling in the Deep",
       albumName: "21",
       albumId: "JapNv7dPxlHE9k6skUiIFGeZeVo=",
-      imageUrl: "http://localhost:8080/images/music/K2E21htPy3yh3UqFYnT7.jpg",
+      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg",
       artist: "Adele",
     },
     {
@@ -25,7 +25,7 @@ function App() {
       title: "God Gave Rock and Roll to You",
       albumName: "100 Rock Hits - The Sound Of My Life",
       albumId: "L4fH084Z7NqGeVBk5VQNrU_gOf8=",
-      imageUrl: "http://localhost:8080/images/music/GsQFR1UxmxS7xTOQf1Mf.jpg",
+      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg",
       artist: "Argent"
     }
   ]
@@ -35,19 +35,19 @@ function App() {
       id:"1",
       name:"21",
       artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/HgZmQ2QdQziC6wsdFmly.jpg"
+      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
     },
     {
       id:"2",
       name:"21",
       artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/HgZmQ2QdQziC6wsdFmly.jpg"
+      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
     },
     {
       id:"3",
       name:"100 Shalalamakuchi",
       artists:["Shanti Shanti", "Many Moore"],
-      imageUrl: "http://localhost:8080/images/music/KwNYGuzSGCAgR30gMhq3.jpg"
+      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg"
     },
     {
       id:"4",
@@ -190,7 +190,11 @@ function App() {
   }
 
   useEffect((e) => {
-    // console.log(query)
+    const interval = setInterval(() => {
+      PlayCodeApi.get();
+    }, 3 * 60 * 1000); // every 3 mins
+
+    return () => clearInterval(interval);
   });
 
   return (

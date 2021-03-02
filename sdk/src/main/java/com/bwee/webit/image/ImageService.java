@@ -1,19 +1,14 @@
-package com.bwee.webit.service;
+package com.bwee.webit.image;
 
-import com.bwee.webit.exception.ImageNotFoundException;
+import com.bwee.webit.core.IdGenerator;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.client.utils.URIUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 
 @Slf4j
 public class ImageService {

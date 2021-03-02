@@ -1,4 +1,4 @@
-package com.bwee.webit.service;
+package com.bwee.webit.core;
 
 import com.bwee.webit.datasource.DbService;
 import com.google.common.collect.Lists;

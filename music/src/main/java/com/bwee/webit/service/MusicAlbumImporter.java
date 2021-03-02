@@ -1,6 +1,8 @@
 package com.bwee.webit.service;
 
+import com.bwee.webit.core.FileService;
 import com.bwee.webit.file.MusicFileService;
+import com.bwee.webit.image.ImageService;
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
 import lombok.SneakyThrows;

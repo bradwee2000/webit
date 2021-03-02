@@ -23,7 +23,7 @@ public class LoginController {
 
         if (StringUtils.equals(username, "DeezNuts")) {
             token = "CQIUC9lAKq2H";
-            final Cookie cookie = new Cookie("au", token);
+            final Cookie cookie = new Cookie("pl", token);
             cookie.setHttpOnly(true);
             cookie.setPath("/");
             cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days

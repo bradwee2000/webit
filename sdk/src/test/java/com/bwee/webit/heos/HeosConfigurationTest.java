@@ -1,4 +1,4 @@
-package com.bwee.webit.config;
+package com.bwee.webit.heos;
 
 import com.bwee.webit.heos.*;
 import com.bwee.webit.heos.model.MusicSource;

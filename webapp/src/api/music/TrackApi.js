@@ -1,4 +1,4 @@
-import SecurityContext from './../security/SecurityContext'
+import SecurityContext from './../../security/SecurityContext'
 
 const TrackApi = {
 
@@ -30,7 +30,8 @@ const TrackApi = {
   },
 
   play: function(trackId) {
-    return "http://localhost:8080/music/tracks/" + trackId + "/play";
+    const playToken = SecurityContext.getPlayTokenHash(trackId);
+    return "http://localhost:8080/music/tracks/" + trackId + "/play?token=" + playToken;
   }
 }
 

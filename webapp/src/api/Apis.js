@@ -1,11 +1,14 @@
-import AlbumApi from './AlbumApi';
+import AlbumApi from './music/AlbumApi';
+import TrackApi from './music/TrackApi';
+import SearchApi from './music/SearchApi';
+import PlayCodeApi from './music/PlayCodeApi'
+
 import LoginApi from './LoginApi';
-import TrackApi from './TrackApi';
-import SearchApi from './SearchApi';
 
 export {
   AlbumApi,
   LoginApi,
   TrackApi,
-  SearchApi
+  SearchApi,
+  PlayCodeApi
 }

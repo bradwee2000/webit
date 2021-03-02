@@ -1,6 +1,5 @@
 package com.bwee.webit.datasource;
 
-import com.bwee.webit.config.CassandraConfiguration;
 import com.bwee.webit.model.MusicUser;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

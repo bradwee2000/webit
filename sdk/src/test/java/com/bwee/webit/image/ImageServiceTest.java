@@ -1,9 +1,10 @@
-package com.bwee.webit.service;
+package com.bwee.webit.image;
 
+import com.bwee.webit.core.IdGenerator;
+import com.bwee.webit.image.ImageService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

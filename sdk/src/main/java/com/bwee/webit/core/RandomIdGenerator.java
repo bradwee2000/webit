@@ -1,8 +1,7 @@
-package com.bwee.webit.service;
+package com.bwee.webit.core;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Primary;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.stereotype.Service;
 
 @Primary

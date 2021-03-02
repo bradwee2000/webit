@@ -2,7 +2,6 @@ package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.YoutubeEntity;
 import com.bwee.webit.model.YoutubeVideo;
-import com.bwee.webit.service.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Service;

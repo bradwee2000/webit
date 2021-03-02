@@ -1,5 +1,6 @@
 package com.bwee.webit.service;
 
+import com.bwee.webit.core.IdGenerator;
 import com.bwee.webit.model.Album;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

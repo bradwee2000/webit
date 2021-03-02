@@ -1,13 +1,11 @@
 package com.bwee.webit.datasource;
 
-import com.bwee.webit.config.CassandraConfiguration;
 import com.bwee.webit.datasource.entity.PersonEntity;
 import com.bwee.webit.model.Person;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cassandraunit.spring.EmbeddedCassandra;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

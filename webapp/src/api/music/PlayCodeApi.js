@@ -1,8 +1,8 @@
-import SecurityContext from './../security/SecurityContext'
+import SecurityContext from './../../security/SecurityContext'
 
-const AlbumApi = {
+const PlayCodeApi = {
 
-  get: function(albumId, successCallback, errorCallback) {
+  get: function(successCallback, errorCallback) {
     const requestOptions = {
         method: "GET",
         headers: {
@@ -10,12 +10,14 @@ const AlbumApi = {
         }
     };
 
-    fetch("http://localhost:8080/music/albums/" + albumId, requestOptions)
+    fetch("http://localhost:8080/music/play-code/", requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
-          console.log(result);
-          successCallback(result);
+          SecurityContext.setPlayTrackCode(result.playCode);
+          if (successCallback) {
+            successCallback(result);
+          }
         },
         (error) => {
           if (errorCallback) {
@@ -27,4 +29,4 @@ const AlbumApi = {
   }
 }
 
-export default AlbumApi
+export default PlayCodeApi

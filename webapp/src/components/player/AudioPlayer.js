@@ -1,16 +1,23 @@
 class AudioPlayer {
   static audio = new Audio();
+  static isPlaying = false;
 
   static play(trackUrl) {
     if (AudioPlayer.audio.src !== trackUrl) {
-        AudioPlayer.audio.pause();
-        AudioPlayer.audio.src = trackUrl;
+      AudioPlayer.audio.pause();
+      AudioPlayer.audio.src = trackUrl;
     }
+
     AudioPlayer.audio.play()
+      .then(() => AudioPlayer.isPlaying = true)
+      .catch(e => AudioPlayer.isPlaying = false);
   }
 
   static pause() {
-    AudioPlayer.audio.pause();
+    if (AudioPlayer.isPlaying) {
+      AudioPlayer.audio.pause();
+      AudioPlayer.isPlaying = false;
+    }
   }
 
   static getCurrentTime() {

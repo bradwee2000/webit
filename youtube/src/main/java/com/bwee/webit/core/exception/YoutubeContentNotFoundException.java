@@ -1,4 +1,4 @@
-package com.bwee.webit.exception;
+package com.bwee.webit.core.exception;
 
 import static com.bwee.webit.constant.YoutubeConstants.YOUTUBE_SOURCE;
 

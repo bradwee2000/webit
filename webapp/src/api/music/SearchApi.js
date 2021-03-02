@@ -1,4 +1,4 @@
-import SecurityContext from './../security/SecurityContext'
+import SecurityContext from './../../security/SecurityContext'
 
 const SearchApi = {
 

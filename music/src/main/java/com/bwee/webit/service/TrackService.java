@@ -1,5 +1,6 @@
 package com.bwee.webit.service;
 
+import com.bwee.webit.core.SearchableCrudService;
 import com.bwee.webit.datasource.TrackDbService;
 import com.bwee.webit.exception.TrackContentNotFoundException;
 import com.bwee.webit.file.MusicFileService;

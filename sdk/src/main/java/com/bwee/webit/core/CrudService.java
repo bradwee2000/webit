@@ -1,4 +1,4 @@
-package com.bwee.webit.service;
+package com.bwee.webit.core;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;

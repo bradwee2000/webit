@@ -1,7 +1,8 @@
 package com.bwee.webit.service;
 
+import com.bwee.webit.core.SearchableCrudService;
 import com.bwee.webit.datasource.YoutubeDbService;
-import com.bwee.webit.exception.YoutubeContentNotFoundException;
+import com.bwee.webit.core.exception.YoutubeContentNotFoundException;
 import com.bwee.webit.model.YoutubeVideo;
 import com.bwee.webit.search.YoutubeEsService;
 import com.google.common.collect.Lists;

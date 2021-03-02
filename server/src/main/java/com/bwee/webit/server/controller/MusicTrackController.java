@@ -1,5 +1,6 @@
 package com.bwee.webit.server.controller;
 
+import com.bwee.webit.server.auth.PlayTrackAuthService;
 import com.bwee.webit.service.TrackService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,9 @@ public class MusicTrackController {
     @Autowired
     private TrackService trackService;
 
+    @Autowired
+    private PlayTrackAuthService playTrackAuthService;
+
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable final String id) {
         return ResponseEntity.ok(trackService.findByIdStrict(id));
@@ -32,7 +36,8 @@ public class MusicTrackController {
 
     @SneakyThrows
     @GetMapping(value = "/{id}/play", produces = "audio/mpeg")
-    public ResponseEntity play(@PathVariable final String id) {
+    public ResponseEntity play(@PathVariable final String id, @RequestParam("token") final String playToken) {
+        playTrackAuthService.validate(id, playToken);
         final Path sourcePath = trackService.getSourcePathById(id);
         return ResponseEntity.ok(new FileSystemResource(sourcePath));
     }
