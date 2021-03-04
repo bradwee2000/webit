@@ -2,11 +2,11 @@ package com.bwee.webit.exception;
 
 import com.bwee.webit.core.exception.ContentNotFoundException;
 
-public class TrackContentNotFoundException extends ContentNotFoundException {
+public class TrackNotFoundException extends ContentNotFoundException {
 
     private static final String SOURCE = "music";
 
-    public TrackContentNotFoundException(String id) {
+    public TrackNotFoundException(String id) {
         super(id, SOURCE);
     }
 }

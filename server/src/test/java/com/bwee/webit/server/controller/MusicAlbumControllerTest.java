@@ -1,6 +1,6 @@
 package com.bwee.webit.server.controller;
 
-import com.bwee.webit.exception.AlbumContentNotFoundException;
+import com.bwee.webit.exception.AlbumNotFoundException;
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.server.model.ImportAlbum;
@@ -95,7 +95,7 @@ class MusicAlbumControllerTest {
     @Test
     @SneakyThrows
     public void testGetByUnknownId_shouldShowNotFound() {
-        when(albumService.findByIdStrict(any())).thenThrow(new AlbumContentNotFoundException("XYZ"));
+        when(albumService.findByIdStrict(any())).thenThrow(new AlbumNotFoundException("XYZ"));
         mvc.perform(get("/music/albums/XYZ"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"error\":\"Content is not found. id=XYZ, source=album\"}"));

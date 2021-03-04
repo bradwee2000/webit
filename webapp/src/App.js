@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react'
 import Header from './components/Header';
-import { AlbumApi, SearchApi, TrackApi, PlayCodeApi } from './api/Apis';
+import { AlbumApi, MusicUserApi, SearchApi, TrackApi, PlayCodeApi } from './api/Apis';
 import SearchBar from './components/search/SearchBar';
 import AlbumSection from './components/album/AlbumSection';
 import PlayerSection from './components/player/PlayerSection';
 import TrackSection from './components/track/TrackSection';
 import TrackPlayList from './components/common/TrackPlayList';
-import LoginButton from './components/security/LoginButton';
+import { LoginButton } from './components/common/Commons';
+import SecurityContext from './security/SecurityContext'
+import FetchPlayCode from './function/FetchPlayCode'
+import AudioPlayer from './components/player/AudioPlayer'
 
 function App() {
   const testTracks = [
@@ -71,57 +74,57 @@ function App() {
     },
   ];
 
+  const defaultUserState = {
+    tracks: [],
+    currentTrackIndex: 0,
+    isShuffle: false,
+    isLoop: false,
+    isPlaying: false,
+    selectedAlbum: null,
+    selectedTrack: null,
+  }
 
   const [tracks, setTracks] = useState(testTracks);
   const [albums, setAlbums] = useState(testAlbums);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playingTrack, setPlayingTrack] = useState();
-  const [playingAlbum, setPlayingAlbum] = useState();
-  const [queue, setQueue] = useState([]);
+  const [userState, setUserState] = useState(defaultUserState);
 
   const doSearch = (query) => {
-    SearchApi.search(query, setSearchResult)
+    SearchApi.search(query)
+      .then(setSearchResult)
   };
 
   const togglePlayTrack = (trackId) => {
     let isPlayNow = !isPlaying;
 
-    // If playing smae track
-    if (playingTrack && playingTrack.id === trackId) {
-      isPlayNow = !isPlaying;
+    // If playing same track, toggle play/pause
+    if (userState.selectedTrack && userState.selectedTrack.id === trackId) {
+      isPlayNow = !isPlaying
+      setIsPlaying(isPlayNow)
     } else {
-      TrackApi.get(trackId, (track) => {
-        TrackPlayList.setTracks(track);
-        setPlayingTrack(TrackPlayList.current());
-        setPlayingAlbum(null);
-      });
-      isPlayNow = true;
+      // Else, play new track
+      TrackApi.play(trackId).then(setUserState)
+      setIsPlaying(true);
     }
-    setIsPlaying(isPlayNow);
   };
 
   const togglePlayAlbum = (albumId) => {
     let isPlayNow = !isPlaying;
 
     // if playing same album
-    if (playingAlbum && playingAlbum.id === albumId) {
+    if (userState.selectedAlbum && userState.selectedAlbum.id === albumId) {
       isPlayNow = !isPlaying;
     } else {
-      AlbumApi.get(albumId, (album) => {
-        setPlayingAlbum(album);
-        TrackPlayList.setTracks(album.tracks);
-        setPlayingTrack(TrackPlayList.current());
-      });
-      isPlayNow = true;
+      AlbumApi.play(albumId).then(setUserState)
+      isPlayNow = true
     }
-    setIsPlaying(isPlayNow);
+    setIsPlaying(isPlayNow)
   };
 
   const setSearchResult = (result) => {
-    setTracks(result.tracks);
-    setAlbums(result.albums);
+    setTracks(result.tracks)
+    setAlbums(result.albums)
   };
-
 
   const eventHandler = {
 
@@ -148,6 +151,10 @@ function App() {
       togglePlayTrack(trackId);
     },
 
+    onTrackPlayFinished() {
+      setIsPlaying(false)
+    },
+
     onAlbumPlay(albumId) {
       togglePlayAlbum(albumId);
     },
@@ -165,37 +172,47 @@ function App() {
     },
 
     onNextClick() {
-      const nextTrack = TrackPlayList.next();
-      if (nextTrack) {
-          setPlayingTrack(nextTrack);
-      }
-      setIsPlaying(nextTrack != null);
+      MusicUserApi.next().then(res => {
+        setUserState(res)
+      })
     },
 
     onPrevClick() {
-      const prevTrack = TrackPlayList.prev();
-      if (prevTrack) {
-          setPlayingTrack(prevTrack);
-      }
-      setIsPlaying(prevTrack != null)
+      MusicUserApi.prev().then(res => {
+        setUserState(res)
+      })
     },
 
     onShuffleClick(isEnabled) {
-      TrackPlayList.setShuffle(isEnabled);
+      MusicUserApi.shuffle(isEnabled).then(res => {
+        setUserState(res)
+      })
     },
 
     onLoopClick(isEnabled) {
-      TrackPlayList.setLoop(isEnabled);
+      MusicUserApi.loop(isEnabled).then(res => {
+        setUserState(res)
+      });
     }
   }
 
+  // Update play code
   useEffect((e) => {
-    const interval = setInterval(() => {
-      PlayCodeApi.get();
-    }, 3 * 60 * 1000); // every 3 mins
-
+    FetchPlayCode();
+    const interval = setInterval(FetchPlayCode , 3 * 60 * 1000); // every 3 mins
     return () => clearInterval(interval);
   });
+
+  // Play or pause music
+  useEffect(() => {
+    if (userState.selectedTrack) {
+      if (isPlaying) {
+        AudioPlayer.play(TrackApi.getStreamUrl(userState.selectedTrack.id));
+      } else {
+        AudioPlayer.pause();
+      }
+    }
+  }, [userState.selectedTrack, isPlaying]);
 
   return (
     <>
@@ -204,12 +221,13 @@ function App() {
         <div className="container">
           <Header/>
           <SearchBar eventHandler={eventHandler} className="mt-3 mb-4"/>
-          <TrackSection tracks={tracks} playingTrack={playingTrack} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
-          <AlbumSection albums={albums} playingAlbum={playingAlbum} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
+          <TrackSection tracks={tracks} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
+          <AlbumSection albums={albums} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
         </div>
       </div>
+      <hr className="mb-5 mt-5"/>
       <div className="fixed-bottom">
-        <PlayerSection eventHandler={eventHandler} playingTrack={playingTrack} isPlaying={isPlaying}/>
+        <PlayerSection eventHandler={eventHandler} userState={userState} isPlaying={isPlaying}/>
       </div>
     </>
   );

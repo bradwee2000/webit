@@ -1,8 +1,10 @@
 package com.bwee.webit.service;
 
 import com.bwee.webit.core.SearchableCrudService;
+import com.bwee.webit.core.SimpleCrudService;
+import com.bwee.webit.datasource.DbService;
 import com.bwee.webit.datasource.TrackDbService;
-import com.bwee.webit.exception.TrackContentNotFoundException;
+import com.bwee.webit.exception.TrackNotFoundException;
 import com.bwee.webit.file.MusicFileService;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.search.TrackEsService;
@@ -13,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.bwee.webit.util.Constants.DEFAULT_PAGE_NUM;
@@ -29,19 +29,19 @@ import static com.bwee.webit.util.Constants.DEFAULT_PAGE_SIZE;
 
 @Slf4j
 @Service
-public class TrackService implements SearchableCrudService<Track> {
+public class TrackService extends SimpleCrudService<Track> implements SearchableCrudService<Track> {
+
+    private final TrackDbService db;
+    private final TrackEsService es;
+    private final MusicFileService musicFileService;
 
     @Autowired
-    private TrackDbService db;
-
-    @Autowired
-    private TrackEsService es;
-
-    @Autowired
-    private MusicFileService musicFileService;
-
-    @Autowired
-    private ElasticsearchOperations esOps;
+    public TrackService(final TrackDbService db, final TrackEsService es, final MusicFileService musicFileService) {
+        super(db);
+        this.db = db;
+        this.es = es;
+        this.musicFileService = musicFileService;
+    }
 
     @Override
     public void save(final Track track) {
@@ -71,24 +71,14 @@ public class TrackService implements SearchableCrudService<Track> {
     }
 
     @Override
-    public Optional<Track> findById(final String id) {
-        return db.findById(id);
-    }
-
-    @Override
     public Track findByIdStrict(final String id) {
-        return db.findById(id).orElseThrow(() -> new TrackContentNotFoundException(id));
+        return db.findById(id).orElseThrow(() -> new TrackNotFoundException(id));
     }
 
     @Override
     public void deleteById(final String id) {
         db.deleteById(id);
         es.deleteById(id);
-    }
-
-    @Override
-    public Slice<Track> findAll(final Pageable pageable) {
-        return db.findAll(pageable);
     }
 
     @Override

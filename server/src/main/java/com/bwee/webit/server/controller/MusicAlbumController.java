@@ -1,11 +1,14 @@
 package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.Album;
+import com.bwee.webit.model.MusicUser;
 import com.bwee.webit.server.model.ImportAlbum;
 import com.bwee.webit.server.model.music.SearchAlbumResp;
+import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.AlbumService;
 import com.bwee.webit.service.Mp3Reader;
 import com.bwee.webit.service.MusicAlbumImporter;
+import com.bwee.webit.service.MusicUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -39,9 +42,22 @@ public class MusicAlbumController {
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private MusicUserService userService;
+
+    @Autowired
+    private MusicUserResFactory musicUserResFactory;
+
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable final String id) {
         return ResponseEntity.ok(albumService.findByIdStrict(id));
+    }
+
+    @PostMapping(value = "/{albumId}/play")
+    public ResponseEntity play(@PathVariable final String albumId) {
+        final Album album = albumService.findByIdStrict(albumId);
+        final MusicUser user = userService.playAlbum(album);
+        return ResponseEntity.ok(musicUserResFactory.build(user, album));
     }
 
     @GetMapping

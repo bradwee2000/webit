@@ -1,20 +1,16 @@
 import { useState } from 'react'
 
-const ToggleButton = ({icon, label="", onClick}) => {
-
-  const [active, setActive] = useState(false);
+const ToggleButton = ({icon, label="", isEnabled, onClick}) => {
 
   const handleToggle = (e) => {
-    const isActiveNow = !active;
-
-    setActive(isActiveNow);
+    const isActiveNow = !isEnabled;
     if (onClick) {
       onClick(isActiveNow, e);
     }
   }
 
-  const className = active ? " active" : ""
-  const fullLabel = (active ? "Disable " : "Enable ") + label;
+  const className = isEnabled ? " active" : ""
+  const fullLabel = (isEnabled ? "Disable " : "Enable ") + label;
 
   return (
     <div className={"toggle-btn" + className}>

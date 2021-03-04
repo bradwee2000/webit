@@ -45,12 +45,10 @@ class MusicUserDbServiceTest {
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
 
         johnOriginal = new MusicUser().setId("123")
-                .setName("John Le Original")
                 .setCurrentTrackIndex(3)
                 .setTrackIdQueue(List.of("A", "B", "C"));
 
         johnClone = MusicUser.copyOf(johnOriginal)
-                .setName("John Le Clone")
                 .setCurrentTrackIndex(2)
                 .setTrackIdQueue(List.of("D", "E"))
                 .setLoop(true)
@@ -70,8 +68,7 @@ class MusicUserDbServiceTest {
         musicUserDbService.updateCurrentTrackIndex(johnClone);
 
         assertThat(musicUserDbService.findById("123"))
-                .hasValueSatisfying(user -> assertThat(user.getCurrentTrackIndex()).isEqualTo(2))
-                .hasValueSatisfying(user -> assertThat(user.getName()).isEqualTo("John Le Original"));
+                .hasValueSatisfying(user -> assertThat(user.getCurrentTrackIndex()).isEqualTo(2));
     }
 
     @Test

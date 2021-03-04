@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -36,6 +38,22 @@ public abstract class SimpleCrudService<T> implements CrudService<T> {
     @Override
     public Optional<T> findById(String id) {
         return dbService.findById(id);
+    }
+
+    @Override
+    public List<T> findByIds(final Collection<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return dbService.findByIds(ids);
+    }
+
+    @Override
+    public List<T> findByIdsSorted(final List<String> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return dbService.findByIdsSorted(ids);
     }
 
     @Override

@@ -1,30 +1,14 @@
-import SecurityContext from './../../security/SecurityContext'
+import { Config, Request } from './../Apis'
 
 const AlbumApi = {
 
-  get: function(albumId, successCallback, errorCallback) {
-    const requestOptions = {
-        method: "GET",
-        headers: {
-          "Authorization": SecurityContext.getToken()
-        }
-    };
+  get: function(albumId) {
+    return Request.get(Config.musicHost + "/albums/" + albumId);
+  },
 
-    fetch("http://localhost:8080/music/albums/" + albumId, requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          console.log(result);
-          successCallback(result);
-        },
-        (error) => {
-          if (errorCallback) {
-            errorCallback(error);
-          }
-          console.log(error)
-        }
-      )
-  }
+  play: function(albumId) {
+    return Request.post(Config.musicHost + "/albums/" + albumId + "/play");
+  },
 }
 
 export default AlbumApi

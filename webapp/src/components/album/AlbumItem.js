@@ -1,8 +1,9 @@
 import AlbumTitle from './AlbumTitle'
-import ArtistList from './../common/ArtistList'
-import PlayButton from './../common/PlayButton'
+import { ArtistList, PlayButton } from './../common/Commons'
 
-const AlbumItem = ({album, playingAlbum, isPlaying, eventHandler}) => {
+const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
+
+  const selectedAlbum = userState.selectedAlbum
 
   const handleAlbumClick = (id) => {
     eventHandler.onAlbumClick(id);
@@ -18,7 +19,7 @@ const AlbumItem = ({album, playingAlbum, isPlaying, eventHandler}) => {
     eventHandler.onAlbumPause(id);
   }
 
-  const isSelected = playingAlbum && album.id === playingAlbum.id;
+  const isSelected = selectedAlbum && album.id === selectedAlbum.id;
 
   return (
     <div className={'album justify-content-between lh-sm text-light border-1 rounded-1 p-3 ' + (isSelected ? "selected" : "")} role='button' onClick={() => handleAlbumClick(album.id)}>

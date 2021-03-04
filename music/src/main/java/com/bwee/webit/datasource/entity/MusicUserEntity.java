@@ -12,6 +12,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Boolean.FALSE;
 import static java.util.Collections.emptyList;
 import static org.springframework.data.cassandra.core.mapping.CassandraType.Name.LIST;
 import static org.springframework.data.cassandra.core.mapping.CassandraType.Name.TEXT;
@@ -31,8 +32,6 @@ public class MusicUserEntity implements Entity<MusicUserEntity> {
     @PrimaryKey
     private String id;
 
-    private String name;
-
     @CassandraType(type = LIST, typeArguments = TEXT)
     private List<String> trackIdQueue = emptyList();
 
@@ -46,7 +45,6 @@ public class MusicUserEntity implements Entity<MusicUserEntity> {
 
     public MusicUserEntity(final MusicUser user) {
         this.id = user.getId();
-        this.name = user.getName();
         this.trackIdQueue = user.getTrackIdQueue();
         this.currentTrackIndex = user.getCurrentTrackIndex();
         this.isShuffle = user.isShuffle();
@@ -57,11 +55,10 @@ public class MusicUserEntity implements Entity<MusicUserEntity> {
     public MusicUser toModel() {
         return new MusicUser()
                 .setId(id)
-                .setName(name)
                 .setTrackIdQueue(trackIdQueue == null ? Collections.emptyList() : trackIdQueue)
                 .setCurrentTrackIndex(currentTrackIndex)
-                .setShuffle(isShuffle)
-                .setLoop(isLoop)
-                .setPlaying(isPlaying);
+                .setShuffle(isShuffle == null ? false : isShuffle)
+                .setLoop(isLoop == null ? false : isLoop)
+                .setPlaying(isPlaying == null ? false : isPlaying);
     }
 }

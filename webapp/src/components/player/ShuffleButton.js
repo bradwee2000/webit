@@ -1,6 +1,8 @@
 import ToggleButton from './../common/ToggleButton'
 
-const ShuffleButton = ({onClick}) => {
+const ShuffleButton = ({userState, onClick}) => {
+
+  const isShuffle = userState.isShuffle
 
   const icon = (
     <svg role="img" height="16" width="16" viewBox="0 0 16 16">
@@ -9,7 +11,7 @@ const ShuffleButton = ({onClick}) => {
   );
 
   return (
-    <ToggleButton icon={icon} onClick={onClick} label="Shuffle"/>
+    <ToggleButton icon={icon} isEnabled={isShuffle} onClick={onClick} label="Shuffle"/>
   )
 }
 

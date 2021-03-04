@@ -30,7 +30,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.csrf().disable().cors().disable()
                 .authorizeRequests()
                     .antMatchers(HttpMethod.OPTIONS).permitAll()
-                    .antMatchers("/login", "/images/**", "/music/tracks/*/play").permitAll()
+                    .antMatchers("/login", "/images/**", "/music/tracks/*/stream").permitAll()
                     .anyRequest().authenticated()
                 .and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)

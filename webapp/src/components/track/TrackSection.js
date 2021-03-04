@@ -1,6 +1,6 @@
 import TrackList from './TrackList'
 
-const TrackSection = ({tracks, className='', playingTrack, isPlaying, eventHandler}) => {
+const TrackSection = ({tracks, className='', userState, isPlaying, eventHandler}) => {
 
   if (tracks === undefined || tracks.length === 0) {
     return <></>;
@@ -14,7 +14,7 @@ const TrackSection = ({tracks, className='', playingTrack, isPlaying, eventHandl
           <div className="link">See All</div>
         </div>
       </div>
-      <TrackList items={tracks} playingTrack={playingTrack} eventHandler={eventHandler} isPlaying={isPlaying}/>
+      <TrackList items={tracks} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} />
     </section>
   )
 }

@@ -1,37 +1,18 @@
-import SecurityContext from './../../security/SecurityContext'
+import { Config, Request, SecurityContext } from './../Apis'
 
 const TrackApi = {
 
-  get: function(trackId, successCallback, errorCallback) {
-
-    const requestOptions = {
-        method: "GET",
-        headers: {
-          "Authorization": SecurityContext.getToken()
-        }
-    };
-
-    fetch("http://localhost:8080/music/tracks/" + trackId, requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          console.log(result);
-          if (successCallback) {
-            successCallback(result);
-          }
-        },
-        (error) => {
-          if (errorCallback) {
-            errorCallback(error);
-          }
-          console.log(error)
-        }
-      )
+  get: function(trackId) {
+    return Request.get(Config.musicHost + "/tracks/" + trackId);
   },
 
   play: function(trackId) {
+    return Request.post(Config.musicHost + "/tracks/" + trackId + "/play");
+  },
+
+  getStreamUrl: function(trackId) {
     const playToken = SecurityContext.getPlayTokenHash(trackId);
-    return "http://localhost:8080/music/tracks/" + trackId + "/play?token=" + playToken;
+    return "http://localhost:8080/music/tracks/" + trackId + "/stream?token=" + playToken;
   }
 }
 

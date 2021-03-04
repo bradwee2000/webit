@@ -4,6 +4,7 @@ import com.bwee.webit.model.Album;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 
 @Data
+@Slf4j
 @Accessors(chain = true)
 @Document(indexName = "album")
 @NoArgsConstructor
@@ -51,6 +53,7 @@ public class AlbumDocument implements SearchDocument<Album> {
         this.artists = album.getArtists();
         this.year = album.getYear();
         this.tags = album.getTags();
+        this.artists = album.getArtists();
         this.trackNames = album.getTracks().stream()
                 .map(m -> m.getArtist() + " " + m.getTitle())
                 .collect(Collectors.toList());

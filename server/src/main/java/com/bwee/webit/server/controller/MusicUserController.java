@@ -4,6 +4,7 @@ import com.bwee.webit.model.MusicUser;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.server.model.music.SaveMusicUserReq;
 import com.bwee.webit.server.model.music.UpdateQueueReq;
+import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.MusicUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,9 @@ public class MusicUserController {
     @Autowired
     private MusicUserService userService;
 
+    @Autowired
+    private MusicUserResFactory musicUserResFactory;
+
     @GetMapping
     public ResponseEntity getMusicUser() {
         final MusicUser user = userService.getLoginUser();
@@ -28,39 +32,33 @@ public class MusicUserController {
     }
 
     @PostMapping
-    public ResponseEntity saveMusicUser(@RequestBody SaveMusicUserReq req) {
-        final MusicUser user = new MusicUser().setName(req.getName());
+    public ResponseEntity saveMusicUser(@RequestBody final SaveMusicUserReq req) {
+        final MusicUser user = new MusicUser().setId(req.getId());
         userService.insertNewUser(user);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 
     @PostMapping("/shuffle")
-    public ResponseEntity shuffle(@RequestParam("isShuffle") Boolean isShuffle) {
+    public ResponseEntity shuffle(@RequestParam(value = "isShuffle", defaultValue = "true") final Boolean isShuffle) {
         final MusicUser user = userService.updateShuffle(isShuffle);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 
     @PostMapping("/loop")
-    public ResponseEntity loop(@RequestParam("isLoop") Boolean isLoop) {
+    public ResponseEntity loop(@RequestParam(value = "isLoop", defaultValue = "true") final Boolean isLoop) {
         final MusicUser user = userService.updateLoop(isLoop);
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 
     @PostMapping("/next")
     public ResponseEntity nextTrack() {
-        final Optional<Track> track = userService.nextTrack();
-        return ResponseEntity.ok(track.orElse(null));
+        final MusicUser user = userService.nextTrack();
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 
     @PostMapping("/prev")
     public ResponseEntity prevTrack() {
-        final Optional<Track> track = userService.prevTrack();
-        return ResponseEntity.ok(track.orElse(null));
-    }
-
-    @PostMapping("/queue")
-    public ResponseEntity updateQueue(@RequestBody final UpdateQueueReq req) {
-        final MusicUser user = userService.updateTrackQueue(req.getTrackIds());
-        return ResponseEntity.ok(user);
+        final MusicUser user = userService.prevTrack();
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 }

@@ -1,32 +1,35 @@
 package com.bwee.webit.service;
 
 import com.bwee.webit.core.SearchableCrudService;
+import com.bwee.webit.core.SimpleCrudService;
 import com.bwee.webit.datasource.YoutubeDbService;
-import com.bwee.webit.core.exception.YoutubeContentNotFoundException;
+import com.bwee.webit.exception.YoutubeContentNotFoundException;
 import com.bwee.webit.model.YoutubeVideo;
 import com.bwee.webit.search.YoutubeEsService;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 import static com.bwee.webit.util.Constants.DEFAULT_PAGE_NUM;
 import static com.bwee.webit.util.Constants.DEFAULT_PAGE_SIZE;
 
 @Service
-public class YoutubeService implements SearchableCrudService<YoutubeVideo> {
+public class YoutubeService extends SimpleCrudService<YoutubeVideo> implements SearchableCrudService<YoutubeVideo> {
+
+    private final YoutubeDbService db;
+    private final YoutubeEsService es;
 
     @Autowired
-    private YoutubeDbService db;
-
-    @Autowired
-    private YoutubeEsService es;
+    public YoutubeService(final YoutubeDbService db, final YoutubeEsService es) {
+        super(db);
+        this.db = db;
+        this.es = es;
+    }
 
     @Override
     public void save(YoutubeVideo video) {
@@ -46,11 +49,6 @@ public class YoutubeService implements SearchableCrudService<YoutubeVideo> {
     }
 
     @Override
-    public Optional<YoutubeVideo> findById(final String id) {
-        return db.findById(id);
-    }
-
-    @Override
     public YoutubeVideo findByIdStrict(final String id) {
         return db.findById(id).orElseThrow(() -> new YoutubeContentNotFoundException(id));
     }
@@ -59,11 +57,6 @@ public class YoutubeService implements SearchableCrudService<YoutubeVideo> {
     public void deleteById(final String id) {
         db.deleteById(id);
         es.deleteById(id);
-    }
-
-    @Override
-    public Slice<YoutubeVideo> findAll(final Pageable pageable) {
-        return db.findAll(pageable);
     }
 
     @Override

@@ -29,6 +29,8 @@ public interface DbService<T, E extends Entity<E>> {
 
     List<T> findByIds(final Collection<String> ids);
 
+    List<T> findByIdsSorted(final List<String> ids);
+
     Slice<T> findAll();
 
     Slice<T> findAll(final int size);

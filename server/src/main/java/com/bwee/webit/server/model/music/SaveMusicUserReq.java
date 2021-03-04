@@ -10,5 +10,5 @@ import static java.util.Collections.emptyList;
 @Data
 public class SaveMusicUserReq {
 
-    private String name;
+    private String id;
 }

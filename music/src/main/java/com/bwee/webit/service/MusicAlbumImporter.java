@@ -102,8 +102,8 @@ public class MusicAlbumImporter {
             }
         }
 
-        trackService.mergeAll(trackList);
-        albumService.merge(album);
+        trackService.saveAll(trackList);
+        albumService.save(album);
 
         log.info("Saved album: {}", album);
         return album;

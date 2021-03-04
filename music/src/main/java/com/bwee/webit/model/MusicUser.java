@@ -19,7 +19,6 @@ public class MusicUser {
     }
 
     private String id;
-    private String name;
     private List<String> trackIdQueue = emptyList();
     private int currentTrackIndex = 0;
     private boolean isShuffle = Boolean.FALSE;

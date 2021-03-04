@@ -1,9 +1,11 @@
 package com.bwee.webit.service;
 
 import com.bwee.webit.core.SearchableCrudService;
+import com.bwee.webit.core.SimpleCrudService;
 import com.bwee.webit.datasource.AlbumDbService;
+import com.bwee.webit.datasource.DbService;
 import com.bwee.webit.datasource.TrackDbService;
-import com.bwee.webit.exception.AlbumContentNotFoundException;
+import com.bwee.webit.exception.AlbumNotFoundException;
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.search.AlbumEsService;
@@ -26,37 +28,32 @@ import static java.util.stream.Collectors.toMap;
 
 @Slf4j
 @Service
-public class AlbumService implements SearchableCrudService<Album> {
+public class AlbumService extends SimpleCrudService<Album> implements SearchableCrudService<Album> {
+
+    private final AlbumDbService albumDbService;
+    private final AlbumEsService albumEsService;
+    private final TrackDbService trackDbService;
 
     @Autowired
-    private AlbumDbService albumDbService;
-
-    @Autowired
-    private AlbumEsService albumEsService;
-
-    @Autowired
-    private TrackDbService trackDbService;
+    public AlbumService(final AlbumDbService albumDbService,
+                        final AlbumEsService albumEsService,
+                        final TrackDbService trackDbService) {
+        super(albumDbService);
+        this.albumDbService = albumDbService;
+        this.albumEsService = albumEsService;
+        this.trackDbService = trackDbService;
+    }
 
     @Override
     public void save(final Album album) {
-        final Album saved = albumDbService.save(album);
-        albumEsService.save(saved);
+        albumDbService.save(album);
+        albumEsService.save(album);
     }
 
     @Override
-    public void saveAll(final Collection<Album> album) {
-        final List<Album> saved = albumDbService.saveAll(album);
-        albumEsService.saveAll(saved);
-    }
-
-    public void merge(final Album album) {
-        final Album merged = albumDbService.merge(album);
-        albumEsService.save(merged);
-    }
-
-    public void mergeAll(final Collection<Album> albums) {
-        final List<Album> saved = albumDbService.mergeAll(albums);
-        albumEsService.saveAll(saved);
+    public void saveAll(final Collection<Album> albums) {
+        albumDbService.saveAll(albums);
+        albumEsService.saveAll(albums);
     }
 
     @Override
@@ -86,7 +83,7 @@ public class AlbumService implements SearchableCrudService<Album> {
 
     @Override
     public Album findByIdStrict(final String id) {
-        return findById(id).orElseThrow(() -> new AlbumContentNotFoundException(id));
+        return findById(id).orElseThrow(() -> new AlbumNotFoundException(id));
     }
 
     @Override

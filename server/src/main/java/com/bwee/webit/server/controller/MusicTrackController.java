@@ -1,6 +1,10 @@
 package com.bwee.webit.server.controller;
 
+import com.bwee.webit.model.MusicUser;
+import com.bwee.webit.model.Track;
 import com.bwee.webit.server.auth.PlayTrackAuthService;
+import com.bwee.webit.server.service.MusicUserResFactory;
+import com.bwee.webit.service.MusicUserService;
 import com.bwee.webit.service.TrackService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +33,28 @@ public class MusicTrackController {
     @Autowired
     private PlayTrackAuthService playTrackAuthService;
 
+    @Autowired
+    private MusicUserService userService;
+
+    @Autowired
+    private MusicUserResFactory musicUserResFactory;
+
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable final String id) {
         return ResponseEntity.ok(trackService.findByIdStrict(id));
     }
 
+    @PostMapping(value = "/{trackId}/play")
+    public ResponseEntity play(@PathVariable final String trackId) {
+        final MusicUser user = userService.playTrack(trackId);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
+    }
+
     @SneakyThrows
-    @GetMapping(value = "/{id}/play", produces = "audio/mpeg")
-    public ResponseEntity play(@PathVariable final String id, @RequestParam("token") final String playToken) {
-        playTrackAuthService.validate(id, playToken);
-        final Path sourcePath = trackService.getSourcePathById(id);
+    @GetMapping(value = "/{trackId}/stream", produces = "audio/mpeg")
+    public ResponseEntity stream(@PathVariable final String trackId, @RequestParam("token") final String playToken) {
+        playTrackAuthService.validate(trackId, playToken);
+        final Path sourcePath = trackService.getSourcePathById(trackId);
         return ResponseEntity.ok(new FileSystemResource(sourcePath));
     }
 

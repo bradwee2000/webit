@@ -2,13 +2,17 @@ package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.MusicUserEntity;
 import com.bwee.webit.model.MusicUser;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.springframework.data.cassandra.core.query.Criteria.where;
 import static org.springframework.data.cassandra.core.query.Query.query;
 
@@ -49,6 +53,32 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
         updateColumn(model.getId(), "isPlaying", model.isPlaying());
     }
 
+    public void update(final Update update) {
+        final Map<String, Object> values = new HashMap<>();
+
+        if (update.name() != null) {
+            values.put("name", update.name());
+        }
+        if (update.trackIdQueue() != null) {
+            values.put("trackIdQueue", update.trackIdQueue());
+        }
+        if (update.currentTrackIndex() != null) {
+            values.put("currentTrackIndex", update.currentTrackIndex());
+        }
+        if (update.isShuffle() != null) {
+            values.put("isShuffle", update.isShuffle());
+        }
+        if (update.isLoop() != null) {
+            values.put("isLoop", update.isLoop());
+        }
+        if (update.isPlaying() != null) {
+            values.put("isPlaying", update.isPlaying());
+        }
+        if (!values.isEmpty()) {
+            updateColumns(update.id(), values);
+        }
+    }
+
     @Override
     public MusicUser toModel(final MusicUserEntity entity) {
         return entity.toModel();
@@ -57,5 +87,25 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
     @Override
     public MusicUserEntity toEntity(final MusicUser model) {
         return new MusicUserEntity(model);
+    }
+
+    @Data
+    @Accessors(fluent = true)
+    public static class Update {
+        public static Update of(final String userId) {
+            return new Update(userId);
+        }
+
+        private final String id;
+        private String name;
+        private List<String> trackIdQueue;
+        private Integer currentTrackIndex;
+        private Boolean isShuffle;
+        private Boolean isLoop;
+        private Boolean isPlaying;
+
+        public Update(String id) {
+            this.id = id;
+        }
     }
 }

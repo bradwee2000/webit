@@ -1,7 +1,7 @@
 import PlayerControl from './PlayerControl'
 import TrackInfo from './TrackInfo'
 
-const PlayerSection = ({playingTrack, isPlaying, eventHandler}) => {
+const PlayerSection = ({userState, isPlaying, eventHandler}) => {
 
   const otherControlComponent = (
     <>
@@ -16,11 +16,11 @@ const PlayerSection = ({playingTrack, isPlaying, eventHandler}) => {
       <div className="row">
         <div className="col my-auto">
           <div className="d-flex justify-content-start">
-            <TrackInfo playingTrack={playingTrack} eventHandler={eventHandler}/>
+            <TrackInfo userState={userState} eventHandler={eventHandler}/>
           </div>
         </div>
         <div className="col my-auto">
-          <PlayerControl playingTrack={playingTrack} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          <PlayerControl userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
         </div>
         <div className="col my-auto">
           <div className="d-flex justify-content-end">

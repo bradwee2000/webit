@@ -30,7 +30,6 @@ public class TrackDbService extends AbstractDbService<Track, TrackEntity> {
             return newEntity;
         }
 
-        log.info("MERGING: {} WITH {}", existingEntity, newEntity);
         final List<String> genre = Stream.concat(existingEntity.getGenre().stream(), newEntity.getGenre().stream())
                 .distinct().collect(toList());
         final List<String> tags = Stream.concat(existingEntity.getTags().stream(), newEntity.getTags().stream())

@@ -1,3 +1,4 @@
+import Config from './../../config/Config'
 import SecurityContext from './../../security/SecurityContext'
 
 const PlayCodeApi = {
@@ -10,22 +11,16 @@ const PlayCodeApi = {
         }
     };
 
-    fetch("http://localhost:8080/music/play-code/", requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          SecurityContext.setPlayTrackCode(result.playCode);
-          if (successCallback) {
-            successCallback(result);
+    return new Promise((resolve, reject) => {
+      fetch(Config.musicHost + "/play-code", requestOptions)
+        .then(res => res.json())
+        .then(result => resolve(result),
+          (error) => {
+            console.log(error)
+            reject(error)
           }
-        },
-        (error) => {
-          if (errorCallback) {
-            errorCallback(error);
-          }
-          console.log(error)
-        }
-      )
+        )
+    });
   }
 }
 

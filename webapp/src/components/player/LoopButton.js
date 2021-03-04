@@ -1,6 +1,8 @@
-import ToggleButton from './../common/ToggleButton'
+import { ToggleButton } from './../common/Commons'
 
-const LoopButton = ({onClick}) => {
+const LoopButton = ({userState, onClick}) => {
+
+  const isEnabled = userState.isLoop
 
   const icon = (
     <svg role="img" height="16" width="16" viewBox="0 0 16 16">
@@ -9,7 +11,7 @@ const LoopButton = ({onClick}) => {
   );
 
   return (
-    <ToggleButton icon={icon} onClick={onClick} label="Loop"/>
+    <ToggleButton icon={icon} isEnabled={isEnabled} onClick={onClick} label="Loop"/>
   )
 }
 

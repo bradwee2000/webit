@@ -3,6 +3,7 @@ class AudioPlayer {
   static isPlaying = false;
 
   static play(trackUrl) {
+
     if (AudioPlayer.audio.src !== trackUrl) {
       AudioPlayer.audio.pause();
       AudioPlayer.audio.src = trackUrl;
@@ -20,6 +21,10 @@ class AudioPlayer {
     }
   }
 
+  static isPlaying() {
+    return AudioPlayer.isPlaying;
+  }
+
   static getCurrentTime() {
     return AudioPlayer.audio.currentTime;
   }
@@ -30,6 +35,10 @@ class AudioPlayer {
 
   static getDuration() {
     return AudioPlayer.audio.duration;
+  }
+
+  static getProgress() {
+    return AudioPlayer.getCurrentTime() / AudioPlayer.getDuration()
   }
 }
 

@@ -1,9 +1,9 @@
 import TrackItem from './TrackItem'
 
-const TrackList = ({items, playingTrack, isPlaying, eventHandler}) => {
+const TrackList = ({items, userState, isPlaying, eventHandler}) => {
 
   const components = items.map((item) => (
-      <TrackItem key={item.id} item={item} playingTrack={playingTrack} eventHandler={eventHandler} isPlaying={isPlaying}/>
+      <TrackItem key={item.id} item={item} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} />
     ));
 
   return (

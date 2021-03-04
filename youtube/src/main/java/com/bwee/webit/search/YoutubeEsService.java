@@ -1,6 +1,6 @@
 package com.bwee.webit.search;
 
-import com.bwee.webit.core.exception.YoutubeContentNotFoundException;
+import com.bwee.webit.exception.YoutubeContentNotFoundException;
 import com.bwee.webit.model.YoutubeVideo;
 import com.bwee.webit.search.document.YoutubeDocument;
 import org.elasticsearch.common.unit.Fuzziness;

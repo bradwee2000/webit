@@ -1,63 +1,63 @@
 import { useState, useEffect } from 'react'
 import LoopButton from './LoopButton'
-import PlayPauseButton from './../common/PlayPauseButton'
+import { Duration, PlayPauseButton, ProgressBar } from './../common/Commons'
 import PrevButton from './PrevButton'
 import NextButton from './NextButton'
 import ShuffleButton from './ShuffleButton'
-import ProgressBar from './../common/ProgressBar'
-import { TrackApi } from './../../api/Apis'
 import AudioPlayer from './AudioPlayer'
-import Duration from './../common/Duration'
 import TrackInfo from './TrackInfo'
 
-const PlayerControl = ({playingTrack, isPlaying, eventHandler}) => {
+const PlayerControl = ({userState, isPlaying, eventHandler}) => {
 
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(0)
+  const selectedTrack = userState.selectedTrack
 
   useEffect(() => {
-    if (playingTrack) {
-      if (isPlaying) {
-        AudioPlayer.play(TrackApi.play(playingTrack.id));
-      } else {
-        AudioPlayer.pause();
-      }
+    let interval;
+
+    if (isPlaying) {
+      interval = setInterval(() => {
+        const progress = AudioPlayer.getProgress()
+        setProgress(progress)
+        if (progress == 1) {
+          eventHandler.onTrackPlayFinished()
+        }
+      }, 1000);
     }
 
-    const interval = setInterval(() => {
-      if (playingTrack && isPlaying) {
-        const progress = AudioPlayer.getCurrentTime() / AudioPlayer.getDuration();
-        setProgress(progress);
+    return () => {
+      if (interval) {
+        clearInterval(interval);
       }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [playingTrack, isPlaying]);
+    }
+  }, [selectedTrack, isPlaying]);
 
-  const handleProgressChange = (progress) => {
+  const onProgressChange = (progress) => {
     const adjustedCurrentTime = AudioPlayer.getDuration() * progress ;
     AudioPlayer.setCurrentTime(adjustedCurrentTime);
     setProgress(progress);
   };
 
-  const handleOnPlay = (e) => {
-    if (playingTrack) {
-      eventHandler.onTrackPlay(playingTrack.id);
+  const onPlay = (e) => {
+    if (selectedTrack) {
+      eventHandler.onTrackPlay(selectedTrack.id);
     }
   };
 
-  const handleOnPause = (e) => {
-    if (playingTrack) {
-      eventHandler.onTrackPause(playingTrack.id);
+  const onPause = (e) => {
+    if (selectedTrack) {
+      eventHandler.onTrackPause(selectedTrack.id);
     }
   };
 
   return (
     <>
     <div className="d-flex justify-content-center control">
-      <div><ShuffleButton onClick={eventHandler.onShuffleClick}/></div>
+      <div><ShuffleButton userState={userState} onClick={eventHandler.onShuffleClick}/></div>
       <div><PrevButton onClick={eventHandler.onPrevClick}/></div>
-      <div><PlayPauseButton onPlay={handleOnPlay} onPause={handleOnPause} isPlaying={isPlaying}/></div>
+      <div><PlayPauseButton onPlay={onPlay} onPause={onPause} isPlaying={isPlaying}/></div>
       <div><NextButton onClick={eventHandler.onNextClick}/></div>
-      <div><LoopButton onClick={eventHandler.onLoopClick}/></div>
+      <div><LoopButton userState={userState} onClick={eventHandler.onLoopClick}/></div>
     </div>
 
     <div className="row">
@@ -67,7 +67,7 @@ const PlayerControl = ({playingTrack, isPlaying, eventHandler}) => {
           </small>
         </div>
         <div className="col-10 d-flex flex-wrap align-content-center">
-          <ProgressBar onProgressChange={handleProgressChange} progress={progress}/>
+          <ProgressBar onProgressChange={onProgressChange} progress={progress}/>
         </div>
         <div className="col-1">
           <small className="text-muted">

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.cassandra.core.query.Query;
+import org.springframework.data.cassandra.core.query.Update;
 import org.springframework.data.domain.*;
 import org.springframework.util.StringUtils;
 
@@ -152,25 +153,33 @@ public abstract class AbstractDbService<T, E extends Entity<E>> implements DbSer
         return cassandra.deleteById(id, clazz);
     }
 
-    public void updateColumn(final String id,
+    public boolean updateColumn(final String id,
                              final String columnName, final Object value) {
-        cassandra.update(query(where("id").is(id)),
+        return cassandra.update(query(where("id").is(id)),
                 update(columnName, value), clazz);
     }
 
-    public void updateColumns(final String id,
+    public boolean updateColumns(final String id,
                               final String columnName1, final Object value1,
                               final String columnName2, final Object value2) {
-        cassandra.update(query(where("id").is(id)),
+        return cassandra.update(query(where("id").is(id)),
                 update(columnName1, value1).set(columnName2, value2), clazz);
     }
 
-    public void updateColumns(final String id,
+    public boolean updateColumns(final String id,
                               final String columnName1, final Object value1,
                               final String columnName2, final Object value2,
                               final String columnName3, final Object value3) {
-        cassandra.update(query(where("id").is(id)),
+        return cassandra.update(query(where("id").is(id)),
                 update(columnName1, value1).set(columnName2, value2).set(columnName3, value3), clazz);
+    }
+
+    public boolean updateColumns(final String id, final Map<String, Object> values) {
+        Update update = Update.empty();
+        for (final Map.Entry<String, Object> e : values.entrySet()) {
+            update = update.set(e.getKey(), e.getValue());
+        }
+        return cassandra.update(query(where("id").is(id)), update, clazz);
     }
 
     public abstract T toModel(E entity);

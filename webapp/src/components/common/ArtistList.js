@@ -1,4 +1,8 @@
 const ArtistList = ({artists, maxDisplay=3, eventHandler}) => {
+  if (artists === undefined) {
+    artists = [];
+  }
+
   if (!Array.isArray(artists)) {
     artists = [artists];
   }

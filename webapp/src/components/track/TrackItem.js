@@ -1,31 +1,32 @@
-import Duration from './../common/Duration'
-import PlayButton from './../common/PlayButton'
+import { PlayButton, Duration } from './../common/Commons'
 
-const TrackItem = ({item, playingTrack, isPlaying, compact=false, eventHandler}) => {
+const TrackItem = ({item, userState, isPlaying, compact=false, eventHandler}) => {
 
-  const handleClick = (id) => {
+  const onClick = (e, id) => {
+    e.stopPropagation();
     eventHandler.onTrackClick(id);
   }
 
-  const handlePlay = (e, id) => {
+  const onPlay = (e, id) => {
     e.stopPropagation();
     eventHandler.onTrackPlay(id);
   }
 
-  const handlePause = (e, id) => {
+  const onPause = (e, id) => {
     e.stopPropagation();
     eventHandler.onTrackPause(id);
   }
 
-  const isSelected = playingTrack && item.id === playingTrack.id;
+  const selectedTrack = userState ? userState.selectedTrack : null
+  const isSelected = selectedTrack && item.id === selectedTrack.id;
 
   return (
-    <div className={`track row rounded-3 ` + (isSelected ? "selected" : "")} onClick={() => handleClick(item.id)} role="button">
+    <div className={`track row rounded-3 ` + (isSelected ? "selected" : "")} onClick={(e) => onClick(e, item.id)} role="button">
       <div className="col d-flex">
         <div className="m-2 position-relative">
           <img src={item.imageUrl} className="thumbnail-sm" alt=""/>
           <div className="position-absolute top-50 start-50 translate-middle">
-            <PlayButton onPlay={(e) => handlePlay(e, item.id)} onPause={(e) => handlePause(e, item.id)} isPlaying={isSelected && isPlaying}/>
+            <PlayButton onPlay={(e) => onPlay(e, item.id)} onPause={(e) => onPause(e, item.id)} isPlaying={isSelected && isPlaying}/>
           </div>
         </div>
         <div className="m-2">
