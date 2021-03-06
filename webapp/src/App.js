@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Route, Switch, Link } from 'react-router-dom';
+import { Route, Switch, Link, useHistory } from 'react-router-dom';
 import Header from './components/Header';
 import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';
 import { LoginButton } from './components/common/Commons';
 import { FetchPlayCode } from './task/Tasks'
 import AudioPlayer from './components/player/AudioPlayer'
+import AlbumPage from './components/AlbumPage'
 import HomePage from './components/HomePage'
 import QueuePage from './components/QueuePage'
 import SearchMainPage from './components/SearchMainPage'
@@ -24,6 +25,7 @@ function App() {
     isNotLoaded: true
   }
 
+  const history = useHistory()
   const [isPlaying, setIsPlaying] = useState(false);
   const [userState, setUserState] = useState(defaultUserState);
 
@@ -106,7 +108,7 @@ function App() {
     },
 
     onAlbumClick(albumId) {
-      console.log('Click Album:' + albumId)
+      history.push({pathname: '/album/' + albumId})
     },
 
     onArtistClick(artist) {
@@ -163,6 +165,9 @@ function App() {
           <Switch>
             <Route path='/' exact>
               <HomePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+            </Route>
+            <Route path='/album/:albumId' >
+              <AlbumPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
             </Route>
             <Route path='/search/:query' >
               <SearchMainPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>

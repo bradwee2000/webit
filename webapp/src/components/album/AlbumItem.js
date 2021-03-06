@@ -1,4 +1,5 @@
 import AlbumTitle from './AlbumTitle'
+
 import { ArtistList, PlayButton } from './../common/Commons'
 
 const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
@@ -20,6 +21,7 @@ const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
   }
 
   const isSelected = selectedAlbum && album.id === selectedAlbum.id;
+
 
   return (
     <div className={'album justify-content-between lh-sm text-light border-1 rounded-1 p-3 ' + (isSelected ? "selected" : "")} role='button' onClick={() => handleAlbumClick(album.id)}>
