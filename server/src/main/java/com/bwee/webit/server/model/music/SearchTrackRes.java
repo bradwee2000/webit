@@ -1,24 +1,21 @@
 package com.bwee.webit.server.model.music;
 
-import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 
 @Data
 @Accessors(chain = true)
-public class SearchTrackResp {
+public class SearchTrackRes {
 
     private final List<TrackResp> tracks;
 
-    public SearchTrackResp(final Collection<Track> tracks) {
+    public SearchTrackRes(final Collection<Track> tracks) {
         this.tracks = tracks.stream().map(TrackResp::new).collect(toList());
     }
 

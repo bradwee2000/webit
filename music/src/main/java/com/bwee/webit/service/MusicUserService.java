@@ -62,12 +62,6 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
         return findById(id).orElseThrow(() -> new MusicUserNotFoundException(id));
     }
 
-    public MusicUser insertNewUser(final MusicUser user) {
-        user.setId(idGenerator.generateId(user));
-        save(user);
-        return user;
-    }
-
     public MusicUser getLoginUser() {
         return findByIdStrict(authenticationService.getLoginUserId());
     }
@@ -146,15 +140,27 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
         return user;
     }
 
+    public MusicUser playTrackFromQueue(final String trackId) {
+        return playTrack(trackId, false);
+    }
+
     public MusicUser playTrack(final String trackId) {
+        return playTrack(trackId, true);
+    }
+
+    private MusicUser playTrack(final String trackId, final boolean isOverwriteQueue) {
         final String userId = authenticationService.getLoginUserId();
         final Track track = trackDbService.findById(trackId)
                 .orElseThrow(() -> new TrackNotFoundException(trackId));
 
-        final MusicUser user = findByIdStrict(userId)
-                .setCurrentTrackIndex(0)
-                .setTrackIdQueue(singletonList(trackId))
-                .setPlaying(true);
+        final MusicUser user = findByIdStrict(userId).setPlaying(true);
+
+        if (isOverwriteQueue) {
+            user.setCurrentTrackIndex(0).setTrackIdQueue(singletonList(trackId));
+        } else {
+            final int trackIndex = user.getTrackIdQueue().indexOf(trackId);
+            user.setCurrentTrackIndex(trackIndex);
+        }
 
         userDbService.update(MusicUserDbService.Update.of(userId)
                 .isPlaying(user.isPlaying())

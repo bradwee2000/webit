@@ -28,13 +28,19 @@ public class MusicUserController {
     @GetMapping
     public ResponseEntity getMusicUser() {
         final MusicUser user = userService.getLoginUser();
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 
     @PostMapping
     public ResponseEntity saveMusicUser(@RequestBody final SaveMusicUserReq req) {
         final MusicUser user = new MusicUser().setId(req.getId());
-        userService.insertNewUser(user);
+        userService.save(user);
+        return ResponseEntity.ok(musicUserResFactory.build(user));
+    }
+
+    @PostMapping("/tracks/{trackId}/play")
+    public ResponseEntity playTrackFromQueue(@PathVariable final String trackId) {
+        final MusicUser user = userService.playTrackFromQueue(trackId);
         return ResponseEntity.ok(musicUserResFactory.build(user));
     }
 

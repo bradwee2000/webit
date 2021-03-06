@@ -1,4 +1,4 @@
-import { Config, SecurityContext } from './Apis'
+import { SecurityContext } from './Apis'
 
 const options = (method, body) => {
   const headers = {

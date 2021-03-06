@@ -19,11 +19,13 @@ button:active, button:focus {
 
 .link {
   text-decoration: none;
-  cursor:pointer;
+  cursor: pointer;
+  color: inherit;
 }
 
 .link:hover {
   text-decoration: underline;
+  color: inherit;
 }
 
 .track {
@@ -130,12 +132,14 @@ button:active, button:focus {
   background-color: #181818;
 }
 
-.player .control button svg {
+.player button svg {
   fill: #AAA;
+  color: #AAA;
 }
 
-.player .control button:hover svg {
+.player button:hover svg {
   fill: #EEE;
+  color: #EEE;
 }
 
 .player .thumbnail {

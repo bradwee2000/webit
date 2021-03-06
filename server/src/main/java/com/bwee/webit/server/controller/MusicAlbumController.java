@@ -3,7 +3,7 @@ package com.bwee.webit.server.controller;
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.MusicUser;
 import com.bwee.webit.server.model.ImportAlbum;
-import com.bwee.webit.server.model.music.SearchAlbumResp;
+import com.bwee.webit.server.model.music.SearchAlbumRes;
 import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.AlbumService;
 import com.bwee.webit.service.Mp3Reader;
@@ -65,19 +65,6 @@ public class MusicAlbumController {
                                @RequestParam final Optional<Integer> size) {
         final Pageable pageable = PageRequest.of(page.orElse(DEFAULT_PAGE_NUM), size.orElse(DEFAULT_PAGE_SIZE));
         return ResponseEntity.ok(albumService.findAll(pageable));
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity search(@RequestParam final String keywords,
-                                 @RequestParam final Optional<Integer> page,
-                                 @RequestParam final Optional<Integer> size) {
-        final Pageable pageable = PageRequest.of(page.orElse(DEFAULT_PAGE_NUM), size.orElse(DEFAULT_PAGE_SIZE));
-
-        final List<SearchAlbumResp> resp = albumService.search(keywords, pageable).stream()
-                .map(SearchAlbumResp::new)
-                .collect(toList());
-
-        return ResponseEntity.ok(resp);
     }
 
     @PostMapping("/import")

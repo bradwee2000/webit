@@ -1,25 +1,33 @@
+import { useHistory } from 'react-router-dom'
 import { useState } from 'react'
 
-const SearchBar = ({className='', eventHandler}) => {
+const SearchBar = ({className='', defaultQuery='', eventHandler}) => {
 
-  const [search, setSearch] = useState('');
+  const history = useHistory()
+  const [query, setQuery] = useState(defaultQuery)
 
-  function handleKeyDown(e) {
-    if (e.key === 'Enter') {
-      const query = e.target.value;
-      eventHandler.onSearchSubmit(query);
+  function onSubmit(e) {
+    // const query = e.target.value
+    if (query === '') {
+      history.push({pathname: '/'})
+    } else {
+      history.push({pathname: '/search/' + query})
     }
   }
 
-  function handleChange(e) {
-    const query = e.target.value;
-    setSearch(query);
-    eventHandler.onSearchChange(query);
+  function onKeyDown(e) {
+    if (e.key === 'Enter') {
+      onSubmit(e)
+    }
   }
 
-  function handleClear(e) {
+  function onChange(e) {
+    setQuery(e.target.value);
+  }
+
+  function onClear(e) {
     e.stopPropagation();
-    setSearch('');
+    setQuery('');
   }
 
   return (
@@ -34,9 +42,9 @@ const SearchBar = ({className='', eventHandler}) => {
               </svg>
             </span>
 
-            <input className="form-control" type="text" name="search" onKeyDown={handleKeyDown} onChange={handleChange} value={search} placeholder="Search for Albums, Artists, or Songs" autoCorrect="off" autoCapitalize="off" spellCheck="false"/>
+            <input className="form-control" type="text" name="search" onKeyDown={onKeyDown} onChange={onChange} value={query} placeholder="Search for Albums, Artists, or Songs" autoCorrect="off" autoCapitalize="off" spellCheck="false"/>
 
-            <button className="input-group-text clear-btn" aria-label="Clear search field" onClick={handleClear}>
+            <button className="input-group-text clear-btn" aria-label="Clear search field" onClick={onClear}>
               <svg height="24" role="img" width="24" viewBox="0 0 24 24">
                 <path d="M4.93,4.93,19.07,19.07m-14.14,0L19.07,4.93" fill="none" stroke="currentColor" strokeMiterlimit="10"></path>
               </svg>

@@ -1,28 +1,27 @@
 import { useState, useEffect } from 'react'
-import LoopButton from './LoopButton'
-import { Duration, PlayPauseButton, ProgressBar } from './../common/Commons'
-import PrevButton from './PrevButton'
-import NextButton from './NextButton'
-import ShuffleButton from './ShuffleButton'
-import AudioPlayer from './AudioPlayer'
-import TrackInfo from './TrackInfo'
+import { Duration, PlayPauseButton, ProgressBar, } from './../common/Commons'
+import { AudioPlayer, LoopButton, PrevButton, NextButton, ShuffleButton } from './Player'
 
 const PlayerControl = ({userState, isPlaying, eventHandler}) => {
 
   const [progress, setProgress] = useState(0)
   const selectedTrack = userState.selectedTrack
 
+  const updateProgress = () => {
+    if (isPlaying) {
+      const progress = AudioPlayer.getProgress()
+      setProgress(progress)
+      if (progress === 1) {
+        eventHandler.onTrackPlayFinished()
+      }
+    }
+  }
+
   useEffect(() => {
     let interval;
 
     if (isPlaying) {
-      interval = setInterval(() => {
-        const progress = AudioPlayer.getProgress()
-        setProgress(progress)
-        if (progress == 1) {
-          eventHandler.onTrackPlayFinished()
-        }
-      }, 1000);
+      interval = setInterval(updateProgress, 1000);
     }
 
     return () => {
@@ -33,9 +32,11 @@ const PlayerControl = ({userState, isPlaying, eventHandler}) => {
   }, [selectedTrack, isPlaying]);
 
   const onProgressChange = (progress) => {
-    const adjustedCurrentTime = AudioPlayer.getDuration() * progress ;
-    AudioPlayer.setCurrentTime(adjustedCurrentTime);
-    setProgress(progress);
+    if (selectedTrack) {
+      const adjustedCurrentTime = AudioPlayer.getDuration() * progress ;
+      AudioPlayer.setCurrentTime(adjustedCurrentTime);
+      setProgress(progress);
+    }
   };
 
   const onPlay = (e) => {

@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 const PlayPauseButton = ({onPlay, onPause, isPlaying=false}) => {
 
   const handleClick = (e) => {

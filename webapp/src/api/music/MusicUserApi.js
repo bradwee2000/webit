@@ -1,4 +1,4 @@
-import { Config, Request, SecurityContext } from './../Apis'
+import { Config, Request } from './../Apis'
 
 const MusicUserApi = {
 
@@ -21,6 +21,10 @@ const MusicUserApi = {
   prev: function() {
     return Request.post(Config.musicHost + "/user/prev");
   },
+
+  selectTrack: function(trackId) {
+    return Request.post(Config.musicHost + "/user/tracks/" + trackId + "/play")
+  }
 }
 
 export default MusicUserApi

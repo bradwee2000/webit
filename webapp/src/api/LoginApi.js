@@ -2,7 +2,7 @@ import SecurityContext from './../security/SecurityContext'
 
 const LoginApi = {
 
-  login: function(username, password, successCallback, errorCallback) {
+  login: function(username, password) {
     const requestOptions = {
           method: "POST",
           headers: {
@@ -12,19 +12,13 @@ const LoginApi = {
           }
     };
 
-    fetch("http://localhost:8080/login", requestOptions)
+    return fetch("http://localhost:8080/login", requestOptions)
       .then(res => res.json())
       .then(
         (result) => {
           SecurityContext.setToken(result.authToken);
-          if (successCallback) {
-              successCallback();
-          }
         },
         (error) => {
-          if (errorCallback) {
-            errorCallback(error);
-          }
           console.log(error)
         }
       )

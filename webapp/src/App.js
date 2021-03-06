@@ -1,78 +1,17 @@
 import { useState, useEffect } from 'react'
+import { Route, Switch, Link } from 'react-router-dom';
 import Header from './components/Header';
-import { AlbumApi, MusicUserApi, SearchApi, TrackApi, PlayCodeApi } from './api/Apis';
-import SearchBar from './components/search/SearchBar';
-import AlbumSection from './components/album/AlbumSection';
+import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';
-import TrackSection from './components/track/TrackSection';
-import TrackPlayList from './components/common/TrackPlayList';
 import { LoginButton } from './components/common/Commons';
-import SecurityContext from './security/SecurityContext'
-import FetchPlayCode from './function/FetchPlayCode'
+import { FetchPlayCode } from './task/Tasks'
 import AudioPlayer from './components/player/AudioPlayer'
+import HomePage from './components/HomePage'
+import QueuePage from './components/QueuePage'
+import SearchMainPage from './components/SearchMainPage'
+
 
 function App() {
-  const testTracks = [
-    {
-      id: "vPgCxjCiRxGjvq6ynmB1dP0A-_s=",
-      track: 0,
-      title: "Rolling in the Deep",
-      albumName: "21",
-      albumId: "JapNv7dPxlHE9k6skUiIFGeZeVo=",
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg",
-      artist: "Adele",
-    },
-    {
-      id: "X4aZ45QREe3TOr1hSj-qUB451XM=",
-      track: 0,
-      title: "God Gave Rock and Roll to You",
-      albumName: "100 Rock Hits - The Sound Of My Life",
-      albumId: "L4fH084Z7NqGeVBk5VQNrU_gOf8=",
-      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg",
-      artist: "Argent"
-    }
-  ]
-
-  const testAlbums = [
-    {
-      id:"1",
-      name:"21",
-      artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
-    },
-    {
-      id:"2",
-      name:"21",
-      artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
-    },
-    {
-      id:"3",
-      name:"100 Shalalamakuchi",
-      artists:["Shanti Shanti", "Many Moore"],
-      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg"
-    },
-    {
-      id:"4",
-      name:"21",
-      artists:["Adele"]
-    },
-    {
-      id:"5",
-      name:"21",
-      artists:["Adele"]
-    },
-    {
-      id:"6",
-      name:"21",
-      artists:["Adele"]
-    },
-    {
-      id:"7",
-      name:"21",
-      artists:["Adele"]
-    },
-  ];
 
   const defaultUserState = {
     tracks: [],
@@ -82,58 +21,57 @@ function App() {
     isPlaying: false,
     selectedAlbum: null,
     selectedTrack: null,
+    isNotLoaded: true
   }
 
-  const [tracks, setTracks] = useState(testTracks);
-  const [albums, setAlbums] = useState(testAlbums);
   const [isPlaying, setIsPlaying] = useState(false);
   const [userState, setUserState] = useState(defaultUserState);
 
-  const doSearch = (query) => {
-    SearchApi.search(query)
-      .then(setSearchResult)
-  };
-
-  const togglePlayTrack = (trackId) => {
-    let isPlayNow = !isPlaying;
-
+  const togglePlayTrack = (trackId, isNewPlayList=true) => {
     // If playing same track, toggle play/pause
     if (userState.selectedTrack && userState.selectedTrack.id === trackId) {
-      isPlayNow = !isPlaying
-      setIsPlaying(isPlayNow)
+      setIsPlaying(!isPlaying)
     } else {
       // Else, play new track
-      TrackApi.play(trackId).then(setUserState)
+      if (isNewPlayList) {
+          TrackApi.play(trackId).then(setUserState)
+      } else {
+          MusicUserApi.selectTrack(trackId).then(setUserState)
+      }
+
       setIsPlaying(true);
     }
   };
 
   const togglePlayAlbum = (albumId) => {
-    let isPlayNow = !isPlaying;
-
-    // if playing same album
+    // if playing same album, toggle play/pause
     if (userState.selectedAlbum && userState.selectedAlbum.id === albumId) {
-      isPlayNow = !isPlaying;
+      setIsPlaying(!isPlaying);
     } else {
       AlbumApi.play(albumId).then(setUserState)
-      isPlayNow = true
+      setIsPlaying(true);
     }
-    setIsPlaying(isPlayNow)
   };
 
-  const setSearchResult = (result) => {
-    setTracks(result.tracks)
-    setAlbums(result.albums)
-  };
+  const playNextTrack = () => {
+    MusicUserApi.next().then(setUserState)
+  }
+
+  const playPrevTrack = () => {
+    MusicUserApi.prev().then(setUserState)
+  }
+
+  const shuffle = (isEnabled) => {
+    MusicUserApi.shuffle(isEnabled).then(setUserState)
+  }
+
+  const loop = (isEnabled) => {
+    MusicUserApi.loop(isEnabled).then(setUserState)
+  }
+
 
   const eventHandler = {
-
-    onSearchSubmit(query) {
-      doSearch(query);
-    },
-
     onSearchChange(q) {
-      // setQuery(q)
     },
 
     onSearchClear() {
@@ -152,7 +90,11 @@ function App() {
     },
 
     onTrackPlayFinished() {
-      setIsPlaying(false)
+      playNextTrack()
+    },
+
+    onQueueTrackClick(trackId) {
+      togglePlayTrack(trackId, false)
     },
 
     onAlbumPlay(albumId) {
@@ -172,36 +114,34 @@ function App() {
     },
 
     onNextClick() {
-      MusicUserApi.next().then(res => {
-        setUserState(res)
-      })
+      playNextTrack()
     },
 
     onPrevClick() {
-      MusicUserApi.prev().then(res => {
-        setUserState(res)
-      })
+      playPrevTrack()
     },
 
     onShuffleClick(isEnabled) {
-      MusicUserApi.shuffle(isEnabled).then(res => {
-        setUserState(res)
-      })
+      shuffle(isEnabled)
     },
 
     onLoopClick(isEnabled) {
-      MusicUserApi.loop(isEnabled).then(res => {
-        setUserState(res)
-      });
+      loop(isEnabled)
     }
   }
 
   // Update play code
   useEffect((e) => {
-    FetchPlayCode();
-    const interval = setInterval(FetchPlayCode , 3 * 60 * 1000); // every 3 mins
-    return () => clearInterval(interval);
+    FetchPlayCode.run()
+    const fetchPlayCodeInterval = FetchPlayCode.schedule()
+    return () => clearInterval(fetchPlayCodeInterval);
   });
+
+  useEffect(() => {
+    if (userState.isNotLoaded) {
+      MusicUserApi.get().then(setUserState)
+    }
+  })
 
   // Play or pause music
   useEffect(() => {
@@ -217,12 +157,20 @@ function App() {
   return (
     <>
       <LoginButton/>
+      <Link to="/" className="link">Home</Link>
       <div className="h-100 overflow-auto">
         <div className="container">
-          <Header/>
-          <SearchBar eventHandler={eventHandler} className="mt-3 mb-4"/>
-          <TrackSection tracks={tracks} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
-          <AlbumSection albums={albums} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
+          <Switch>
+            <Route path='/' exact>
+              <HomePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+            </Route>
+            <Route path='/search/:query' >
+              <SearchMainPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+            </Route>
+            <Route path='/queue' >
+              <QueuePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+            </Route>
+          </Switch>
         </div>
       </div>
       <hr className="mb-5 mt-5"/>

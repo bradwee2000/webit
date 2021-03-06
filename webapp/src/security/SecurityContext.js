@@ -24,7 +24,7 @@ class SecurityContext {
   }
 
   static hash(value) {
-    var hash = 0, i, chr;
+    var hash = 0, i;
     if (value.length === 0) return hash;
     for (i = 0; i < value.length; i++) {
       const chr = value.charCodeAt(i);
