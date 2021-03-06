@@ -17,7 +17,7 @@ function AlbumPage({isPlaying, userState, eventHandler}) {
       <img src={album.imageUrl} width="200" height="200"/>
       <h1>{album.name}</h1>
       <h6>{album.year}</h6>
-      <TrackSection tracks={album.tracks} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} className="mb-4"/>
+      <TrackSection tracks={album.tracks} userState={userState} isPlaying={isPlaying} showAlbum={false} eventHandler={eventHandler} className="mb-4"/>
     </>
   );
 }

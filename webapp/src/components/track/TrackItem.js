@@ -1,6 +1,6 @@
 import { PlayButton, Duration } from './../common/Commons'
 
-const TrackItem = ({item, userState, isPlaying, compact=false, eventHandler}) => {
+const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) => {
 
   const onClick = (e, id) => {
     e.stopPropagation();
@@ -34,7 +34,7 @@ const TrackItem = ({item, userState, isPlaying, compact=false, eventHandler}) =>
           <small className="text-muted float-start">{item.artist}</small>
         </div>
       </div>
-      { !compact &&
+      { showAlbum &&
       <div className="col">
         <small className="text-muted">{item.albumName}</small>
       </div>

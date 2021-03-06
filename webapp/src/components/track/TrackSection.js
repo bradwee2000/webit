@@ -1,7 +1,7 @@
 import TrackList from './TrackList'
 import { Link } from 'react-router-dom'
 
-const TrackSection = ({tracks, className='', userState, isPlaying, eventHandler, seeAllLink=""}) => {
+const TrackSection = ({tracks, className='', userState, isPlaying, eventHandler, seeAllLink="", showAlbum=true}) => {
   if (tracks === undefined || tracks.length === 0) {
     return <></>;
   }
@@ -14,7 +14,7 @@ const TrackSection = ({tracks, className='', userState, isPlaying, eventHandler,
         <h4>Tracks</h4>
         <div className="mt-1">{seeAllLinkComponent}</div>
       </div>
-      <TrackList items={tracks} userState={userState} isPlaying={isPlaying} eventHandler={eventHandler} />
+      <TrackList items={tracks} userState={userState} isPlaying={isPlaying} showAlbum={showAlbum} eventHandler={eventHandler} />
     </section>
   )
 }
