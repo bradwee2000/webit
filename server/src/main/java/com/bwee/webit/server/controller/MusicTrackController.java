@@ -1,11 +1,11 @@
 package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.MusicUser;
-import com.bwee.webit.model.Track;
-import com.bwee.webit.server.auth.PlayTrackAuthService;
-import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.MusicUserService;
+import com.bwee.webit.service.PlayTrackCodeService;
 import com.bwee.webit.service.TrackService;
+import com.bwee.webit.server.exception.UnauthorizedAccessException;
+import com.bwee.webit.server.service.MusicUserResFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Path;
 import java.util.Optional;
 
@@ -31,13 +32,16 @@ public class MusicTrackController {
     private TrackService trackService;
 
     @Autowired
-    private PlayTrackAuthService playTrackAuthService;
+    private PlayTrackCodeService playTrackCodeService;
 
     @Autowired
     private MusicUserService userService;
 
     @Autowired
     private MusicUserResFactory musicUserResFactory;
+
+    @Autowired
+    private HttpServletRequest req;
 
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable final String id) {
@@ -53,7 +57,9 @@ public class MusicTrackController {
     @SneakyThrows
     @GetMapping(value = "/{trackId}/stream", produces = "audio/mpeg")
     public ResponseEntity stream(@PathVariable final String trackId, @RequestParam("token") final String playToken) {
-        playTrackAuthService.validate(trackId, playToken);
+        if (!playTrackCodeService.isValid(trackId, playToken)) {
+            throw new UnauthorizedAccessException(req);
+        }
         final Path sourcePath = trackService.getSourcePathById(trackId);
         return ResponseEntity.ok(new FileSystemResource(sourcePath));
     }

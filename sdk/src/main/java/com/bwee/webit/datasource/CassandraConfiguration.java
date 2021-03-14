@@ -1,11 +1,8 @@
 package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.Entity;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tinkerpop.shaded.kryo.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;

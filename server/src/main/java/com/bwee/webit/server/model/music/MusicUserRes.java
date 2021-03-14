@@ -1,7 +1,5 @@
 package com.bwee.webit.server.model.music;
 
-import com.bwee.webit.model.Album;
-import com.bwee.webit.model.Track;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -13,7 +11,7 @@ import static java.util.Collections.emptyList;
 @Accessors(chain = true)
 public class MusicUserRes {
 
-    private List<Track> tracks = emptyList();
+    private List<TrackRes> tracks = emptyList();
 
     private Integer currentTrackIndex;
 
@@ -23,7 +21,7 @@ public class MusicUserRes {
 
     private Boolean isPlaying;
 
-    private Album selectedAlbum;
+    private AlbumRes selectedAlbum;
 
-    private Track selectedTrack;
+    private TrackRes selectedTrack;
 }

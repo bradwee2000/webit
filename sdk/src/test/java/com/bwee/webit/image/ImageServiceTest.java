@@ -1,7 +1,7 @@
 package com.bwee.webit.image;
 
-import com.bwee.webit.core.IdGenerator;
 import com.bwee.webit.image.ImageService;
+import com.bwee.webit.service.IdGenerator;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

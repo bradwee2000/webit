@@ -1,4 +1,4 @@
-import SecurityContext from './../security/SecurityContext'
+import { Config, SecurityContext } from './Apis'
 
 const LoginApi = {
 
@@ -7,21 +7,26 @@ const LoginApi = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "username": username,
-            "password": password
-          }
+          },
+          body: JSON.stringify({
+             username: username,
+             password: password })
     };
 
-    return fetch("http://localhost:8080/login", requestOptions)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          SecurityContext.setToken(result.authToken);
-        },
-        (error) => {
-          console.log(error)
-        }
-      )
+    return fetch(Config.authHost + "/login", requestOptions)
+        .then(res => res.json())
+        .then(res => {
+          if (res.error) {
+            throw new Error(res.error)
+          }
+          return res
+        })
+        .then(res => SecurityContext.setToken(res.accessToken))
+        .catch(e => {
+          const errorMsg = "Failed to login: " + e
+          console.error(errorMsg)
+          throw new Error(errorMsg)
+        })
   }
 }
 

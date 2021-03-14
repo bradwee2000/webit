@@ -22,9 +22,9 @@ class AlbumEntityTest {
                 .setYear(2020)
                 .setTags(Arrays.asList("Instrumental", "Classic"))
                 .setTracks(Arrays.asList(
-                        new Track().setId("2").setTrack(2),
-                        new Track().setId("1").setTrack(1),
-                        new Track().setId("3").setTrack(3)
+                        new Track().setId("2").setTrackNum("02"),
+                        new Track().setId("1").setTrackNum("01"),
+                        new Track().setId("3").setTrackNum("03")
                 ));
     }
 
@@ -36,13 +36,6 @@ class AlbumEntityTest {
         assertThat(entity.getArtists()).containsExactly("Anonymous");
         assertThat(entity.getYear()).isEqualTo(2020);
         assertThat(entity.getTags()).containsExactly("Instrumental", "Classic");
-        assertThat(entity.getTracks()).hasSize(3);
-    }
-
-    @Test
-    public void testCreateWithMusicList_shouldSortMusicByTrackNum() {
-        final AlbumEntity entity = new AlbumEntity(album);
-        assertThat(entity.getTracks()).extracting(AlbumEntity.Track::getMusicId).containsExactly("1", "2", "3");
     }
 
     @Test
@@ -54,7 +47,6 @@ class AlbumEntityTest {
         assertThat(model.getArtists()).isEqualTo(album.getArtists());
         assertThat(model.getYear()).isEqualTo(album.getYear());
         assertThat(model.getTags()).isEqualTo(album.getTags());
-        assertThat(model.getTracks()).extracting(Track::getId).containsExactly("1", "2", "3");
     }
 
     @Test

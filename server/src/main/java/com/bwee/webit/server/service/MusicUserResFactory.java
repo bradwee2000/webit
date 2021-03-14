@@ -2,13 +2,16 @@ package com.bwee.webit.server.service;
 
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.MusicUser;
-import com.bwee.webit.model.Track;
+import com.bwee.webit.server.model.music.AlbumRes;
 import com.bwee.webit.server.model.music.MusicUserRes;
+import com.bwee.webit.server.model.music.TrackRes;
 import com.bwee.webit.service.TrackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MusicUserResFactory {
@@ -17,12 +20,20 @@ public class MusicUserResFactory {
     private TrackService trackService;
 
     public MusicUserRes build(final MusicUser user) {
-        return build(user, null);
+        return doBuild(user, Optional.empty());
     }
 
     public MusicUserRes build(final MusicUser user, final Album album) {
-        final List<Track> tracks = trackService.findByIdsSorted(user.getTrackIdQueue());
-        final Track selectedTrack = tracks.isEmpty() ? null : tracks.get(user.getCurrentTrackIndex());
+        return doBuild(user, Optional.ofNullable(album));
+    }
+
+    public MusicUserRes doBuild(final MusicUser user, final Optional<Album> album) {
+        final List<TrackRes> tracks = trackService.findByIdsSorted(user.getTrackIdQueue()).stream()
+                .map(TrackRes::new)
+                .collect(Collectors.toList());
+
+        final TrackRes selectedTrack = tracks.isEmpty() ? null : tracks.get(user.getCurrentTrackIndex());
+
         return new MusicUserRes()
                 .setCurrentTrackIndex(user.getCurrentTrackIndex())
                 .setIsLoop(user.isLoop())
@@ -30,6 +41,6 @@ public class MusicUserResFactory {
                 .setIsShuffle(user.isShuffle())
                 .setTracks(tracks)
                 .setSelectedTrack(selectedTrack)
-                .setSelectedAlbum(album);
+                .setSelectedAlbum(album.map(AlbumRes::new).orElse(null));
     }
 }

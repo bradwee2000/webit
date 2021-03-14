@@ -1,49 +1,27 @@
 package com.bwee.webit.datasource;
 
 import com.bwee.webit.model.MusicUser;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.cassandraunit.spring.EmbeddedCassandra;
-import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
-@EmbeddedCassandra
-@ExtendWith(SpringExtension.class)
-@TestPropertySource(properties = {
-        "spring.data.cassandra.keyspace-name=\"testwebit\"",
-        "spring.data.cassandra.port=9142",
-        "spring.data.cassandra.schema-action=RECREATE_DROP_UNUSED"
-})
-@ContextConfiguration(classes = {MusicUserDbService.class, CassandraConfiguration.class})
-class MusicUserDbServiceTest {
+@ContextConfiguration(classes = { MusicUserDbService.class })
+class MusicUserDbServiceTest extends EmbeddedCassandraTest {
 
     private MusicUser johnOriginal, johnClone;
 
     @Autowired
     private MusicUserDbService musicUserDbService;
 
-    @BeforeAll
-    @SneakyThrows
-    public static void beforeAll() {
-        EmbeddedCassandraServerHelper.startEmbeddedCassandra(10_000L);
-    }
-
     @BeforeEach
     public void before() {
-        EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-
         johnOriginal = new MusicUser().setId("123")
                 .setCurrentTrackIndex(3)
                 .setTrackIdQueue(List.of("A", "B", "C"));
@@ -69,16 +47,6 @@ class MusicUserDbServiceTest {
 
         assertThat(musicUserDbService.findById("123"))
                 .hasValueSatisfying(user -> assertThat(user.getCurrentTrackIndex()).isEqualTo(2));
-    }
-
-    @Test
-    public void testUpdateTrackIds_shouldUpdateOnlyTrackIds() {
-        musicUserDbService.updateTrackIds(johnClone);
-        assertThat(musicUserDbService.findById("123")).hasValue(
-                johnOriginal
-                        .setTrackIdQueue(johnClone.getTrackIdQueue())
-                        .setCurrentTrackIndex(0)
-        );
     }
 
     @Test

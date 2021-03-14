@@ -12,7 +12,6 @@ import org.springframework.data.cassandra.core.mapping.Table;
 import java.util.Collections;
 import java.util.List;
 
-import static java.lang.Boolean.FALSE;
 import static java.util.Collections.emptyList;
 import static org.springframework.data.cassandra.core.mapping.CassandraType.Name.LIST;
 import static org.springframework.data.cassandra.core.mapping.CassandraType.Name.TEXT;
@@ -42,6 +41,8 @@ public class MusicUserEntity implements Entity<MusicUserEntity> {
     private Boolean isLoop;
 
     private Boolean isPlaying;
+
+    private String selectedDeviceId;
 
     public MusicUserEntity(final MusicUser user) {
         this.id = user.getId();

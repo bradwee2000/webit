@@ -1,6 +1,6 @@
 package com.bwee.webit.image;
 
-import com.bwee.webit.core.IdGenerator;
+import com.bwee.webit.service.IdGenerator;
 import org.springframework.stereotype.Component;
 
 import java.security.MessageDigest;

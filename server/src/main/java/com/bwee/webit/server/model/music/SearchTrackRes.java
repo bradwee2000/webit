@@ -13,35 +13,9 @@ import static java.util.stream.Collectors.toList;
 @Accessors(chain = true)
 public class SearchTrackRes {
 
-    private final List<TrackResp> tracks;
+    private final List<TrackRes> tracks;
 
     public SearchTrackRes(final Collection<Track> tracks) {
-        this.tracks = tracks.stream().map(TrackResp::new).collect(toList());
-    }
-
-    @Data
-    public static class TrackResp {
-        private final String id;
-        private final String title;
-        private final String artist;
-        private final AlbumResp album;
-        private final String imageUrl;
-        private final Long durationMillis;
-
-        public TrackResp(final Track track) {
-            this.id = track.getId();
-            this.title = track.getTitle();
-            this.artist = track.getArtist();
-            this.album = new AlbumResp(track.getAlbumId(), track.getAlbumName());
-            this.imageUrl = track.getImageUrl();
-            this.durationMillis = track.getDurationMillis();
-        }
-    }
-
-    @Data
-    public static class AlbumResp {
-        private final String id;
-        private final String name;
-
+        this.tracks = tracks.stream().map(TrackRes::new).collect(toList());
     }
 }

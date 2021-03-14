@@ -1,12 +1,9 @@
 package com.bwee.webit.service;
 
-import com.bwee.webit.core.SearchableCrudService;
-import com.bwee.webit.core.SimpleCrudService;
-import com.bwee.webit.datasource.DbService;
-import com.bwee.webit.datasource.TrackDbService;
 import com.bwee.webit.exception.TrackNotFoundException;
-import com.bwee.webit.file.MusicFileService;
 import com.bwee.webit.model.Track;
+import com.bwee.webit.datasource.TrackDbService;
+import com.bwee.webit.file.MusicFileService;
 import com.bwee.webit.search.TrackEsService;
 import com.bwee.webit.search.model.TrackDocument;
 import com.google.common.collect.Lists;
@@ -15,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 
@@ -73,6 +69,10 @@ public class TrackService extends SimpleCrudService<Track> implements Searchable
     @Override
     public Track findByIdStrict(final String id) {
         return db.findById(id).orElseThrow(() -> new TrackNotFoundException(id));
+    }
+
+    public List<Track> findByAlbumId(final String albumId) {
+        return db.findByAlbumId(albumId);
     }
 
     @Override

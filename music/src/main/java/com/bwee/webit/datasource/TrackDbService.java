@@ -5,12 +5,15 @@ import com.bwee.webit.model.Track;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.data.cassandra.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
+import static org.springframework.data.cassandra.core.query.Criteria.where;
 
 @Slf4j
 @Service
@@ -22,6 +25,13 @@ public class TrackDbService extends AbstractDbService<Track, TrackEntity> {
     public TrackDbService(final CassandraOperations cassandra) {
         super(cassandra, TrackEntity.class);
         this.cassandra = cassandra;
+    }
+
+    public List<Track> findByAlbumId(final String albumId) {
+        final Query query = Query.query(where("albumId").is(albumId));
+        return cassandra.select(query, TrackEntity.class).stream()
+                .map(e -> e.toModel())
+                .collect(Collectors.toList());
     }
 
     @Override

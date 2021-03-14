@@ -1,10 +1,17 @@
-import { LoginApi, PlayCodeApi } from './../../api/Apis'
+import { LoginApi } from './../../api/Apis'
+import { useHistory } from 'react-router-dom';
 
 const LoginButton = ({playingTrack, eventHandler}) => {
 
+  const history = useHistory()
+
   const handleClick = () => {
-    const successCallback = PlayCodeApi.get;
-    LoginApi.login("DeezNuts", "Hulala", successCallback);
+    LoginApi.login("brad", "DeezNuts")
+      .then(() => {
+        history.push({pathname: '/'})
+        eventHandler.onLogin({name:"DeezNuts"})
+      })
+      .catch(e => console.log(e))
   };
 
   return (

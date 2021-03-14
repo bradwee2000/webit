@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
 import static org.springframework.data.cassandra.core.query.Criteria.where;
 import static org.springframework.data.cassandra.core.query.Query.query;
 
@@ -27,14 +26,12 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
         this.cassandra = cassandra;
     }
 
-    public void updateCurrentTrackIndex(final MusicUser model) {
-        updateColumn(model.getId(), "currentTrackIndex", model.getCurrentTrackIndex());
+    public MusicUser findByIdOrCreate(final String id) {
+        return findById(id).orElseGet(() -> save(new MusicUser().setId(id)));
     }
 
-    public void updateTrackIds(final MusicUser model) {
-        updateColumns(model.getId(),
-                "trackIdQueue", model.getTrackIdQueue(),
-                "currentTrackIndex", model.getCurrentTrackIndex());
+    public void updateCurrentTrackIndex(final MusicUser model) {
+        updateColumn(model.getId(), "currentTrackIndex", model.getCurrentTrackIndex());
     }
 
     public void updateShuffle(final MusicUser model) {
@@ -103,6 +100,7 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
         private Boolean isShuffle;
         private Boolean isLoop;
         private Boolean isPlaying;
+        private String selectedDeviceId;
 
         public Update(String id) {
             this.id = id;

@@ -22,9 +22,9 @@ class AlbumDocumentTest {
                 .setYear(2020)
                 .setTags(Arrays.asList("Instrumental", "Classic"))
                 .setTracks(Arrays.asList(
-                        new Track().setId("2").setTrack(2).setArtist("Sam").setTitle("Hello"),
-                        new Track().setId("1").setTrack(1).setArtist("Sam").setTitle("Beautiful"),
-                        new Track().setId("3").setTrack(3).setArtist("Ivy").setTitle("World")
+                        new Track().setId("2").setTrackNum("002").setArtist("Sam").setTitle("Hello"),
+                        new Track().setId("1").setTrackNum("001").setArtist("Sam").setTitle("Beautiful"),
+                        new Track().setId("3").setTrackNum("003").setArtist("Ivy").setTitle("World")
                 ));
     }
 

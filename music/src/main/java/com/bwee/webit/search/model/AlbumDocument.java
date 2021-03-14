@@ -63,7 +63,7 @@ public class AlbumDocument implements SearchDocument<Album> {
     public Album toModel() {
         return new Album().setId(id)
                 .setName(name)
-                .setArtists(artists == null ? emptyList() : tags)
+                .setArtists(artists == null ? emptyList() : artists)
                 .setTags(tags == null ? emptyList() : tags)
                 .setYear(year);
     }

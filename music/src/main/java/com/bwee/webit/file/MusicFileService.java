@@ -2,7 +2,7 @@ package com.bwee.webit.file;
 
 
 import com.bwee.webit.model.Track;
-import com.bwee.webit.core.FileService;
+import com.bwee.webit.service.FileService;
 
 import java.nio.file.Path;
 
@@ -23,10 +23,15 @@ public class MusicFileService {
     }
 
     public Path toStoragePath(final Track track) {
-        return Path.of(musicStorePath, track.getAlbumName(), toFilename(track));
+        return Path.of(musicStorePath, String.valueOf(track.getYear()), track.getAlbumName(), toFilename(track));
     }
 
     private String toFilename(final Track track) {
-        return track.getArtist() + " - " + track.getTitle() + "." + track.getExt();
+        return new StringBuilder()
+                .append(track.getTrackNum()).append(" - ")
+                .append(track.getArtist()).append(" - ")
+                .append(track.getTitle()).append(".")
+                .append(track.getExt())
+                .toString();
     }
 }

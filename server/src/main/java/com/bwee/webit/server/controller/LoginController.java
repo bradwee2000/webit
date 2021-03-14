@@ -1,36 +1,42 @@
 package com.bwee.webit.server.controller;
 
-import com.bwee.webit.server.model.security.LoginRes;
-import org.apache.commons.lang3.StringUtils;
+import com.bwee.webit.auth.AuthenticationService;
+import com.bwee.webit.server.model.LoginRes;
+import com.bwee.webit.service.WebitUserService;
+import lombok.Data;
+import lombok.experimental.Accessors;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotEmpty;
 
 @Controller
 @RequestMapping("/login")
 public class LoginController {
 
-    @PostMapping
-    public ResponseEntity login(@RequestHeader final String username,
-                                @RequestHeader final String password,
-                                final HttpServletResponse response) {
-        final String token;
+    @Autowired
+    private WebitUserService webitUserService;
 
-        if (StringUtils.equals(username, "DeezNuts")) {
-            token = "CQIUC9lAKq2H";
-            final Cookie cookie = new Cookie("pl", token);
-            cookie.setHttpOnly(true);
-            cookie.setPath("/");
-            cookie.setMaxAge(7 * 24 * 60 * 60); // 7 days
-            response.addCookie(cookie);
-        } else {
-            token = "";
-        }
-        return ResponseEntity.ok(new LoginRes().setAuthToken(token));
+    @Autowired
+    private AuthenticationService authenticationService;
+
+    @PostMapping
+    public ResponseEntity login(@RequestBody final LoginReq loginReq) {
+        final String token = authenticationService.login(loginReq.getUsername(), loginReq.getPassword());
+        return ResponseEntity.ok(new LoginRes().setAccessToken(token));
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class LoginReq {
+        @NotEmpty
+        private String username;
+
+        @NotEmpty
+        private String password;
     }
 }

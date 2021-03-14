@@ -1,7 +1,5 @@
 package com.bwee.webit.service;
 
-import com.bwee.webit.core.SearchableCrudService;
-import com.bwee.webit.core.SimpleCrudService;
 import com.bwee.webit.datasource.YoutubeDbService;
 import com.bwee.webit.exception.YoutubeContentNotFoundException;
 import com.bwee.webit.model.YoutubeVideo;

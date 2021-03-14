@@ -1,9 +1,6 @@
 package com.bwee.webit.service;
 
-import com.bwee.webit.core.SearchableCrudService;
-import com.bwee.webit.core.SimpleCrudService;
 import com.bwee.webit.datasource.AlbumDbService;
-import com.bwee.webit.datasource.DbService;
 import com.bwee.webit.datasource.TrackDbService;
 import com.bwee.webit.exception.AlbumNotFoundException;
 import com.bwee.webit.model.Album;
@@ -68,13 +65,11 @@ public class AlbumService extends SimpleCrudService<Album> implements Searchable
     @Override
     public Optional<Album> findById(final String id) {
         return albumDbService.findById(id).map(album -> {
-            final Map<String, Integer> musicIdTrackMap = album.getTracks().stream()
-                    .collect(toMap(music -> music.getId(), music -> music.getTrack()));
+            final List<String> trackIds = album.getTracks().stream().map(t -> t.getTrackNum()).collect(toList());
 
             // Populate music list and preserve the track numbers
-            final List<Track> trackList = trackDbService.findByIds(musicIdTrackMap.keySet()).stream()
-                    .map(music -> music.setTrack(musicIdTrackMap.get(music.getId())))
-                    .sorted(comparing(Track::getTrack))
+            final List<Track> trackList = trackDbService.findByIds(trackIds).stream()
+                    .sorted(comparing(Track::getTrackNum))
                     .collect(toList());
 
             return album.setTracks(trackList);

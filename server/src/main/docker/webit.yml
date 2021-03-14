@@ -1,0 +1,95 @@
+version: "3.7"
+services:
+  elasticsearch:
+    image: arm64v8/elasticsearch:7.10.1
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - node.name={{.Node.Hostname}}
+      - cluster.name=Webit
+      - discovery.seed_hosts=elasticsearch
+      - cluster.initial_master_nodes=pi0,pi1,pi1
+      - bootstrap.memory_lock=false
+    volumes:
+      - elasticsearch-volume:/usr/share/elasticsearch/data
+    ports:
+      - target: 9300
+        published: 9300
+        mode: host
+      - target: 9200
+        published: 9200
+        mode: host
+    networks:
+      - elasticsearch-network
+    deploy:
+      replicas: 3
+  #      endpoint_mode: dnsrr
+
+  cassandra:
+    image: arm64v8/cassandra:3.11.9
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - CASSANDRA_BROADCAST_ADDRESS={{.Node.Hostname}}
+      - CASSANDRA_SEEDS=pi0.wee,pi1.wee,pi2.wee
+      - HEAP_NEWSIZE=256M
+      - MAX_HEAP_SIZE=1024M
+    volumes:
+      - cassandra-volume:/var/lib/cassandra
+    networks:
+      - cassandra-network
+    deploy:
+      replicas: 3
+      endpoint_mode: dnsrr
+
+#  nginx:
+#    image: arm64v8/nginx:1.19.6-alpine
+#    ports:
+#      - 9200:9200
+#      - 9300:9300
+#      - 9042:9042
+#    deploy:
+#      replicas: 2
+#    networks:
+#      - cassandra
+#      - elasticsearch
+#    command: |
+#      /bin/sh -c "echo '
+#      user nobody nogroup;
+#      worker_processes auto;
+#      events {
+#        worker_connections 1024;
+#      }
+#      http {
+#        client_max_body_size 4g;
+#        resolver 127.0.0.11 ipv6=off;
+#        server {
+#          listen *:9200;
+#          location / {
+#            proxy_set_header Connection keep-alive;
+#            set $$url http://elasticsearch:9200;
+#            proxy_pass $$url;
+#            proxy_set_header  Host $$http_host;
+#            proxy_set_header  X-Real-IP $$remote_addr;
+#            proxy_set_header  X-Forwarded-For $$proxy_add_x_forwarded_for;
+#          }
+#        }
+#      }
+#      stream {
+#        upstream cassandra {
+#          server cassandra:9042;
+#        }
+#        server {
+#          listen *:9042;
+#          proxy_pass cassandra;
+#        }
+#      }
+#      ' | tee /etc/nginx/nginx.conf && nginx -t && nginx -g 'daemon off;'"
+
+volumes:
+  cassandra-volume:
+  elasticsearch-volume:
+networks:
+  elasticsearch-network:
+    driver: overlay
+  cassandra-network:
+    external:
+      name: host

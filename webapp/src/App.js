@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Route, Switch, Link, useHistory } from 'react-router-dom';
 import Header from './components/Header';
-import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
+import { AlbumApi, MusicUserApi, TrackApi, SecurityContext } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';
 import { LoginButton } from './components/common/Commons';
 import { FetchPlayCode } from './task/Tasks'
@@ -73,6 +73,11 @@ function App() {
 
 
   const eventHandler = {
+    onLogin(webitUser) {
+        console.log(webitUser)
+        MusicUserApi.get().then(setUserState)
+    },
+
     onSearchChange(q) {
     },
 
@@ -132,6 +137,12 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    if (!SecurityContext.isLoggedIn()) {
+      history.push({pathname: '/login'})
+    }
+  })
+
   // Update play code
   useEffect((e) => {
     FetchPlayCode.run()
@@ -156,32 +167,36 @@ function App() {
     }
   }, [userState.selectedTrack, isPlaying]);
 
+console.log("LOGIN KA BA? " + SecurityContext.isLoggedIn())
+  if (!SecurityContext.isLoggedIn()) {
+    return <><LoginButton eventHandler={eventHandler}/></>
+  }
+
   return (
     <>
-      <LoginButton/>
-      <Link to="/" className="link">Home</Link>
-      <div className="h-100 overflow-auto">
-        <div className="container">
-          <Switch>
-            <Route path='/' exact>
-              <HomePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
-            </Route>
-            <Route path='/album/:albumId' >
-              <AlbumPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
-            </Route>
-            <Route path='/search/:query' >
-              <SearchMainPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
-            </Route>
-            <Route path='/queue' >
-              <QueuePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
-            </Route>
-          </Switch>
-        </div>
+    <Link to="/" className="link">Home</Link>
+    <div className="h-100 overflow-auto">
+      <div className="container">
+        <Switch>
+          <Route path='/' exact>
+            <HomePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          </Route>
+          <Route path='/album/:albumId' >
+            <AlbumPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          </Route>
+          <Route path='/search/:query' >
+            <SearchMainPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          </Route>
+          <Route path='/queue' >
+            <QueuePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          </Route>
+        </Switch>
       </div>
-      <hr className="mb-5 mt-5"/>
-      <div className="fixed-bottom">
-        <PlayerSection eventHandler={eventHandler} userState={userState} isPlaying={isPlaying}/>
-      </div>
+    </div>
+    <hr className="mb-5 mt-5"/>
+    <div className="fixed-bottom">
+      <PlayerSection eventHandler={eventHandler} userState={userState} isPlaying={isPlaying}/>
+    </div>
     </>
   );
 }

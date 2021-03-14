@@ -80,6 +80,6 @@ class TrackNumSortStrategyTest {
     }
 
     public Track track(int num) {
-        return new Track().setId("" + num).setTrack(num);
+        return new Track().setId("" + num).setTrackNum("" + num);
     }
 }

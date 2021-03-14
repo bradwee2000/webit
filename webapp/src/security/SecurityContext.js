@@ -2,6 +2,11 @@ class SecurityContext {
   static authToken;
   static playTrackCode;
 
+  static isLoggedIn() {
+    return SecurityContext.authToken !== undefined
+      && SecurityContext.authToken !== '';
+  }
+
   static setToken(authToken) {
     SecurityContext.authToken = authToken;
   }

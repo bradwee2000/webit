@@ -29,7 +29,7 @@ public class TrackNumSortStrategy implements TrackSortStrategy {
         final List<Track> tracks = trackDbService.findByIdsSorted(user.getTrackIdQueue());
 
         final List<String> trackIds = tracks.stream()
-                .sorted(comparing(Track::getTrack))
+                .sorted(comparing(Track::getTrackNum))
                 .map(Track::getId)
                 .collect(Collectors.toList());
 

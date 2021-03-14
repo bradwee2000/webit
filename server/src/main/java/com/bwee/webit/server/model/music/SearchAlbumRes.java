@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Collections.emptyList;
-
 @Data
 @NoArgsConstructor
 public class SearchAlbumRes {

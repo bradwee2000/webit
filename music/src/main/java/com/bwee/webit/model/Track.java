@@ -14,13 +14,13 @@ import java.util.List;
 public class Track {
 
     private String id;
-    private int track;
+    private String trackNum;
     private String title;
     private String albumName;
     private String albumId;
     private String imageUrl;
     private String artist;
-    private List<String> genre;
+    private List<String> genre = Collections.emptyList();;
     private String originalArtist;
     private String composer;
     private String ext;

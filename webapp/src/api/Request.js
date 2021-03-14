@@ -20,9 +20,22 @@ const options = (method, body) => {
 }
 
 const doFetch = (url, requestOptions) => {
-  return fetch(url, requestOptions)
-    .then(res => res.json())
-    .catch(e => console.log(e))
+  return new Promise((resolve, reject) => {
+    return fetch(url, requestOptions)
+      .then(res => res.json())
+      .then(res => {
+        if (res.error) {
+          throw new Error(res.error)
+        }
+        return res
+      })
+      .then(res => {
+        resolve(res)
+      })
+      .catch(e => {
+        console.error("Request failed: " + e)
+      })
+  })
 }
 
 const Requests = {

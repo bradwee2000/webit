@@ -1,6 +1,6 @@
 package com.bwee.webit.image;
 
-import com.bwee.webit.core.IdGenerator;
+import com.bwee.webit.service.IdGenerator;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

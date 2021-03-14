@@ -26,8 +26,16 @@
             <artifactId>webit-datasource-music</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.bwee.webit</groupId>
+            <artifactId>webit-heos</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

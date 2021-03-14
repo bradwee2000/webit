@@ -2,12 +2,12 @@ package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;
-import com.bwee.webit.server.auth.PlayTrackAuthService;
+import com.bwee.webit.service.PlayTrackCodeService;
 import com.bwee.webit.server.model.music.SearchAlbumRes;
 import com.bwee.webit.server.model.music.SearchAllMusicRes;
 import com.bwee.webit.server.model.music.SearchTrackRes;
 import com.bwee.webit.service.AlbumService;
-import com.bwee.webit.service.MusicAlbumImporter;
+import com.bwee.webit.service.AlbumImporter;
 import com.bwee.webit.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.bwee.webit.util.Constants.DEFAULT_PAGE_NUM;
-import static com.bwee.webit.util.Constants.DEFAULT_PAGE_SIZE;
 
 @Slf4j
 @Controller
@@ -34,7 +29,7 @@ public class MusicSearchController {
     private AlbumService albumService;
 
     @Autowired
-    private MusicAlbumImporter musicAlbumImporter;
+    private AlbumImporter albumImporter;
 
     @Autowired
     private HttpServletRequest request;
@@ -43,7 +38,7 @@ public class MusicSearchController {
     private TrackService trackService;
 
     @Autowired
-    private PlayTrackAuthService playTrackAuthService;
+    private PlayTrackCodeService playTrackCodeService;
 
     @GetMapping("/{query}")
     public ResponseEntity searchAll(@PathVariable final String query) {

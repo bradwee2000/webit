@@ -5,9 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.cassandra.core.mapping.*;
 
 import java.util.List;
 
@@ -29,15 +27,22 @@ public class TrackEntity implements Entity<TrackEntity> {
 
     @PrimaryKey
     private String id;
-    private String title;
+
+    @Indexed
     private String albumId;
+
+    private String title;
     private String albumName;
     private String artist;
     private String originalArtist;
     private String composer;
+    private String trackNum;
 
     @CassandraType(type = LIST, typeArguments = TEXT)
     private List<String> genre = emptyList();
+
+    @CassandraType(type = LIST, typeArguments = TEXT)
+    private List<String> tags = emptyList();
 
     private String ext;
     private Long size;
@@ -48,14 +53,12 @@ public class TrackEntity implements Entity<TrackEntity> {
     private Integer sampleRate;
     private String imageUrl;
 
-    @CassandraType(type = LIST, typeArguments = TEXT)
-    private List<String> tags = emptyList();
-
     public TrackEntity(final Track track) {
         this.id = track.getId();
         this.title = track.getTitle();
-        this.albumName = track.getAlbumName();
         this.albumId = track.getAlbumId();
+        this.trackNum = track.getTrackNum();
+        this.albumName = track.getAlbumName();
         this.artist = track.getArtist();
         this.originalArtist = track.getOriginalArtist();
         this.composer = track.getComposer();
@@ -71,24 +74,17 @@ public class TrackEntity implements Entity<TrackEntity> {
         this.imageUrl = track.getImageUrl();
     }
 
-    public List<String> getGenre() {
-        return genre == null ? emptyList() : genre;
-    }
-
-    public List<String> getTags() {
-        return tags == null ? emptyList() : tags;
-    }
-
     public Track toModel() {
         return new Track()
                 .setId(id)
                 .setTitle(title)
+                .setTrackNum(trackNum)
                 .setAlbumId(albumId)
                 .setAlbumName(albumName)
                 .setArtist(artist)
                 .setOriginalArtist(originalArtist)
                 .setComposer(composer)
-                .setGenre(getGenre())
+                .setGenre(genre == null ? emptyList() : genre)
                 .setSize(size)
                 .setDurationMillis(durationMillis)
                 .setYear(year)
@@ -97,6 +93,6 @@ public class TrackEntity implements Entity<TrackEntity> {
                 .setSampleRate(sampleRate)
                 .setExt(ext)
                 .setImageUrl(imageUrl)
-                .setTags(getTags());
+                .setTags(tags == null ? emptyList() : tags);
     }
 }

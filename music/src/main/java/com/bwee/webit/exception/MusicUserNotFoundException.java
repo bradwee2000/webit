@@ -1,6 +1,6 @@
 package com.bwee.webit.exception;
 
-import com.bwee.webit.core.exception.NotFoundException;
+import com.bwee.webit.exception.NotFoundException;
 
 public class MusicUserNotFoundException extends NotFoundException {
 

@@ -1,32 +1,43 @@
 package com.bwee.webit.server.auth;
 
+import com.bwee.webit.auth.AuthTokenVerifier;
 import com.bwee.webit.auth.AuthUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Enumeration;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class AuthFilter extends OncePerRequestFilter {
 
+    @Autowired
+    private AuthTokenVerifier tokenVerifier;
+
+    @Autowired
+    private HandlerExceptionResolver handlerExceptionResolver;
+
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
-        final String token = req.getHeader(HttpHeaders.AUTHORIZATION);
-        log.info("Accessing {} {} using token={}", req.getMethod(), req.getRequestURI(), token);
+        final String headerToken = req.getHeader(HttpHeaders.AUTHORIZATION);
+        log.info("Accessing {} {} using token={}", req.getMethod(), req.getRequestURI(), headerToken);
 
 //        final Enumeration<String> enumeration = req.getHeaderNames();
 //        while(enumeration.hasMoreElements()) {
@@ -34,14 +45,21 @@ public class AuthFilter extends OncePerRequestFilter {
 //            log.info(" -- HEADER: {}={}", key, req.getHeader(key));
 //        }
 
-        final SecurityContext securityContext = SecurityContextHolder.getContext();
+        try {
+            if (!StringUtils.isEmpty(headerToken)) {
+                final AuthUser principal = tokenVerifier.verifyToken(headerToken);
+                final List<GrantedAuthority> grantedAuthorities = principal.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority(role))
+                        .collect(Collectors.toList());
+                final Authentication auth = new UsernamePasswordAuthenticationToken(principal, headerToken, grantedAuthorities);
+                final SecurityContext securityContext = SecurityContextHolder.getContext();
+                securityContext.setAuthentication(auth);
+            }
 
-        if (!StringUtils.isEmpty(token)) {
-            final AuthUser principal = new AuthUser(token, token);
-            final Authentication auth = new UsernamePasswordAuthenticationToken(principal, token, Collections.emptyList());
+            filterChain.doFilter(req, res);
 
-            securityContext.setAuthentication(auth);
+        } catch (Exception e) {
+            handlerExceptionResolver.resolveException(req, res, null, e);
         }
-        filterChain.doFilter(req, res);
     }
 }

@@ -17,14 +17,13 @@ public class SearchAllMusicRes {
     private List<AlbumRes> albums = emptyList();
     private List<TrackRes> tracks = emptyList();
 
-    public SearchAllMusicRes setAlbums(List<Album> albums) {
+    public SearchAllMusicRes setAlbums(final List<Album> albums) {
         this.albums = albums.stream().map(AlbumRes::new).collect(toList());
         return this;
     }
 
-    public SearchAllMusicRes setTracks(List<Track> tracks) {
+    public SearchAllMusicRes setTracks(final List<Track> tracks) {
         this.tracks = tracks.stream().map(TrackRes::new).collect(toList());
         return this;
     }
-
 }

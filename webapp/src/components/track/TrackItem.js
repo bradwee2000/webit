@@ -1,4 +1,5 @@
 import { PlayButton, Duration } from './../common/Commons'
+import { Link } from 'react-router-dom';
 
 const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) => {
 
@@ -17,8 +18,11 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
     eventHandler.onTrackPause(id);
   }
 
+console.log(item)
+
   const selectedTrack = userState ? userState.selectedTrack : null
   const isSelected = selectedTrack && item.id === selectedTrack.id;
+  const albumLink = "/album/" + item.albumId
 
   return (
     <div className={`track row rounded-3 ` + (isSelected ? "selected" : "")} onClick={(e) => onClick(e, item.id)} role="button">
@@ -36,7 +40,9 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
       </div>
       { showAlbum &&
       <div className="col">
-        <small className="text-muted">{item.albumName}</small>
+        <small className="text-muted">
+          <Link to={albumLink} className="link">{item.albumName}</Link>
+        </small>
       </div>
       }
       <div className="col-1 m-2 text-end mt-3">

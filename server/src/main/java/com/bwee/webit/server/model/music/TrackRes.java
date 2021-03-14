@@ -8,6 +8,7 @@ public class TrackRes {
     private final String id;
     private final String title;
     private final String artist;
+    private final String albumId;
     private final String albumName;
     private final String imageUrl;
     private final Long durationMillis;
@@ -16,6 +17,7 @@ public class TrackRes {
         this.id = track.getId();
         this.title = track.getTitle();
         this.artist = track.getArtist();
+        this.albumId = track.getAlbumId();
         this.albumName = track.getAlbumName();
         this.imageUrl = track.getImageUrl();
         this.durationMillis = track.getDurationMillis();

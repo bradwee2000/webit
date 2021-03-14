@@ -1,9 +1,7 @@
 package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.MusicUser;
-import com.bwee.webit.model.Track;
 import com.bwee.webit.server.model.music.SaveMusicUserReq;
-import com.bwee.webit.server.model.music.UpdateQueueReq;
 import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.MusicUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @Slf4j
 @Controller

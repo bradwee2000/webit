@@ -1,6 +1,6 @@
 package com.bwee.webit.image;
 
-import com.bwee.webit.core.exception.ContentNotFoundException;
+import com.bwee.webit.exception.ContentNotFoundException;
 
 public class ImageNotFoundException extends ContentNotFoundException {
 

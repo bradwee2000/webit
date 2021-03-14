@@ -5,7 +5,8 @@ const interval = 3 * 60 * 1000 // 3 mins
 const FetchPlayCode = {
   run: () => {
     return PlayCodeApi.get()
-      .then(result => SecurityContext.setPlayTrackCode(result.playCode));
+      .then(result => SecurityContext.setPlayTrackCode(result.playCode))
+      .catch(error => console.error("Failed to fetch play code", error));
   },
 
   schedule: () => {

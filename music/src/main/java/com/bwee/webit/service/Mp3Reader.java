@@ -2,6 +2,7 @@ package com.bwee.webit.service;
 
 import com.bwee.webit.model.Genre;
 import com.bwee.webit.model.Track;
+import com.bwee.webit.util.ImportUtils;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.Mp3File;
 import lombok.Data;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
+import static com.bwee.webit.util.ImportUtils.padZeros;
 import static java.nio.file.Files.isDirectory;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -27,13 +29,8 @@ import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class Mp3Reader {
-    private TrackIdGenerator trackIdGenerator;
 
-    public Mp3Reader(final TrackIdGenerator idGenerator) {
-        this.trackIdGenerator = idGenerator;
-    }
-
-    public Track read(String filePath) {
+    public Track read(final String filePath) {
         return read(Path.of(filePath));
     }
 
@@ -69,15 +66,16 @@ public class Mp3Reader {
 
         final Track track = new Track()
                 .setTitle(formatName(id3.getTitle()))
-                .setArtist(capitalize(id3.getArtist()))
+                .setArtist(id3.getArtist())
+                .setAlbumName(id3.getAlbum())
                 .setYear(Integer.parseInt(id3.getYear()))
-                .setComposer(capitalize(id3.getComposer()))
+                .setComposer(id3.getComposer())
                 .setGenre(genreDescription == null ? emptyList() : Collections.singletonList(genreDescription))
                 .setBitRate(file.getBitrate())
-                .setTrack(getTrack(id3.getTrack()))
+                .setTrackNum(ImportUtils.padZeros(getTrack(id3.getTrack()), 9))
                 .setDurationMillis(file.getLengthInMilliseconds())
                 .setSampleRate(file.getSampleRate())
-                .setOriginalArtist(capitalize(id3.getOriginalArtist()))
+                .setOriginalArtist(id3.getOriginalArtist())
                 .setSize(file.getLength())
                 .setChannel(WordUtils.capitalizeFully(file.getChannelMode()))
                 .setSourcePath(path)
@@ -91,7 +89,7 @@ public class Mp3Reader {
             return null;
         }
 
-        return capitalize(StringUtils.replaceChars(name, "/", "-"));
+        return StringUtils.replaceChars(name, "/", "-");
     }
 
     public String capitalize(final String value) {
@@ -135,7 +133,7 @@ public class Mp3Reader {
 
         // Return all music
         final List<Track> allTrack = Stream.concat(dirMusic.stream(), subDirTracks.stream())
-                .sorted(comparing(m -> m.getTrack()))
+                .sorted(comparing(m -> m.getTrackNum()))
                 .collect(toList());
         return allTrack;
     }
@@ -148,7 +146,7 @@ public class Mp3Reader {
 
         if (config.useFileNameAsTrackNum()) {
             musicStream = musicStream.sorted(comparing(music -> music.getSourcePath().getFileName().toString()))
-                    .map(music -> music.setTrack(trackCounter.getAndIncrement()));
+                    .map(music -> music.setTrackNum(ImportUtils.padZeros(trackCounter.getAndIncrement(), 9)));
         }
 
         return musicStream.collect(toList());
