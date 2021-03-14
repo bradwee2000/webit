@@ -1,7 +1,7 @@
 import { LoginApi } from './../../api/Apis'
 import { useHistory } from 'react-router-dom';
 
-const LoginButton = ({playingTrack, eventHandler}) => {
+const LoginButton = ({onLoginSuccess}) => {
 
   const history = useHistory()
 
@@ -9,7 +9,7 @@ const LoginButton = ({playingTrack, eventHandler}) => {
     LoginApi.login("brad", "DeezNuts")
       .then(() => {
         history.push({pathname: '/'})
-        eventHandler.onLogin({name:"DeezNuts"})
+        onLoginSuccess()
       })
       .catch(e => console.log(e))
   };

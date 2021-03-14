@@ -104,7 +104,7 @@ public class HeosController {
         private String name;
         private Double gid;
 
-        public PlayerResp(Player player) {
+        public PlayerResp(final Player player) {
             this.pid = player.getPid();
             this.model = player.getModel();
             this.name = player.getName();

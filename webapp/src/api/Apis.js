@@ -1,4 +1,5 @@
 import AlbumApi from './music/AlbumApi'
+import HeosApi from './music/HeosApi'
 import MusicUserApi from './music/MusicUserApi'
 import TrackApi from './music/TrackApi'
 import SearchApi from './music/SearchApi'

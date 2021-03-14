@@ -1,9 +1,5 @@
 package com.bwee.webit.auth;
 
-import com.bwee.webit.auth.AuthTokenVerifier;
-import com.bwee.webit.auth.AuthUser;
-import com.bwee.webit.auth.ClaimNames;
-import com.bwee.webit.exception.InvalidTokenException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +9,9 @@ import java.sql.Date;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class AuthTokenVerifierTest {
 
@@ -43,25 +39,25 @@ class AuthTokenVerifierTest {
 
     @Test
     public void testVerifyToken_shouldReturnAuthUser() {
-        final AuthUser user = verifier.verifyToken(validToken);
-        assertThat(user).isNotNull();
-        assertThat(user.getUserId()).isEqualTo("123");
-        assertThat(user.getName()).isEqualTo("John");
-        assertThat(user.getRoles()).containsExactlyInAnyOrder("ADMIN", "SUPV");
+        final Optional<AuthUser> user = verifier.verifyToken(validToken);
+        assertThat(user).isNotEmpty();
+        assertThat(user.get().getUserId()).isEqualTo("123");
+        assertThat(user.get().getName()).isEqualTo("John");
+        assertThat(user.get().getRoles()).containsExactlyInAnyOrder("ADMIN", "SUPV");
     }
 
     @Test
-    public void testVerifyInvalidSignatureToken_shouldThrowException() {
-        assertThatThrownBy(() -> verifier.verifyToken(invalidSignatureToken)).isInstanceOf(InvalidTokenException.class);
+    public void testVerifyInvalidSignatureToken_shouldReturnEmpty() {
+        assertThat(verifier.verifyToken(invalidSignatureToken)).isEmpty();
     }
 
     @Test
-    public void testVerifyMalformedToken_shouldThrowException() {
-        assertThatThrownBy(() -> verifier.verifyToken("MALFORMED_TOKEN")).isInstanceOf(InvalidTokenException.class);
+    public void testVerifyMalformedToken_shouldReturnEmpty() {
+        assertThat(verifier.verifyToken("MALFORMED_TOKEN")).isEmpty();
     }
 
     @Test
-    public void testVerifyInvalidToken_shouldThrowException() {
-        assertThatThrownBy(() -> verifier.verifyToken("AN.INVALID.TOKEN")).isInstanceOf(InvalidTokenException.class);
+    public void testVerifyInvalidToken_shouldReturnEmpty() {
+        assertThat(verifier.verifyToken("AN.INVALID.TOKEN")).isEmpty();
     }
 }

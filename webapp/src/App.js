@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Route, Switch, Link, useHistory } from 'react-router-dom';
 import Header from './components/Header';
-import { AlbumApi, MusicUserApi, TrackApi, SecurityContext } from './api/Apis';
+import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';
 import { LoginButton } from './components/common/Commons';
 import { FetchPlayCode } from './task/Tasks'
@@ -71,7 +71,6 @@ function App() {
     MusicUserApi.loop(isEnabled).then(setUserState)
   }
 
-
   const eventHandler = {
     onLogin(webitUser) {
         console.log(webitUser)
@@ -137,12 +136,6 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    if (!SecurityContext.isLoggedIn()) {
-      history.push({pathname: '/login'})
-    }
-  })
-
   // Update play code
   useEffect((e) => {
     FetchPlayCode.run()
@@ -166,11 +159,6 @@ function App() {
       }
     }
   }, [userState.selectedTrack, isPlaying]);
-
-console.log("LOGIN KA BA? " + SecurityContext.isLoggedIn())
-  if (!SecurityContext.isLoggedIn()) {
-    return <><LoginButton eventHandler={eventHandler}/></>
-  }
 
   return (
     <>

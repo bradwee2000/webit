@@ -12,7 +12,7 @@ function HomePage({isPlaying, userState, eventHandler}) {
       title: "Rolling in the Deep",
       albumName: "21",
       albumId: "JapNv7dPxlHE9k6skUiIFGeZeVo=",
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg",
+      imageUrl: "http://localhost:8080/images/music/WT5aAV_rmOS5bgtNDuK1g2fAoJo=.jpg",
       artist: "Adele",
     },
     {
@@ -21,7 +21,7 @@ function HomePage({isPlaying, userState, eventHandler}) {
       title: "God Gave Rock and Roll to You",
       albumName: "100 Rock Hits - The Sound Of My Life",
       albumId: "L4fH084Z7NqGeVBk5VQNrU_gOf8=",
-      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg",
+      imageUrl: "http://localhost:8080/images/music/2JxFLxlA7e5w2OdWNejhDyMaoEI=.jpg",
       artist: "Argent"
     }
   ]
@@ -31,19 +31,19 @@ function HomePage({isPlaying, userState, eventHandler}) {
       id:"1",
       name:"21",
       artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
+      imageUrl: "http://localhost:8080/images/music/WT5aAV_rmOS5bgtNDuK1g2fAoJo=.jpg"
     },
     {
       id:"2",
       name:"21",
       artists:["Adele"],
-      imageUrl: "http://localhost:8080/images/music/b0vwgyNq2Zm7blcjLyHa.jpg"
+      imageUrl: "http://localhost:8080/images/music/2JxFLxlA7e5w2OdWNejhDyMaoEI=.jpg"
     },
     {
       id:"3",
       name:"100 Shalalamakuchi",
       artists:["Shanti Shanti", "Many Moore"],
-      imageUrl: "http://localhost:8080/images/music/iiZaayDjwJM478tlqzcM.jpg"
+      imageUrl: "http://localhost:8080/images/music/2JxFLxlA7e5w2OdWNejhDyMaoEI=.jpg"
     },
     {
       id:"4",

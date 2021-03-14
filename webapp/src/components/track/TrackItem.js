@@ -18,8 +18,6 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
     eventHandler.onTrackPause(id);
   }
 
-console.log(item)
-
   const selectedTrack = userState ? userState.selectedTrack : null
   const isSelected = selectedTrack && item.id === selectedTrack.id;
   const albumLink = "/album/" + item.albumId

@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -45,21 +46,16 @@ public class AuthFilter extends OncePerRequestFilter {
 //            log.info(" -- HEADER: {}={}", key, req.getHeader(key));
 //        }
 
-        try {
-            if (!StringUtils.isEmpty(headerToken)) {
-                final AuthUser principal = tokenVerifier.verifyToken(headerToken);
-                final List<GrantedAuthority> grantedAuthorities = principal.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role))
-                        .collect(Collectors.toList());
-                final Authentication auth = new UsernamePasswordAuthenticationToken(principal, headerToken, grantedAuthorities);
-                final SecurityContext securityContext = SecurityContextHolder.getContext();
-                securityContext.setAuthentication(auth);
-            }
+        tokenVerifier.verifyToken(headerToken).ifPresent(user -> {
+            final List<GrantedAuthority> grantedAuthorities = user.getRoles().stream()
+                    .map(role -> new SimpleGrantedAuthority(role))
+                    .collect(Collectors.toList());
 
-            filterChain.doFilter(req, res);
+            final Authentication auth = new UsernamePasswordAuthenticationToken(user, headerToken, grantedAuthorities);
+            final SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(auth);
+        });
 
-        } catch (Exception e) {
-            handlerExceptionResolver.resolveException(req, res, null, e);
-        }
+        filterChain.doFilter(req, res);
     }
 }

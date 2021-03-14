@@ -31,7 +31,9 @@ public class HeosClient {
     public HeosClient connect() {
         if (!isConnected()) {
             try {
-                socket = new Socket(deviceIp.get(), 1255);
+                final String ip = deviceIp.get();
+                log.info("Connecting to {}", ip);
+                socket = new Socket(ip, 1255);
                 out = new PrintWriter(socket.getOutputStream(), true);
                 in = new Scanner(socket.getInputStream());
                 in.useDelimiter("\r\n");
