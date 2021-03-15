@@ -16,7 +16,7 @@ public interface MusicServiceClient {
     @PostMapping(value = "/user/prev")
     MusicUserRes playPrev(@RequestHeader("Authorization") final String token);
 
-    @PostMapping(value = "/user")
+    @GetMapping(value = "/user")
     MusicUserRes get(@RequestHeader("Authorization") final String token);
 
     @GetMapping(value = "/play-code")

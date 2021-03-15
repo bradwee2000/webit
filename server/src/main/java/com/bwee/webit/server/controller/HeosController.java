@@ -1,14 +1,15 @@
 package com.bwee.webit.server.controller;
 
-import com.bwee.webit.heos.model.Player;
 import com.bwee.webit.heos.connect.HeosClient;
 import com.bwee.webit.heos.connect.HeosListener;
-import com.bwee.webit.heos.service.HeosMusicService;
+import com.bwee.webit.heos.model.Player;
 import com.bwee.webit.heos.service.HeosBrowseService;
+import com.bwee.webit.heos.service.HeosMusicService;
 import com.bwee.webit.heos.service.HeosPlayerService;
 import com.bwee.webit.heos.service.HeosSystemService;
 import com.bwee.webit.service.MusicUserService;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -44,20 +45,20 @@ public class HeosController {
     @PostMapping("/players/{pid}/connect")
     public ResponseEntity connect(@PathVariable final String pid) {
         heosMusicService.connect(pid);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(SuccessRes.of(pid));
     }
 
     @PostMapping("/players/{pid}/play")
     public ResponseEntity play(@PathVariable final String pid,
                                @RequestHeader("Authorization") final String token) {
         final boolean isSuccess = heosMusicService.play(pid, token);
-        return ResponseEntity.ok(isSuccess);
+        return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
     }
 
     @PostMapping("/players/{pid}/pause")
     public ResponseEntity pause(@PathVariable final String pid) {
-        final String state = heosMusicService.pause(pid);
-        return ResponseEntity.ok(state);
+        final boolean isSuccess = heosMusicService.pause(pid);
+        return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
     }
 
     @GetMapping("/players")
@@ -65,31 +66,30 @@ public class HeosController {
         return ResponseEntity.ok(heosMusicService.getPlayers().stream().map(PlayerResp::new).collect(Collectors.toList()));
     }
 
-    @GetMapping("/players/{pid}/now-playing")
-    public ResponseEntity getPlayer(@PathVariable("pid") final String pid) {
-        return ResponseEntity.ok(playerService.getNowPlayingMedia(pid));
-    }
-
     @PostMapping("/players/{pid}/play-url")
     public ResponseEntity playUrl(@PathVariable("pid") final String pid, @RequestParam("url") final String url) {
-        return ResponseEntity.ok(playerService.playUrl(pid, url));
+        final boolean isSuccess = playerService.playUrl(pid, url);
+        return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
     }
 
     @GetMapping("/players/{pid}/volume")
     public ResponseEntity getPlayerVolume(@PathVariable("pid") final String pid) {
-        return ResponseEntity.ok(heosMusicService.getVolume(pid));
+        final int volume = heosMusicService.getVolume(pid);
+        return ResponseEntity.ok(VolumeRes.of(pid).setVolume(volume));
     }
 
     @PostMapping("/players/{pid}/volume")
     public ResponseEntity setPlayerVolume(@PathVariable("pid") final String pid,
                                           @RequestParam("volume") final int volume) {
-        return ResponseEntity.ok(heosMusicService.setVolume(pid, volume));
+        final int setVolume = heosMusicService.setVolume(pid, volume);
+        return ResponseEntity.ok(VolumeRes.of(pid).setVolume(setVolume));
     }
 
     @PostMapping("/signin")
     public ResponseEntity signin(@RequestHeader final String username,
                                  @RequestHeader final String password) {
-        return ResponseEntity.ok(systemService.accountSignIn(username, password));
+        final boolean isSuccess = systemService.accountSignIn(username, password);
+        return ResponseEntity.ok(new SuccessRes().setSuccess(isSuccess));
     }
 
     @GetMapping("/sources")
@@ -98,6 +98,7 @@ public class HeosController {
     }
 
     @Data
+    @Accessors(chain = true)
     public static class PlayerResp {
         private String pid;
         private String model;
@@ -110,5 +111,27 @@ public class HeosController {
             this.name = player.getName();
             this.gid = player.getGid();
         }
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class SuccessRes {
+        public static SuccessRes of(final String playerId) {
+            return new SuccessRes().setPlayerId(playerId);
+        }
+
+        private String playerId;
+        private boolean isSuccess = true;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class VolumeRes {
+        public static VolumeRes of(final String playerId) {
+            return new VolumeRes().setPlayerId(playerId);
+        }
+
+        private String playerId;
+        private int volume;
     }
 }

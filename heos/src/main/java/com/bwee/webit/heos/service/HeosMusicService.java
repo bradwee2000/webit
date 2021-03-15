@@ -53,9 +53,8 @@ public class HeosMusicService implements HeosChangeListener {
         return systemService.getPlayers();
     }
 
-    public String pause(final String pid) {
-        final String state = playerService.setPlayState(pid, PlayState.STOP);
-        return state;
+    public boolean pause(final String pid) {
+        return playerService.setPlayState(pid, PlayState.STOP);
     }
 
     public int getVolume(final String pid) {

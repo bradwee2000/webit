@@ -41,13 +41,14 @@ public class HeosPlayerService {
      * @param state - a String that is either "start", "stop", or "pause".
      * @return the newly set state, a String that is either "start", "stop", or "pause".
      */
-    public String setPlayState(String playerId, PlayState state){
+    public boolean setPlayState(String playerId, PlayState state){
         final Response response = heosClient.execute(PlayerCommands.SET_PLAY_STATE(playerId, state));
 
-        if(response.isSuccess()){
-            return response.getMessageParam("state");
+        if(!response.isSuccess()){
+            log.error("Failed to change play state: {}", response);
         }
-        return null;
+
+        return response.isSuccess();
     }
 
     /**
