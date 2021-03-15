@@ -10,24 +10,32 @@ import AlbumPage from './components/AlbumPage'
 import HomePage from './components/HomePage'
 import QueuePage from './components/QueuePage'
 import SearchMainPage from './components/SearchMainPage'
+import WebDevice from './components/player/WebDevice'
+import HeosDevice from './components/player/HeosDevice'
 
+const defaultUserState = {
+  tracks: [],
+  currentTrackIndex: 0,
+  isShuffle: false,
+  isLoop: false,
+  isPlaying: false,
+  selectedAlbum: null,
+  selectedTrack: null,
+  isNotLoaded: true
+}
+
+const defaultDevice = {
+  id: "web",
+  type: "web"
+}
 
 function App() {
 
-  const defaultUserState = {
-    tracks: [],
-    currentTrackIndex: 0,
-    isShuffle: false,
-    isLoop: false,
-    isPlaying: false,
-    selectedAlbum: null,
-    selectedTrack: null,
-    isNotLoaded: true
-  }
-
   const history = useHistory()
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [userState, setUserState] = useState(defaultUserState);
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [userState, setUserState] = useState(defaultUserState)
+  const [selectedDevice, setSelectedDevice] = useState(defaultDevice)
+  const deviceServices = [WebDevice, HeosDevice]
 
   const togglePlayTrack = (trackId, isNewPlayList=true) => {
     // If playing same track, toggle play/pause
@@ -41,19 +49,19 @@ function App() {
           MusicUserApi.selectTrack(trackId).then(setUserState)
       }
 
-      setIsPlaying(true);
+      setIsPlaying(true)
     }
-  };
+  }
 
   const togglePlayAlbum = (albumId) => {
     // if playing same album, toggle play/pause
     if (userState.selectedAlbum && userState.selectedAlbum.id === albumId) {
-      setIsPlaying(!isPlaying);
+      setIsPlaying(!isPlaying)
     } else {
       AlbumApi.play(albumId).then(setUserState)
-      setIsPlaying(true);
+      setIsPlaying(true)
     }
-  };
+  }
 
   const playNextTrack = () => {
     MusicUserApi.next().then(setUserState)
@@ -133,16 +141,33 @@ function App() {
 
     onLoopClick(isEnabled) {
       loop(isEnabled)
+    },
+
+    onDeviceSelected(deviceId, deviceType) {
+      if (selectedDevice.id === deviceId && selectedDevice.type === deviceType) {
+        return // do nothing
+      } else {
+        const deviceService = findSelectedDeviceService()
+        if (deviceService) {
+          deviceService.pause()
+        }
+        setSelectedDevice({id: deviceId, type: deviceType})
+      }
     }
+  }
+
+  const findSelectedDeviceService = () => {
+    return deviceServices.find(d => d.getType() === selectedDevice.type)
   }
 
   // Update play code
   useEffect((e) => {
     FetchPlayCode.run()
     const fetchPlayCodeInterval = FetchPlayCode.schedule()
-    return () => clearInterval(fetchPlayCodeInterval);
+    return () => clearInterval(fetchPlayCodeInterval)
   });
 
+  // Get User info on load
   useEffect(() => {
     if (userState.isNotLoaded) {
       MusicUserApi.get().then(setUserState)
@@ -152,13 +177,17 @@ function App() {
   // Play or pause music
   useEffect(() => {
     if (userState.selectedTrack) {
-      if (isPlaying) {
-        AudioPlayer.play(TrackApi.getStreamUrl(userState.selectedTrack.id));
-      } else {
-        AudioPlayer.pause();
+      const deviceService = findSelectedDeviceService()
+
+      if (deviceService) {
+        if (isPlaying) {
+          deviceService.play(selectedDevice.id)
+        } else {
+          deviceService.pause(selectedDevice.id)
+        }
       }
     }
-  }, [userState.selectedTrack, isPlaying]);
+  }, [userState.selectedTrack, isPlaying, selectedDevice])
 
   return (
     <>
@@ -183,7 +212,7 @@ function App() {
     </div>
     <hr className="mb-5 mt-5"/>
     <div className="fixed-bottom">
-      <PlayerSection eventHandler={eventHandler} userState={userState} isPlaying={isPlaying}/>
+      <PlayerSection eventHandler={eventHandler} userState={userState} selectedDevice={selectedDevice} isPlaying={isPlaying}/>
     </div>
     </>
   );

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Duration, PlayPauseButton, ProgressBar, } from './../common/Commons'
 import { AudioPlayer, LoopButton, PrevButton, NextButton, ShuffleButton } from './Player'
 
-const PlayerControl = ({userState, isPlaying, eventHandler}) => {
+const PlayerControl = ({userState, device, isPlaying, eventHandler}) => {
 
   const [progress, setProgress] = useState(0)
   const selectedTrack = userState.selectedTrack
@@ -67,7 +67,7 @@ const PlayerControl = ({userState, isPlaying, eventHandler}) => {
             <Duration millis={AudioPlayer.getCurrentTime() * 1000}/>
           </small>
         </div>
-        <div className="col-10 d-flex flex-wrap align-content-center">
+        <div className="col-10">
           <ProgressBar onProgressChange={onProgressChange} progress={progress}/>
         </div>
         <div className="col-1">

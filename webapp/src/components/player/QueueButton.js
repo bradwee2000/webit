@@ -1,6 +1,6 @@
-import ToggleButton from './../common/ToggleButton'
+import { ToggleButton } from './../common/Commons'
 
-const QueueButton = ({userState, onClick}) => {
+const QueueButton = ({userState, isEnabled, onClick}) => {
 
   const icon = (
     <svg role="img" height="16" width="16" viewBox="0 0 16 16">
@@ -12,7 +12,7 @@ const QueueButton = ({userState, onClick}) => {
   )
 
   return (
-    <ToggleButton icon={icon} isEnabled={false} onClick={onClick} label="Queue"/>
+    <ToggleButton icon={icon} isEnabled={isEnabled} onClick={onClick} label="Queue"/>
   )
 }
 

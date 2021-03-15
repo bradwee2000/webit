@@ -14,7 +14,7 @@ const HeosApi = {
     return Request.post(Config.heosHost + "/players/" + pid + "/pause");
   },
 
-  getVolume: function(pid, volume) {
+  getVolume: function(pid) {
     return Request.get(Config.heosHost + "/players/" + pid + "/volume");
   },
 

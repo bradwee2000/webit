@@ -1,5 +1,6 @@
 import AudioPlayer from './AudioPlayer'
 import DeviceButton from './DeviceButton'
+import DeviceMenu from './DeviceMenu'
 import LoopButton from './LoopButton'
 import MuteButton from './MuteButton'
 import NextButton from './NextButton'
@@ -13,6 +14,7 @@ import TrackInfo from './TrackInfo'
 export {
   AudioPlayer,
   DeviceButton,
+  DeviceMenu,
   LoopButton,
   MuteButton,
   NextButton,

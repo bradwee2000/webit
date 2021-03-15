@@ -13,6 +13,7 @@ import SecurityContext from './../security/SecurityContext'
 export {
   AlbumApi,
   Config,
+  HeosApi,
   LoginApi,
   MusicUserApi,
   PlayCodeApi,
