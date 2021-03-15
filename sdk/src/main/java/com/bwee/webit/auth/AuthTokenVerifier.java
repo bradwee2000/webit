@@ -19,7 +19,6 @@ public class AuthTokenVerifier {
 
     public Optional<AuthUser> verifyToken(final String token) {
         if (StringUtils.isEmpty(token)) {
-            log.info("Token is empty.");
             return Optional.empty();
         }
 
