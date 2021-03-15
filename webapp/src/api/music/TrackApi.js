@@ -12,7 +12,7 @@ const TrackApi = {
 
   getStreamUrl: function(trackId) {
     const playToken = SecurityContext.getPlayTokenHash(trackId);
-    return Config.musicHost + "/tracks/" + trackId + "/stream?token=" + playToken;
+    return Config.musicStreamHost + "/tracks/" + trackId + "/stream?token=" + playToken;
   }
 }
 

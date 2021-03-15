@@ -10,8 +10,7 @@ import AlbumPage from './components/AlbumPage'
 import HomePage from './components/HomePage'
 import QueuePage from './components/QueuePage'
 import SearchMainPage from './components/SearchMainPage'
-import WebDevice from './components/player/WebDevice'
-import HeosDevice from './components/player/HeosDevice'
+import { HeosDevice, WebDevice } from './components/device/Devices'
 
 const defaultUserState = {
   tracks: [],
@@ -35,6 +34,7 @@ function App() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [userState, setUserState] = useState(defaultUserState)
   const [selectedDevice, setSelectedDevice] = useState(defaultDevice)
+  const [deviceService, setDeviceService] = useState(WebDevice)
   const deviceServices = [WebDevice, HeosDevice]
 
   const togglePlayTrack = (trackId, isNewPlayList=true) => {
@@ -147,11 +147,10 @@ function App() {
       if (selectedDevice.id === deviceId && selectedDevice.type === deviceType) {
         return // do nothing
       } else {
-        const deviceService = findSelectedDeviceService()
-        if (deviceService) {
-          deviceService.pause()
+        const service = findSelectedDeviceService()
+        if (service) {
+          setSelectedDevice({id: deviceId, type: deviceType})
         }
-        setSelectedDevice({id: deviceId, type: deviceType})
       }
     }
   }
@@ -174,20 +173,25 @@ function App() {
     }
   })
 
-  // Play or pause music
+  // Handle device changes
+  useEffect(() => {
+    const service = findSelectedDeviceService()
+    if (service) {
+      setDeviceService(service)
+
+    }
+  }, [selectedDevice])
+
+  // Play or pause music on device
   useEffect(() => {
     if (userState.selectedTrack) {
-      const deviceService = findSelectedDeviceService()
-
-      if (deviceService) {
-        if (isPlaying) {
-          deviceService.play(selectedDevice.id)
-        } else {
-          deviceService.pause(selectedDevice.id)
-        }
+      if (isPlaying) {
+        deviceService.play(selectedDevice.id)
+      } else {
+        deviceService.pause(selectedDevice.id)
       }
     }
-  }, [userState.selectedTrack, isPlaying, selectedDevice])
+  }, [userState.selectedTrack, isPlaying, deviceService])
 
   return (
     <>
@@ -212,7 +216,7 @@ function App() {
     </div>
     <hr className="mb-5 mt-5"/>
     <div className="fixed-bottom">
-      <PlayerSection eventHandler={eventHandler} userState={userState} selectedDevice={selectedDevice} isPlaying={isPlaying}/>
+      <PlayerSection eventHandler={eventHandler} userState={userState} deviceService={deviceService} selectedDevice={selectedDevice} isPlaying={isPlaying}/>
     </div>
     </>
   );

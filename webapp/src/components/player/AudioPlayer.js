@@ -30,7 +30,9 @@ class AudioPlayer {
   }
 
   static setCurrentTime(currentTime) {
+    if (!isNaN(currentTime)) {
       AudioPlayer.audio.currentTime = currentTime
+    }
   }
 
   static getDuration() {

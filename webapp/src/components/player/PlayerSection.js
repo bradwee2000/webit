@@ -1,6 +1,6 @@
 import { PlayerControl, PlayerOtherControls, TrackInfo } from './Player'
 
-const PlayerSection = ({userState, isPlaying, selectedDevice, eventHandler}) => {
+const PlayerSection = ({userState, isPlaying, deviceService, selectedDevice, eventHandler}) => {
 
   return (
     <section className="player">
@@ -19,7 +19,7 @@ const PlayerSection = ({userState, isPlaying, selectedDevice, eventHandler}) => 
         </div>
 
         <div className="col-12 col-md my-auto">
-          <PlayerControl userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+          <PlayerControl userState={userState} deviceService={deviceService} selectedDevice={selectedDevice} isPlaying={isPlaying} eventHandler={eventHandler}/>
         </div>
 
       </div>

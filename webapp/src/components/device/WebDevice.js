@@ -1,5 +1,5 @@
 import { MusicUserApi, TrackApi } from './../../api/Apis'
-import { AudioPlayer } from './Player'
+import { AudioPlayer } from './../player/Player'
 
 const WebDevice = {
   play: (deviceId) => {

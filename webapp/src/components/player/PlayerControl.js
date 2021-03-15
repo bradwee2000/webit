@@ -1,15 +1,16 @@
 import { useState, useEffect } from 'react'
 import { Duration, PlayPauseButton, ProgressBar, } from './../common/Commons'
 import { AudioPlayer, LoopButton, PrevButton, NextButton, ShuffleButton } from './Player'
+import { HeosDevice, WebDevice } from './../device/Devices'
 
-const PlayerControl = ({userState, device, isPlaying, eventHandler}) => {
+const PlayerControl = ({userState, deviceService, selectedDevice, isPlaying, eventHandler}) => {
 
   const [progress, setProgress] = useState(0)
   const selectedTrack = userState.selectedTrack
 
   const updateProgress = () => {
     if (isPlaying) {
-      const progress = AudioPlayer.getProgress()
+      const progress = deviceService.getProgress()
       setProgress(progress)
       if (progress === 1) {
         eventHandler.onTrackPlayFinished()
@@ -32,9 +33,11 @@ const PlayerControl = ({userState, device, isPlaying, eventHandler}) => {
   }, [selectedTrack, isPlaying]);
 
   const onProgressChange = (progress) => {
-    if (selectedTrack) {
-      const adjustedCurrentTime = AudioPlayer.getDuration() * progress ;
-      AudioPlayer.setCurrentTime(adjustedCurrentTime);
+    const duration = deviceService.getDuration()
+
+    if (selectedTrack && duration) {
+      const adjustedCurrentTime = duration * progress ;
+      deviceService.setCurrentTime(selectedDevice.id, adjustedCurrentTime);
       setProgress(progress);
     }
   };
@@ -64,7 +67,7 @@ const PlayerControl = ({userState, device, isPlaying, eventHandler}) => {
     <div className="row">
         <div className="col-1">
           <small className="text-muted">
-            <Duration millis={AudioPlayer.getCurrentTime() * 1000}/>
+            <Duration millis={deviceService.getCurrentTime() * 1000}/>
           </small>
         </div>
         <div className="col-10">
@@ -72,7 +75,7 @@ const PlayerControl = ({userState, device, isPlaying, eventHandler}) => {
         </div>
         <div className="col-1">
           <small className="text-muted">
-            <Duration millis={AudioPlayer.getDuration() * 1000}/>
+            <Duration millis={deviceService.getDuration() * 1000}/>
           </small>
         </div>
     </div>
