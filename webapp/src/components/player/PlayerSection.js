@@ -14,7 +14,7 @@ const PlayerSection = ({userState, isPlaying, deviceService, selectedDevice, eve
 
         <div className="col col-md-3 my-auto order-md-1">
           <div className="d-flex justify-content-end p-3">
-            <PlayerOtherControls userState={userState} selectedDevice={selectedDevice} eventHandler={eventHandler}/>
+            <PlayerOtherControls userState={userState} deviceService={deviceService} selectedDevice={selectedDevice} eventHandler={eventHandler}/>
           </div>
         </div>
 

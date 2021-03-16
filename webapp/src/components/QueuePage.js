@@ -18,7 +18,7 @@ function QueuePage({isPlaying, userState, eventHandler}) {
 
   return (
     <>
-      <TrackSection tracks={userState.tracks} userState={userState} isPlaying={isPlaying} eventHandler={localEventHandler} className="mb-4"/>
+      <TrackSection tracks={userState.tracks} userState={userState} isPlaying={isPlaying} eventHandler={localEventHandler} className="mb-4" title="Queue"/>
     </>
   );
 }
