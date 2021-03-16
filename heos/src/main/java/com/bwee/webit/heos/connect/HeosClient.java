@@ -3,6 +3,7 @@ package com.bwee.webit.heos.connect;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -46,6 +47,20 @@ public class HeosClient {
         return this;
     }
 
+    @SneakyThrows
+    public HeosClient close() {
+        if (isConnected()) {
+            in.close();
+            out.close();
+            socket.close();
+
+            in = null;
+            out = null;
+            socket = null;
+        }
+        return this;
+    }
+
     /**
      * Write a certain command to the Heos System.
      * @param command a String describing the command (see Constants package)
@@ -72,7 +87,7 @@ public class HeosClient {
     }
 
     public boolean isConnected() {
-        return socket != null && out != null && in != null && gson != null;
+        return socket != null && out != null && in != null;
     }
 
     protected Scanner getIn() {
