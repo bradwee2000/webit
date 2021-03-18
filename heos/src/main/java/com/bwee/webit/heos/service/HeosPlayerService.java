@@ -137,6 +137,7 @@ public class HeosPlayerService {
     }
 
     public boolean playUrl(String playerId, final String url) {
+        log.info("Player {} playing URL {}", playerId, url);
         final Response response = heosClient.execute(BrowseCommands.PLAY_URL(playerId, url));
         return response.isSuccess();
     }

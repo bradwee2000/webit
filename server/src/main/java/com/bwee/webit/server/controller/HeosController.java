@@ -42,10 +42,16 @@ public class HeosController {
     @Autowired
     private MusicUserService musicUserService;
 
-    @PostMapping("/players/{pid}/connect")
-    public ResponseEntity connect(@PathVariable final String pid) {
-        heosMusicService.connect(pid);
-        return ResponseEntity.ok(SuccessRes.of(pid));
+    @PostMapping("/connect")
+    public ResponseEntity connect() {
+        heosMusicService.connect();
+        return ResponseEntity.ok(new SuccessRes());
+    }
+
+    @PostMapping("/close")
+    public ResponseEntity close() {
+        heosMusicService.close();
+        return ResponseEntity.ok(new SuccessRes());
     }
 
     @PostMapping("/players/{pid}/play")

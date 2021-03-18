@@ -8,12 +8,14 @@ import com.bwee.webit.heos.model.Account;
 import com.bwee.webit.heos.model.MusicSource;
 import com.bwee.webit.heos.model.Player;
 import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
 import java.util.*;
 
+@Slf4j
 @Service
 public class HeosSystemService {
     private static final Type MUSIC_SOURCE_RESPONSE_TYPE = new TypeToken<Response<List<MusicSource>>>() {}.getType();
@@ -49,10 +51,10 @@ public class HeosSystemService {
     }
 
     public List<Player> getPlayers(){
-        Response response = heosClient.execute(SystemCommands.GET_PLAYERS);
-
+        final Response response = heosClient.execute(SystemCommands.GET_PLAYERS);
+        log.info("HEOS Response: {}", response);
         if(response.isSuccess()){
-            List<Player> players = new ArrayList<>();
+            final List<Player> players = new ArrayList<>();
             for (final Map<String, Object> map : (List<Map<String, Object>>) response.getPayload() ) {
                 players.add(new Player(map));
             }

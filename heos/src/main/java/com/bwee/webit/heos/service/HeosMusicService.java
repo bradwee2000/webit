@@ -34,9 +34,14 @@ public class HeosMusicService implements HeosChangeListener {
 
     public String lastTokenUsed;
 
-    public void connect(final String pid) {
+    public void connect() {
         heosClient.connect();
         heosListener.startListening(this);
+    }
+
+    public void close() {
+        heosClient.close();
+        heosListener.stop();
     }
 
     public boolean play(final String pid, final String token) {
