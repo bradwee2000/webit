@@ -22,11 +22,6 @@ const LoginApi = {
           return res
         })
         .then(res => SecurityContext.setToken(res.accessToken))
-        .catch(e => {
-          const errorMsg = "Failed to login: " + e
-          console.error(errorMsg)
-          throw new Error(errorMsg)
-        })
   }
 }
 
