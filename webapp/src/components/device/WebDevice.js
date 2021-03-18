@@ -2,6 +2,15 @@ import { MusicUserApi, TrackApi } from './../../api/Apis'
 import { AudioPlayer } from './../player/Player'
 
 const WebDevice = {
+
+  connect: () => {
+    // do nothing
+  },
+
+  close: () => {
+    return AudioPlayer.pause()
+  },
+
   play: (deviceId) => {
     MusicUserApi.get().then(res => {
       if (res.selectedTrack) {

@@ -1,6 +1,15 @@
 import { HeosApi } from './../../api/Apis'
 
 const HeosDevice = {
+
+  connect: () => {
+    return HeosApi.connect()
+  },
+
+  close: () => {
+    return HeosApi.close()
+  },
+
   play: (deviceId) => {
     return HeosApi.play(deviceId)
   },
