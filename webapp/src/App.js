@@ -175,10 +175,20 @@ function App() {
 
   // Handle device changes
   useEffect(() => {
-    const service = findSelectedDeviceService()
-    if (service) {
-      setDeviceService(service)
+    const newDeviceService = findSelectedDeviceService()
+    if (deviceService === newDeviceService) {
+      return
+    }
 
+    if (newDeviceService) {
+      // Close old device
+      if (deviceService) {
+          deviceService.close()
+      }
+
+      // Connect to new device
+      newDeviceService.connect()
+      setDeviceService(newDeviceService)
     }
   }, [selectedDevice])
 
