@@ -43,6 +43,7 @@ public class HeosListener extends HeosClient {
         if (isListening()) {
             changeListener.stop();
             changeListener = null;
+            close();
         }
     }
 }

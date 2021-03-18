@@ -80,10 +80,14 @@ public class HeosClient {
             out.flush();
         }).start();
 
-        final String json = in.next();
-        log.info("Response: {}", json);
-
-        return gson.fromJson(json, type);
+        try {
+            final String json = in. next();
+            log.info("Response: {}", json);
+            return gson.fromJson(json, type);
+        } catch (final IndexOutOfBoundsException e) {
+            close();
+            return new Response<>();
+        }
     }
 
     public boolean isConnected() {
