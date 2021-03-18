@@ -6,7 +6,7 @@ const TrackApi = {
     return Request.get(Config.musicHost + "/tracks/" + trackId);
   },
 
-  play: function(trackId) {
+  play: function(trackId, newPlay=false) {
     return Request.post(Config.musicHost + "/tracks/" + trackId + "/play");
   },
 

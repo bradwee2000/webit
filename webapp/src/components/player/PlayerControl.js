@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Duration, PlayPauseButton, ProgressBar, } from './../common/Commons'
-import { AudioPlayer, LoopButton, PrevButton, NextButton, ShuffleButton } from './Player'
-import { HeosDevice, WebDevice } from './../device/Devices'
+import { LoopButton, PrevButton, NextButton, ShuffleButton } from './Player'
 
 const PlayerControl = ({userState, deviceService, selectedDevice, isPlaying, eventHandler}) => {
 

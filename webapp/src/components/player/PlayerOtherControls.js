@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useHistory, useLocation } from 'react-router-dom';
 import { ProgressBar } from './../common/Commons'
 import { HeosApi } from './../../api/Apis'
-import { AudioPlayer, DeviceButton, DeviceMenu, MuteButton, QueueButton } from './Player'
+import { DeviceButton, DeviceMenu, MuteButton, QueueButton } from './Player'
 
 const webDevice = {
   id: "web",

@@ -1,6 +1,6 @@
 import AlbumTitle from './AlbumTitle'
 
-import { ArtistList, PlayButton } from './../common/Commons'
+import { ArtistList, PlayPauseButton } from './../common/Commons'
 
 const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
 
@@ -21,7 +21,7 @@ const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
   }
 
   const isSelected = selectedAlbum && album.id === selectedAlbum.id;
-
+  const isThisAlbumPlaying = isSelected && isPlaying
 
   return (
     <div className={'album justify-content-between lh-sm text-light border-1 rounded-1 p-3 ' + (isSelected ? "selected" : "")} role='button' onClick={() => handleAlbumClick(album.id)}>
@@ -29,7 +29,7 @@ const AlbumItem = ({album, userState, isPlaying, eventHandler}) => {
         <div className="position-relative">
           <img src={album.imageUrl} className="img w-100" alt=""/>
           <div className="position-absolute bottom-0 end-0 m-2">
-            <PlayButton onPlay={(e) => handleAlbumPlay(e, album.id)} onPause={(e) => handleAlbumPause(e, album.id)} isPlaying={isSelected && isPlaying}/>
+            <PlayPauseButton onPlay={(e) => handleAlbumPlay(e, album.id)} onPause={(e) => handleAlbumPause(e, album.id)} isPlaying={isThisAlbumPlaying} className="primary"/>
           </div>
         </div>
         <h6 className="my-0 mt-3 mb-1">

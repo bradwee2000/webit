@@ -3,9 +3,7 @@ import { Route, Switch, Link, useHistory } from 'react-router-dom';
 import Header from './components/Header';
 import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';
-import { LoginButton } from './components/common/Commons';
 import { FetchPlayCode } from './task/Tasks'
-import AudioPlayer from './components/player/AudioPlayer'
 import AlbumPage from './components/AlbumPage'
 import HomePage from './components/HomePage'
 import QueuePage from './components/QueuePage'
@@ -53,12 +51,17 @@ function App() {
     }
   }
 
-  const togglePlayAlbum = (albumId) => {
+  const togglePlayAlbum = (albumId, trackId) => {
     // if playing same album, toggle play/pause
-    if (userState.selectedAlbum && userState.selectedAlbum.id === albumId) {
+    if (userState.selectedAlbum
+      && userState.selectedTrack
+      && userState.selectedAlbum.id === albumId
+      && (userState.selectedTrack.id === trackId || !trackId)) {
       setIsPlaying(!isPlaying)
     } else {
-      AlbumApi.play(albumId).then(setUserState)
+      AlbumApi.play(albumId, trackId)
+        .then(setUserState)
+        .catch(e => console.error(e))
       setIsPlaying(true)
     }
   }
@@ -81,8 +84,7 @@ function App() {
 
   const eventHandler = {
     onLogin(webitUser) {
-        console.log(webitUser)
-        MusicUserApi.get().then(setUserState)
+      MusicUserApi.get().then(setUserState)
     },
 
     onSearchChange(q) {
@@ -111,12 +113,12 @@ function App() {
       togglePlayTrack(trackId, false)
     },
 
-    onAlbumPlay(albumId) {
-      togglePlayAlbum(albumId);
+    onAlbumPlay(albumId, trackId) {
+      togglePlayAlbum(albumId, trackId);
     },
 
-    onAlbumPause(albumId) {
-      togglePlayAlbum(albumId);
+    onAlbumPause(albumId, trackId) {
+      togglePlayAlbum(albumId, trackId);
     },
 
     onAlbumClick(albumId) {
@@ -124,7 +126,7 @@ function App() {
     },
 
     onArtistClick(artist) {
-      console.log("Click Artist:" + artist)
+      history.push({pathname: '/artist/' + artist})
     },
 
     onNextClick() {
@@ -171,7 +173,7 @@ function App() {
     if (userState.isNotLoaded) {
       MusicUserApi.get().then(setUserState)
     }
-  })
+  }, [userState.isNotLoaded])
 
   // Handle device changes
   useEffect(() => {
@@ -201,7 +203,7 @@ function App() {
         deviceService.pause(selectedDevice.id)
       }
     }
-  }, [userState.selectedTrack, isPlaying, deviceService])
+  }, [userState.selectedTrack, isPlaying, deviceService, selectedDevice.id])
 
   return (
     <>

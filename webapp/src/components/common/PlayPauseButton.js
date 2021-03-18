@@ -1,4 +1,4 @@
-const PlayPauseButton = ({onPlay, onPause, isPlaying=false}) => {
+const PlayPauseButton = ({onPlay, onPause, isPlaying=false, className=""}) => {
 
   const handleClick = (e) => {
     e.stopPropagation()
@@ -11,7 +11,7 @@ const PlayPauseButton = ({onPlay, onPause, isPlaying=false}) => {
 
   return (
     <>
-      <button className={'btn ' + (isPlaying ? 'pause' : 'play')} onClick={handleClick}><div className="icon"></div></button>
+      <button className={'btn ' + className + ' ' + (isPlaying ? 'pause' : 'play')} onClick={handleClick}><div className="icon"></div></button>
     </>
   )
 }

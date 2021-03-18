@@ -81,6 +81,12 @@ button:active, button:focus {
   height: 40px;
 }
 
+.btn.play.large,
+.btn.pause.large {
+  width: 55px;
+  height: 55px;
+}
+
 .btn.play .icon {
   width: 12px;
   height: 12px;
@@ -99,19 +105,34 @@ button:active, button:focus {
   margin: 0 0 0 2px;
 }
 
+.btn.play.large .icon {
+  width: 20px;
+  height: 20px;
+  border-width: 10px 0px 10px 20px;
+  margin:0 auto 0 6px;
+}
+
+.btn.pause.large .icon {
+  height: 20px;
+  border-style: double;
+  border-width: 0px 0 0px 17px;
+  border-color: #fff;
+  margin: 0 0 0 5px;
+}
+
 .track .btn {
   background-color: rgba(0,0,0,0.2);
   border-radius: none;
 }
 
-.album .btn.play,
-.album .btn.pause {
+.btn.primary.play,
+.btn.primary.pause {
   border-radius:40px;
   background-color: #1db954;
 }
 
-.album .btn.play:hover,
-.album .btn.pause:hover {
+.btn.primary.play:hover,
+.btn.primary.pause:hover {
   background-color: #3FDB66;
 }
 

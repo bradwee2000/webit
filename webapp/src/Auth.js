@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
 import { useHistory } from 'react-router-dom';
-import { SecurityContext } from './api/Apis';
+import { useState, useEffect } from 'react'
 import LoginPage from './components/LoginPage'
 
 function Auth({children, loginPage}) {
@@ -16,7 +15,7 @@ function Auth({children, loginPage}) {
     if (!isLoggedIn) {
       history.push({pathname: '/login'})
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, history]);
 
 
   if (!isLoggedIn) {

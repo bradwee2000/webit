@@ -1,7 +1,7 @@
-import { PlayButton, Duration } from './../common/Commons'
+import { ArtistList, PlayButton, Duration } from './../common/Commons'
 import { Link } from 'react-router-dom';
 
-const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) => {
+const TrackItem = ({item, userState, isPlaying, showAlbum=true, showTrackNum=false, eventHandler}) => {
 
   const onClick = (e, id) => {
     e.stopPropagation();
@@ -10,6 +10,7 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
 
   const onPlay = (e, id) => {
     e.stopPropagation();
+    console.log(eventHandler, id)
     eventHandler.onTrackPlay(id);
   }
 
@@ -24,7 +25,13 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
 
   return (
     <div className={`track row rounded-3 ` + (isSelected ? "selected" : "")} onClick={(e) => onClick(e, item.id)} role="button">
+
       <div className="col d-flex">
+        { showTrackNum &&
+        <div className="p-3">
+          {item.trackNum}
+        </div>
+        }
         <div className="m-2 position-relative">
           <img src={item.imageUrl} className="thumbnail-sm" alt=""/>
           <div className="position-absolute top-50 start-50 translate-middle">
@@ -33,9 +40,12 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
         </div>
         <div className="m-2">
           <h6 className="my-0">{item.title}</h6>
-          <small className="text-muted float-start">{item.artist}</small>
+          <small className="text-muted float-start">
+            <ArtistList artists={item.artist} eventHandler={eventHandler} />
+          </small>
         </div>
       </div>
+
       { showAlbum &&
       <div className="col">
         <small className="text-muted">
@@ -43,6 +53,7 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, eventHandler}) =
         </small>
       </div>
       }
+
       <div className="col-1 m-2 text-end mt-3">
         <Duration millis={item.durationMillis}/>
       </div>
