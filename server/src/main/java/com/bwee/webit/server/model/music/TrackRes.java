@@ -2,6 +2,7 @@ package com.bwee.webit.server.model.music;
 
 import com.bwee.webit.model.Track;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 @Data
 public class TrackRes {
@@ -12,6 +13,7 @@ public class TrackRes {
     private final String albumName;
     private final String imageUrl;
     private final Long durationMillis;
+    private final Integer trackNum;
 
     public TrackRes(final Track track) {
         this.id = track.getId();
@@ -21,5 +23,8 @@ public class TrackRes {
         this.albumName = track.getAlbumName();
         this.imageUrl = track.getImageUrl();
         this.durationMillis = track.getDurationMillis();
+        this.trackNum = StringUtils.isEmpty(track.getTrackNum()) ?
+                null :
+                Integer.parseInt(track.getTrackNum());
     }
 }

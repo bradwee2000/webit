@@ -2,11 +2,15 @@ package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.MusicUser;
+import com.bwee.webit.model.Track;
+import com.bwee.webit.server.exception.BadRequestException;
 import com.bwee.webit.server.service.AlbumTrackResFactory;
 import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.AlbumService;
 import com.bwee.webit.service.MusicUserService;
+import com.bwee.webit.service.TrackService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +32,9 @@ public class MusicAlbumController {
     private AlbumService albumService;
 
     @Autowired
+    private TrackService trackService;
+
+    @Autowired
     private MusicUserService userService;
 
     @Autowired
@@ -46,6 +53,20 @@ public class MusicAlbumController {
     public ResponseEntity play(@PathVariable final String albumId) {
         final Album album = albumService.findByIdStrict(albumId);
         final MusicUser user = userService.playAlbum(album);
+        return ResponseEntity.ok(musicUserResFactory.build(user, album));
+    }
+
+    @PostMapping(value = "/{albumId}/tracks/{trackId}/play")
+    public ResponseEntity play(@PathVariable final String albumId,
+                               @PathVariable final String trackId) {
+        final Album album = albumService.findByIdStrict(albumId);
+        final Track track = trackService.findByIdStrict(trackId);
+
+        if (!StringUtils.equals(album.getId(), track.getAlbumId())) {
+            throw new BadRequestException("Track does not belong to album.");
+        }
+
+        final MusicUser user = userService.playAlbum(album, track);
         return ResponseEntity.ok(musicUserResFactory.build(user, album));
     }
 

@@ -8,10 +8,12 @@ import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.data.cassandra.core.query.Criteria.where;
 
@@ -31,7 +33,8 @@ public class TrackDbService extends AbstractDbService<Track, TrackEntity> {
         final Query query = Query.query(where("albumId").is(albumId));
         return cassandra.select(query, TrackEntity.class).stream()
                 .map(e -> e.toModel())
-                .collect(Collectors.toList());
+                .sorted(comparing(Track::getTrackNum))
+                .collect(toList());
     }
 
     @Override

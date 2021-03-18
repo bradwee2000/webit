@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
@@ -164,13 +165,22 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
     }
 
     public MusicUser playAlbum(final Album album) {
+        return playAlbum(album, Optional.empty());
+    }
 
+    public MusicUser playAlbum(final Album album, final Track track) {
+        return playAlbum(album, Optional.of(track));
+    }
+
+    private MusicUser playAlbum(final Album album, final Optional<Track> track) {
         final List<String> trackIds = trackDbService.findByAlbumId(album.getId()).stream()
                 .map(t -> t.getId())
                 .collect(Collectors.toList());
 
+        final int trackIndex = track.map(t -> trackIds.indexOf(t.getId())).orElse(0);
+
         final MusicUser user = getLoginUser()
-                .setCurrentTrackIndex(0)
+                .setCurrentTrackIndex(trackIndex)
                 .setTrackIdQueue(trackIds)
                 .setPlaying(true);
 

@@ -50,7 +50,7 @@ public class HeosMusicService implements HeosChangeListener {
         final String playCode = musicServiceClient.getPlayCode(token).getPlayCode();
         final String trackId = user.getSelectedTrack().getId();
         final String playToken = toPlayToken(playCode, trackId);
-        final String url = "http://192.168.1.11:8080/music/tracks/" + trackId + "/stream?token=" + playToken;
+        final String url = "http://192.168.1.2:8080/music/tracks/" + trackId + "/stream?token=" + playToken;
         return playerService.playUrl(pid, url);
     }
 
