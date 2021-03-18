@@ -28,9 +28,9 @@ const ArtistList = ({artists, maxDisplay=3, eventHandler}) => {
   }
 
   return (
-    <div className="">
+    <span className="">
       {components}
-    </div>
+    </span>
   )
 }
 
