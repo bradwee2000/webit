@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   elasticsearch:
-    image: arm64v8/elasticsearch:7.10.1
+    image: pi1.wee:443/arm64v8/elasticsearch:7.10.1
     hostname: "{{.Node.Hostname}}"
     environment:
       - node.name={{.Node.Hostname}}
@@ -25,7 +25,7 @@ services:
   #      endpoint_mode: dnsrr
 
   cassandra:
-    image: arm64v8/cassandra:3.11.9
+    image: pi1.wee:443/arm64v8/cassandra:3.11.9
     hostname: "{{.Node.Hostname}}"
     environment:
       - CASSANDRA_BROADCAST_ADDRESS={{.Node.Hostname}}
@@ -41,7 +41,7 @@ services:
       endpoint_mode: dnsrr
 
 #  nginx:
-#    image: arm64v8/nginx:1.19.6-alpine
+#    image: pi1.wee:443/arm64v8/nginx:1.19.6-alpine
 #    ports:
 #      - 9200:9200
 #      - 9300:9300
