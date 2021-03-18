@@ -17,20 +17,11 @@ const PlayerOtherControls = ({userState, deviceService, selectedDevice, eventHan
   const location = useLocation();
   const history = useHistory()
   const [volume, setVolume] = useState(1)
-  const [isQueueEnabled, setIsQueueEnabled] = useState(false)
-  const [isDeviceEnabled, setIsDeviceEnabled] = useState(false)
+  const [isQueueBtnEnabled, setIsQueueBtnEnabled] = useState(false)
+  const [isDeviceBtnEnabled, setIsDeviceBtnEnabled] = useState(false)
   const [devices, setDevices] = useState([webDevice])
-  const [selectedDeviceId, setSelectedDeviceId] = useState(webDevice.id)
+  const [isFetchingDevices, setIsFetchingDevices] = useState(false)
   let lastVolume = 0.1 //default volume if unmute
-
-  const fetchDevices = () => {
-    HeosApi.getPlayers().then(res => {
-      const heosDevices = res.map(p => ({id: p.pid, name: p.name, type: "heos"}))
-      setDevices([webDevice].concat(heosDevices))
-    }).catch(e => {
-      // do nothing
-    })
-  }
 
   const onVolumeChange = (newVolume) => {
     const snappedVolume = Math.round(newVolume * 10) / 10 // Snap to nearest 10s
@@ -55,21 +46,41 @@ const PlayerOtherControls = ({userState, deviceService, selectedDevice, eventHan
     } else {
       history.goBack()
     }
-    setIsQueueEnabled(isEnabled)
+    setIsQueueBtnEnabled(isEnabled)
   }
 
-  const onDeviceClick = (isEnabled, e) => {
+  const onDeviceBtnClick = (isEnabled, e) => {
     e.stopPropagation();
-    if (isEnabled) {
-      fetchDevices()
+    if (isDeviceBtnEnabled !== isEnabled) {
+        setIsDeviceBtnEnabled(isEnabled)
     }
-    setIsDeviceEnabled(isEnabled)
   }
 
   const onDeviceSelected = (e, deviceId, deviceType) => {
     e.stopPropagation()
     eventHandler.onDeviceSelected(deviceId, deviceType);
   }
+
+  // Call Heos API to fetch devices
+  useEffect(() => {
+    if (isFetchingDevices) {
+      HeosApi.getPlayers().then(res => {
+        const heosDevices = res.map(p => ({id: p.pid, name: p.name, type: "heos"}))
+        setDevices([webDevice].concat(heosDevices))
+      }).catch(e => {
+        // do nothing
+      }).finally(() => {
+        setIsFetchingDevices(false)
+      })
+    }
+  }, [isFetchingDevices])
+
+  // If device menu is shown, fetch devices (e.g. HEOS, chromecast, etc)
+  useEffect(() => {
+    if (isDeviceBtnEnabled) {
+      setIsFetchingDevices(true)
+    }
+  }, [isDeviceBtnEnabled])
 
   // Adjust volume based to device volume
   const deviceVolume = deviceService.getVolume(selectedDevice.id)
@@ -80,18 +91,18 @@ const PlayerOtherControls = ({userState, deviceService, selectedDevice, eventHan
   // Toggle Queue button based on URL path
   useEffect(() => {
     const isQueuePath = location.pathname === queuePath
-    if (isQueuePath !== isQueueEnabled) {
-      setIsQueueEnabled(isQueuePath)
+    if (isQueuePath !== isQueueBtnEnabled) {
+      setIsQueueBtnEnabled(isQueuePath)
     }
   }, [location.pathname])
 
   return (
     <>
       <div className="col-6"></div>
-      <div className="col"><QueueButton onClick={onQueueClick} isEnabled={isQueueEnabled}/></div>
+      <div className="col"><QueueButton onClick={onQueueClick} isEnabled={isQueueBtnEnabled}/></div>
       <div className="col">
-        <DeviceMenu isShow={isDeviceEnabled} devices={devices} selectedDevice={selectedDevice} onClick={onDeviceSelected}/>
-        <DeviceButton onClick={onDeviceClick} isEnabled={isDeviceEnabled}/>
+        <DeviceMenu isShow={isDeviceBtnEnabled} devices={devices} selectedDevice={selectedDevice} onClick={onDeviceSelected}/>
+        <DeviceButton onClick={onDeviceBtnClick} isEnabled={isDeviceBtnEnabled}/>
         </div>
       <div className="col"><MuteButton volume={volume} onClick={onMuteClick}/></div>
       <div className="col-3 d-flex align-items-center">

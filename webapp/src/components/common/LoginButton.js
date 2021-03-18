@@ -10,8 +10,9 @@ const LoginButton = ({onLoginSuccess}) => {
       .then(() => {
         history.push({pathname: '/'})
         onLoginSuccess()
+      }).catch(e => {
+        console.error(e)
       })
-      .catch(e => console.log(e))
   };
 
   return (

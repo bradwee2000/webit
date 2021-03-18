@@ -1,6 +1,7 @@
 const PlayPauseButton = ({onPlay, onPause, isPlaying=false}) => {
 
   const handleClick = (e) => {
+    e.stopPropagation()
     if (isPlaying) {
       onPause(e);
     } else {
