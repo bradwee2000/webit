@@ -31,20 +31,26 @@ const WebDevice = {
     return AudioPlayer.getCurrentTime()
   },
 
-  setCurrentTime: (deviceId, currentTime) => {
-    AudioPlayer.setCurrentTime(currentTime)
+  setCurrentTime: (deviceId, currentTimeMillis) => {
+    AudioPlayer.setCurrentTime(currentTimeMillis / 1000)
   },
 
   getDuration: () => {
-    return AudioPlayer.getDuration()
+    return new Promise((resolve, reject) => {
+      resolve(AudioPlayer.getDuration())
+    })
   },
 
   getProgress: () => {
-    return AudioPlayer.getProgress()
+    return new Promise((resolve, reject) => {
+      resolve(AudioPlayer.getProgress())
+    })
   },
 
   getVolume: () => {
-    return AudioPlayer.getVolume()
+    return new Promise((resolve, reject) => {
+      resolve(AudioPlayer.getVolume())
+    })
   },
 
   setVolume: (deviceId, volume) => {

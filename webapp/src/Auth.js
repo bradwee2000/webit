@@ -1,24 +1,24 @@
 import { useHistory } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import LoginPage from './components/LoginPage'
+import SecurityContext from './security/SecurityContext'
 
 function Auth({children, loginPage}) {
 
   const history = useHistory()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
 
   const onLoginSuccess = () => {
-    setIsLoggedIn(true);
+    
   }
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!SecurityContext.isLoggedIn()) {
       history.push({pathname: '/login'})
     }
-  }, [isLoggedIn, history]);
+  }, [SecurityContext.isLoggedIn(), history]);
 
 
-  if (!isLoggedIn) {
+  if (!SecurityContext.isLoggedIn()) {
     return <><LoginPage onLoginSuccess={onLoginSuccess}/></>
   }
 

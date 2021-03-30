@@ -3,16 +3,20 @@ class SecurityContext {
   static playTrackCode;
 
   static isLoggedIn() {
-    return SecurityContext.authToken !== undefined
-      && SecurityContext.authToken !== '';
+    const token = SecurityContext.getToken()
+    return token !== null && token !== ''
+    // return SecurityContext.authToken !== undefined
+    //   && SecurityContext.authToken !== '';
   }
 
   static setToken(authToken) {
-    SecurityContext.authToken = authToken;
+    localStorage.setItem("au", authToken)
+    // SecurityContext.authToken = authToken;
   }
 
   static getToken() {
-    return SecurityContext.authToken;
+    return localStorage.getItem("au")
+    // return SecurityContext.authToken;
   }
 
   static setPlayTrackCode(playTrackCode) {

@@ -21,7 +21,12 @@ const LoginApi = {
           }
           return res
         })
+        .then(res => {
+          document.cookie = "au=" + res.accessToken + ";max-age=10800;"
+          return res;
+        })
         .then(res => SecurityContext.setToken(res.accessToken))
+
   }
 }
 

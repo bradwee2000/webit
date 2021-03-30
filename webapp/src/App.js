@@ -185,6 +185,7 @@ function App() {
     if (newDeviceService) {
       // Close old device
       if (deviceService) {
+          deviceService.pause(selectedDevice.id)
           deviceService.close()
       }
 

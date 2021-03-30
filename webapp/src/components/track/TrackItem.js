@@ -28,7 +28,7 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, showTrackNum=fal
 
       <div className="col d-flex">
         { showTrackNum &&
-        <div className="p-3">
+        <div className="track-num pt-3 text-muted">
           {item.trackNum}
         </div>
         }
@@ -54,7 +54,7 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, showTrackNum=fal
       </div>
       }
 
-      <div className="col-1 m-2 text-end mt-3">
+      <div className="col-1 m-2 text-end mt-3 text-muted">
         <Duration millis={item.durationMillis}/>
       </div>
     </div>

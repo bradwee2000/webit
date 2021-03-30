@@ -83,10 +83,13 @@ const PlayerOtherControls = ({userState, deviceService, selectedDevice, eventHan
   }, [isDeviceBtnEnabled])
 
   // Adjust volume based to device volume
-  const deviceVolume = deviceService.getVolume(selectedDevice.id)
   useEffect(() => {
-      setVolume(deviceVolume)
-  }, [deviceVolume])
+    deviceService.getVolume(selectedDevice.id)
+      .then(setVolume)
+      .catch(e => {
+        console.error("Failed to get device volume", e)
+      })
+  }, [deviceService])
 
   // Toggle Queue button based on URL path
   useEffect(() => {

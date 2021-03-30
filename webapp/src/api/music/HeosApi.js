@@ -30,6 +30,10 @@ const HeosApi = {
     const deviceVolume = Math.floor(45 * volume)
     return Request.post(Config.heosHost + "/players/" + pid + "/volume?volume=" + deviceVolume);
   },
+
+  getState: function(pid) {
+    return Request.post(Config.heosHost + "/players/" + pid + "/state");
+  }
 }
 
 export default HeosApi

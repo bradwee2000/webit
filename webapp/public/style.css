@@ -2,6 +2,10 @@ button:active, button:focus {
   box-shadow: none !important;
 }
 
+.bg-dark {
+    background-color: #1b1c1d !important;
+}
+
 .search-bar .search-icon,
 .search-bar .clear-btn,
 .search-bar .clear-btn:focus {
@@ -28,8 +32,9 @@ button:active, button:focus {
   color: inherit;
 }
 
-.track {
-
+.track-num {
+  text-align: right;
+  min-width: 2em;
 }
 
 .album {

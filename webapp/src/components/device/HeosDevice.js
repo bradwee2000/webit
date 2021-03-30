@@ -22,20 +22,21 @@ const HeosDevice = {
     return false
   },
 
-  getCurrentTime: () => {
-    return 0
+  getCurrentTime: (deviceId) => {
+    return HeosApi.getState(deviceId).then(state => state.currentProgress)
   },
 
   setCurrentTime: (deviceId, currentTime) => {
 
   },
 
-  getDuration: () => {
-    return 0
+  getDuration: (deviceId) => {
+    return HeosApi.getState(deviceId)
+      .then(res => res.duration)
   },
 
-  getProgress: () => {
-    return 0
+  getProgress: (deviceId) => {
+    return HeosApi.getState(deviceId).then(state => (state.duration && state.duration) > 0 ? state.currentProgress / state.duration : 0)
   },
 
   getVolume: (deviceId) => {
