@@ -46,10 +46,6 @@ public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEn
         updateColumn(model.getId(), "isLoop", model.isLoop());
     }
 
-    public void updatePlaying(final MusicUser model) {
-        updateColumn(model.getId(), "isPlaying", model.isPlaying());
-    }
-
     public void update(final Update update) {
         final Map<String, Object> values = new HashMap<>();
 

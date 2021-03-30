@@ -6,9 +6,13 @@ import com.bwee.webit.model.Track;
 import com.bwee.webit.server.auth.AuthFilter;
 import com.bwee.webit.server.config.SecurityConfiguration;
 import com.bwee.webit.server.controller.MusicAlbumController;
+import com.bwee.webit.server.model.music.AlbumTracksRes;
+import com.bwee.webit.server.model.music.TrackRes;
+import com.bwee.webit.server.service.AlbumTrackResFactory;
 import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.AlbumService;
 import com.bwee.webit.service.MusicUserService;
+import com.bwee.webit.service.TrackService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +31,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.bwee.webit.util.TestUtils.om;
 import static java.util.Collections.singletonList;
@@ -58,7 +63,14 @@ class MusicAlbumControllerTest {
     @MockBean
     private MusicUserResFactory musicUserResFactory;
 
+    @MockBean
+    private TrackService trackService;
+
+    @MockBean
+    private AlbumTrackResFactory albumTrackResFactory;
+
     private Album album;
+    private AlbumTracksRes albumTracksRes;
     private Track alphabet;
     private Track littleLamb;
 
@@ -73,9 +85,17 @@ class MusicAlbumControllerTest {
                 .setTags(List.of("Children", "Happy"))
                 .setTracks(List.of(alphabet, littleLamb));
 
+        albumTracksRes = new AlbumTracksRes()
+                .setId(album.getId())
+                .setName(album.getName())
+                .setTags(album.getTags())
+                .setYear(album.getYear())
+                .setTracks(album.getTracks().stream().map(TrackRes::new).collect(Collectors.toList()));
+
         when(albumService.findByIdStrict("ABC")).thenReturn(album);
         when(albumService.findById("ABC")).thenReturn(Optional.of(album));
         when(albumService.findAll(any())).thenReturn(new SliceImpl<>(singletonList(album)));
+        when(albumTrackResFactory.build(album)).thenReturn(albumTracksRes);
     }
 
     @Test

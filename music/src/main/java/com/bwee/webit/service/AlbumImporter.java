@@ -51,7 +51,7 @@ public class AlbumImporter {
     private MusicFileService musicFileService;
 
     @SneakyThrows
-    public Album importAlbumFromPath(ImportConfig importConfig) {
+    public Album importAlbumFromPath(final ImportConfig importConfig) {
         log.info("Import music from: path={}, config={}", importConfig.path(), importConfig);
 
         final Mp3Reader.Config config = Mp3Reader.Config.defaults()

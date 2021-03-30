@@ -63,12 +63,12 @@ public class GlobalExceptionHandler {
         }
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity handleAllOtherExceptions(final Exception e) {
-        final Error error = new Error().setError(e.getMessage());
-        log.error("Server Error", e);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity handleAllOtherExceptions(final Exception e) {
+//        final Error error = new Error().setError(e.getMessage());
+//        log.error("Server Error", e);
+//        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+//    }
 
     @Data
     @Accessors(chain = true)

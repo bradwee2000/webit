@@ -9,6 +9,7 @@ import com.bwee.webit.server.service.MusicUserResFactory;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -44,6 +45,9 @@ public class MusicTrackController {
     @Autowired
     private HttpServletRequest req;
 
+    @Value("${music.stream.security.enabled:true}")
+    private Boolean isMusicStreamSecurityEnabled;
+
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable final String id) {
         return ResponseEntity.ok(trackService.findByIdStrict(id));
@@ -58,7 +62,7 @@ public class MusicTrackController {
     @SneakyThrows
     @GetMapping(value = "/{trackId}/stream", produces = "audio/mpeg")
     public ResponseEntity stream(@PathVariable final String trackId, @RequestParam("token") final String playToken) {
-        if (!playTrackCodeService.isValid(trackId, playToken)) {
+        if (isMusicStreamSecurityEnabled && !playTrackCodeService.isValid(trackId, playToken)) {
             throw new UnauthorizedAccessException(req);
         }
         final Path sourcePath = trackService.getSourcePathById(trackId);
