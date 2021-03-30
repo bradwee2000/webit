@@ -1,64 +1,35 @@
 package com.bwee.webit.heos.connect;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.lang.reflect.Type;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 @Slf4j
 public class HeosClient {
-    /* Networking */
-    private Socket socket;
-    private PrintWriter out;
-    private Scanner in;
-    private Gson gson;
-    private Supplier<String> deviceIp;
+    private final Supplier<String> deviceIp;
+    private final ExecutorService executorService;
+    private Optional<HeosChangeReader> heosChangeReader = Optional.empty();
 
-    public HeosClient(final Supplier<String> deviceIp) {
+    private AtomicBoolean isListening = new AtomicBoolean(false);
+
+    private final BlockingQueue<HeosConnection> connectionPool = new ArrayBlockingQueue(2);
+
+    public HeosClient(final Supplier<String> deviceIp,
+                      final ExecutorService commandExecutorService) {
         this.deviceIp = deviceIp;
-    }
-
-    /**
-     * Connect to a Heos System that is located at a certain ip.
-     */
-    public HeosClient connect() {
-        if (!isConnected()) {
-            try {
-                final String ip = deviceIp.get();
-                log.info("Connecting to {}", ip);
-                socket = new Socket(ip, 1255);
-                out = new PrintWriter(socket.getOutputStream(), true);
-                in = new Scanner(socket.getInputStream());
-                in.useDelimiter("\r\n");
-                gson = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-            } catch (IOException ex) {
-                log.error(ex.getMessage(), ex);
-                throw new IllegalStateException(ex);
-            }
-        }
-        return this;
-    }
-
-    @SneakyThrows
-    public HeosClient close() {
-        if (isConnected()) {
-            in.close();
-            out.close();
-            socket.close();
-
-            in = null;
-            out = null;
-            socket = null;
-        }
-        return this;
+        this.executorService = commandExecutorService;
     }
 
     /**
@@ -71,34 +42,42 @@ public class HeosClient {
     }
 
     public <T> Response<T> execute(final String command, Type type) {
-        if (!isConnected()) {
-            connect();
+        return getConnection().execute(command, type);
+    }
+
+    public HeosClient listen(final HeosChangeListener listener) {
+        if (heosChangeReader.isPresent()) {
+            log.warn("Already listening.");
+            return this;
         }
 
-        new Thread(() -> {
-            out.println(command);
-            out.flush();
-        }).start();
-
-        try {
-            final String json = in. next();
-            log.info("Response: {}", json);
-            return gson.fromJson(json, type);
-        } catch (final IndexOutOfBoundsException e) {
-            close();
-            return new Response<>();
-        }
+        heosChangeReader = getConnection().listen(listener);
+        return this;
     }
 
-    public boolean isConnected() {
-        return socket != null && out != null && in != null;
+    public HeosClient stopListening() {
+        log.info("Stop Listening Called");
+        heosChangeReader.ifPresent(h -> h.stop());
+        heosChangeReader = Optional.empty();
+        log.info("Stop Listening Finished");
+        return this;
     }
 
-    protected Scanner getIn() {
-        return in;
+    private HeosConnection getConnection() {
+        log.info("POOL size={}", connectionPool.size());
+        return Optional.ofNullable(connectionPool.poll()).orElseGet(() -> createNewConnection());
     }
 
-    protected Gson getGson() {
-        return gson;
+    private HeosConnection createNewConnection() {
+        final Supplier<Socket> socketSupplier = () -> {
+            try {
+                return new Socket(deviceIp.get(), 1255);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        };
+        final Supplier<ExecutorService> executorServiceSupplier = () -> Executors.newFixedThreadPool(2);
+        return new HeosConnection(socketSupplier, connectionPool, executorServiceSupplier);
     }
+
 }

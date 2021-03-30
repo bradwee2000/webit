@@ -14,8 +14,6 @@ import java.util.Map;
 public class Response<T> {
     private Map<String, String> heos = Collections.emptyMap();
 
-    private Map<String, String> messageParams = Collections.emptyMap();
-
     /**
      * Can be either null, a Map or an array of maps.
      */
@@ -38,14 +36,11 @@ public class Response<T> {
     }
 
     public Map<String, String> getMessageParams() {
-        if (messageParams == null) {
-            final String message = getMessage();
-            if (StringUtils.isEmpty(message)) {
-                return Collections.emptyMap();
-            }
-            messageParams = HeosUtil.toMap(message);
+        final String message = getMessage();
+        if (StringUtils.isEmpty(message)) {
+            return Collections.emptyMap();
         }
-        return messageParams;
+        return HeosUtil.toMap(message);
     }
 
     public String getMessageParam(final String key) {

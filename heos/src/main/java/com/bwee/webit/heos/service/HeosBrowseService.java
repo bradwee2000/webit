@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,11 @@ public class HeosBrowseService {
             log.error("Failed to browse sid={}. Error={}", sourceId, response.getMessage());
             return emptyList();
         }
+
+        if (response.getPayload() == null) {
+            return Collections.emptyList();
+        }
+
         return response.getPayload().stream()
                 .peek(m -> m.setSid(sourceId))
                 .collect(Collectors.toList());

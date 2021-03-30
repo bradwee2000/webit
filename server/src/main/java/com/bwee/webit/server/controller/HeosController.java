@@ -1,7 +1,6 @@
 package com.bwee.webit.server.controller;
 
 import com.bwee.webit.heos.connect.HeosClient;
-import com.bwee.webit.heos.connect.HeosListener;
 import com.bwee.webit.heos.model.Player;
 import com.bwee.webit.heos.service.HeosBrowseService;
 import com.bwee.webit.heos.service.HeosMusicService;
@@ -37,21 +36,18 @@ public class HeosController {
     private HeosClient heosClient;
 
     @Autowired
-    private HeosListener heosListener;
-
-    @Autowired
     private MusicUserService musicUserService;
 
     @PostMapping("/connect")
     public ResponseEntity connect() {
-        heosMusicService.connect();
-        return ResponseEntity.ok(new SuccessRes());
+        final boolean isSuccess = heosMusicService.startListening();
+        return ResponseEntity.ok(new SuccessRes().setSuccess(isSuccess));
     }
 
     @PostMapping("/close")
     public ResponseEntity close() {
-        heosMusicService.close();
-        return ResponseEntity.ok(new SuccessRes());
+        final boolean isSuccess = heosMusicService.stopListening();
+        return ResponseEntity.ok(new SuccessRes().setSuccess(isSuccess));
     }
 
     @PostMapping("/players/{pid}/play")
@@ -67,6 +63,17 @@ public class HeosController {
         return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
     }
 
+    @GetMapping("/players/{pid}/queue")
+    public ResponseEntity getQueue(@PathVariable final String pid) {
+        return ResponseEntity.ok(playerService.getQueue(pid));
+    }
+
+    @DeleteMapping("/players/{pid}/queue")
+    public ResponseEntity clearQueue(@PathVariable final String pid) {
+        final boolean isSuccess = playerService.clearQueue(pid);
+        return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
+    }
+
     @GetMapping("/players")
     public ResponseEntity getPlayers() {
         return ResponseEntity.ok(heosMusicService.getPlayers().stream().map(PlayerResp::new).collect(Collectors.toList()));
@@ -76,6 +83,11 @@ public class HeosController {
     public ResponseEntity playUrl(@PathVariable("pid") final String pid, @RequestParam("url") final String url) {
         final boolean isSuccess = playerService.playUrl(pid, url);
         return ResponseEntity.ok(SuccessRes.of(pid).setSuccess(isSuccess));
+    }
+
+    @GetMapping("/players/{pid}/state")
+    public ResponseEntity getPlayerState(@PathVariable("pid") final String pid) {
+        return ResponseEntity.ok(heosMusicService.getPlayerState(pid));
     }
 
     @GetMapping("/players/{pid}/volume")
@@ -101,6 +113,16 @@ public class HeosController {
     @GetMapping("/sources")
     public ResponseEntity getSources() {
         return ResponseEntity.ok(systemService.getMusicSources());
+    }
+
+    @GetMapping("/sources/{sourceId}")
+    public ResponseEntity browse(@PathVariable final String sourceId) {
+        return ResponseEntity.ok(browseService.browseSource(sourceId));
+    }
+
+    @GetMapping("/sources/{sourceId}/{containerId}")
+    public ResponseEntity browse(@PathVariable final String sourceId, @PathVariable final String containerId) {
+        return ResponseEntity.ok(browseService.browseContainer(sourceId, containerId));
     }
 
     @Data

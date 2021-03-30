@@ -5,4 +5,5 @@ public interface HeosChangeListener {
     void playerVolumeChanged(String pid, int level);
     void playerNowPlayingChanged(String pid);
     void playerNowPlayingProgress(String pid, int current, int duration);
+    void playerPlaybackError(String pid, String error);
 }

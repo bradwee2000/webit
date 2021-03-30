@@ -71,8 +71,7 @@ public class HeosPlayerService {
      */
     public int setVolume(String playerId, int newVolume){
         final Response response = heosClient.execute(PlayerCommands.SET_VOLUME(playerId, newVolume));
-
-        if(response.isSuccess()){
+        if (response.isSuccess()){
             return Integer.parseInt(response.getMessageParam("level"));
         }
         return -1;
@@ -83,7 +82,7 @@ public class HeosPlayerService {
      * @param step (between 1-10)
      * @return boolean indicating a successful operation.
      */
-    public boolean volumeUp(String playerId, int step){
+    public boolean volumeUp(final String playerId, final int step){
         Response response = heosClient.execute(PlayerCommands.VOLUME_UP(playerId, step));
         return response.isSuccess();
     }
@@ -93,25 +92,9 @@ public class HeosPlayerService {
      * @param step (between 1-10)
      * @return boolean indicating a successful operation.
      */
-    public boolean volumeDown(String playerId, int step){
+    public boolean volumeDown(final String playerId, final int step){
         Response response = heosClient.execute(PlayerCommands.VOLUME_DOWN(playerId, step));
         return response.isSuccess();
-    }
-
-    /**
-     * Gets the now playing media in the format of:
-     * 'Song Name' by Song Artist
-     * @return Now playing media in a formatted String.
-     */
-    public String getNowPlayingMedia(String playerId){
-        Response response = heosClient.execute(PlayerCommands.GET_NOW_PLAYING_MEDIA(playerId));
-
-        if(response.isSuccess()){
-            Map<String, Object> map = (Map<String, Object>) response.getPayload();
-            return "'" + map.get("song") + "' by "+ map.get("artist");
-        }
-
-        return null;
     }
 
     public List<QueuedSong> getQueue(String playerId) {
@@ -124,6 +107,15 @@ public class HeosPlayerService {
         }
 
         return response.getPayload();
+    }
+
+    public boolean clearQueue(final String playerId) {
+        final Response response = heosClient.execute(PlayerCommands.CLEAR_QUEUE(playerId));
+
+        if (!response.isSuccess()){
+            log.error("Failed to clear queue. Player Id={}, message={}", playerId, response.getMessage());
+        }
+        return response.isSuccess();
     }
 
     public boolean playNext(String playerId) {

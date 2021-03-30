@@ -35,6 +35,10 @@ public class PlayerCommands {
         return "heos://player/get_queue?pid=" + pid;
     }
 
+    public static final String CLEAR_QUEUE(String pid){
+        return "heos://player/clear_queue?pid=" + pid;
+    }
+
     public static final String PLAY_NEXT(String pid){
         return "heos://player/play_next?pid=" + pid;
     }

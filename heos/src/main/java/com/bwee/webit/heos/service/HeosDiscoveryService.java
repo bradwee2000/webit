@@ -27,10 +27,6 @@ public class HeosDiscoveryService {
                     + "ST: " + SSDP_ST + "\r\n"
                     + "\r\n";
 
-    public HeosClient connect() {
-        return new HeosClient(() -> discoverHeosDeviceIp());
-    }
-
     @SneakyThrows
     public String discoverHeosDeviceIp() {
         /* our M-SEARCH data as a byte array */
