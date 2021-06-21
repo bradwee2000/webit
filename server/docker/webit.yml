@@ -1,16 +1,38 @@
 version: "3.7"
 services:
+
+  server:
+    image: pi1.wee:443/arm64v8/webit-server-alpine:latest
+    hostname: "{{.Node.Hostname}}"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=prod"
+    ports:
+      - target: 8080
+        published: 8080
+    networks:
+      - server-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - "node.hostname==pi1"
+    extra_hosts:
+      - "pi0.wee:192.168.1.100"
+      - "pi1.wee:192.168.1.101"
+      - "pi2.wee:192.168.1.102"
+
   elasticsearch:
     image: pi1.wee:443/arm64v8/elasticsearch:7.10.1
     hostname: "{{.Node.Hostname}}"
     environment:
       - node.name={{.Node.Hostname}}
-      - cluster.name=Webit
-      - discovery.seed_hosts=elasticsearch
-      - cluster.initial_master_nodes=pi0,pi1,pi2
-      - bootstrap.memory_lock=false
+      - "cluster.name=Webit"
+      - "discovery.seed_hosts=elasticsearch"
+      - "cluster.initial_master_nodes=pi0,pi1,pi2"
+      - "bootstrap.memory_lock=false"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - elasticsearch-volume:/usr/share/elasticsearch/data
+      - es-vol:/usr/share/elasticsearch/data
     ports:
       - target: 9300
         published: 9300
@@ -22,24 +44,29 @@ services:
       - elasticsearch-network
     deploy:
       replicas: 3
+      placement:
+        constraints:
+          - "node.labels.es==true"
   #      endpoint_mode: dnsrr
 
   cassandra:
     image: pi1.wee:443/arm64v8/cassandra:3.11.9
     hostname: "{{.Node.Hostname}}"
     environment:
-      - CASSANDRA_BROADCAST_ADDRESS={{.Node.Hostname}}
-      - CASSANDRA_SEEDS=pi0.wee,pi1.wee,pi2.wee
+      - CASSANDRA_BROADCAST_ADDRESS={{.Node.Hostname}}.wee
+      - CASSANDRA_SEEDS=pi1.wee
       - HEAP_NEWSIZE=256M
       - MAX_HEAP_SIZE=1024M
     volumes:
-      - cassandra-volume:/var/lib/cassandra
+      - cassandra-vol:/var/lib/cassandra
     networks:
       - cassandra-network
     deploy:
       replicas: 3
       endpoint_mode: dnsrr
-
+      placement:
+        constraints:
+          - "node.labels.cassandra==true"
 #  nginx:
 #    image: pi1.wee:443/arm64v8/nginx:1.19.6-alpine
 #    ports:
@@ -85,11 +112,14 @@ services:
 #      ' | tee /etc/nginx/nginx.conf && nginx -t && nginx -g 'daemon off;'"
 
 volumes:
-  cassandra-volume:
-  elasticsearch-volume:
+  cassandra-vol:
+  es-vol:
+
 networks:
-  elasticsearch-network:
-    driver: overlay
   cassandra-network:
     external:
       name: host
+  elasticsearch-network:
+    driver: overlay
+  server-network:
+    driver: overlay
