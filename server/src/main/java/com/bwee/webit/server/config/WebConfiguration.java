@@ -13,7 +13,7 @@ public class WebConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**").allowedOrigins("http://localhost:3000");
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000", "http://pi0.wee", "http://pi1.wee", "http://pi2.wee");
             }
         };
     }

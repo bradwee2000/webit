@@ -1,4 +1,4 @@
-package com.bwee.webit.controller;
+package com.bwee.webit.server.controller;
 
 import com.bwee.webit.model.Album;
 import com.bwee.webit.model.Track;

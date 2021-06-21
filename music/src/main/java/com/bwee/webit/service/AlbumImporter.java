@@ -11,13 +11,17 @@ import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.bwee.webit.util.ImportUtils.padZeros;
 import static java.util.stream.Collectors.toList;
@@ -49,6 +53,32 @@ public class AlbumImporter {
 
     @Autowired
     private MusicFileService musicFileService;
+
+    @Value("${music.storage.unprocessed.path:~/Downloads/Music}")
+    private String unprocessedMusicPath;
+
+    public List<Path> listUnprocessedMusicPaths() {
+        return listUnprocessedMusicPaths(null);
+    }
+
+    public List<Path> listUnprocessedMusicPaths(final String subPath) {
+        try {
+            final Path path = Optional.ofNullable(subPath)
+                    .map(s -> Path.of(unprocessedMusicPath, s))
+                    .orElse(Path.of(unprocessedMusicPath));
+
+            return Files.list(path).collect(toList());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Album> importAllAlbums() {
+        return listUnprocessedMusicPaths().stream()
+                .map(path -> AlbumImporter.ImportConfig.defaults().path(path))
+                .map(config -> importAlbumFromPath(config))
+                .collect(toList());
+    }
 
     @SneakyThrows
     public Album importAlbumFromPath(final ImportConfig importConfig) {
@@ -137,7 +167,8 @@ public class AlbumImporter {
         private String albumName;
         private List<String> albumTags = Collections.emptyList();
         private Integer albumYear;
-        private boolean useFilenameAsTrackNum;
+        private boolean useFilenameAsTrackNum = true;
         private boolean copyFiles;
+        private boolean overwriteCache;
     }
 }

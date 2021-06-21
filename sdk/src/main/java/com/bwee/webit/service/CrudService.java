@@ -25,5 +25,7 @@ public interface CrudService<T> {
 
     void deleteById(final String id);
 
+    void deleteAll(final Collection<String> ids);
+
     Slice<T> findAll(final Pageable pageable);
 }

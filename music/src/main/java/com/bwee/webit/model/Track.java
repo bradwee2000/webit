@@ -27,9 +27,9 @@ public class Track {
     private List<String> tags = Collections.emptyList();
     private long size;
     private long durationMillis;
-    private int year;
-    private int bitRate;
+    private Integer year;
+    private Integer bitRate;
     private String channel;
-    private int sampleRate;
+    private Integer sampleRate;
     private Path sourcePath;
 }

@@ -82,6 +82,12 @@ public class TrackService extends SimpleCrudService<Track> implements Searchable
     }
 
     @Override
+    public void deleteAll(Collection<String> ids) {
+        db.deleteAll(ids);
+        es.deleteAll(ids);
+    }
+
+    @Override
     public List<Track> search(String keywords) {
         return search(keywords, PageRequest.of(DEFAULT_PAGE_NUM, DEFAULT_PAGE_SIZE));
     }

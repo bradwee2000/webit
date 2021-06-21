@@ -1,8 +1,11 @@
 package com.bwee.webit.search;
 
 import com.bwee.webit.search.model.SearchDocument;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.reindex.DeleteByQueryRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.query.DeleteQuery;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 
 import java.util.*;
@@ -51,6 +54,10 @@ public abstract class AbstractEsService<T, D extends SearchDocument<T>> {
 
     public void deleteById(final String id) {
         es.deleteById(id);
+    }
+
+    public void deleteAll(final Collection<String> ids) {
+        es.deleteAll(es.findAllById(ids));
     }
 
     public Optional<T> findById(final String id) {

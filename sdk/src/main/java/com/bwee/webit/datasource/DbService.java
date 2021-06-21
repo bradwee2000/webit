@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,4 +33,6 @@ public interface DbService<T, E extends Entity<E>> {
     Slice<T> findAll(final Pageable pageable);
 
     boolean deleteById(final String id);
+
+    void deleteAll(final Collection<String> ids);
 }

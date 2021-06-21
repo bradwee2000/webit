@@ -60,18 +60,19 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <configuration>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
                     <container>
                         <environment>
-                            <SPRING_PROFILES_ACTIVE>prod</SPRING_PROFILES_ACTIVE>
+                            <SPRING_PROFILES_ACTIVE>pi</SPRING_PROFILES_ACTIVE>
                         </environment>
+                        <mainClass>com.bwee.webit.Application</mainClass>
                     </container>
                     <from>
-                        <image>openjdk:14-alpine3.10</image>
+                        <image>arm64v8/openjdk:15-oracle</image>
                     </from>
                     <to>
-                        <image>webit-server-alpine</image>
+                        <image>pi1.wee:443/arm64v8/webit-server-pi</image>
                     </to>
-
                 </configuration>
             </plugin>
         </plugins>

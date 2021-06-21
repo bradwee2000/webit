@@ -20,8 +20,10 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -97,6 +99,13 @@ class AbstractDbServiceTest {
         dbService.deleteById(john.getId());
 
         assertThat(dbService.findById(john.getId())).isEmpty();
+    }
+
+    @Test
+    public void testDeleteAllByIds_shouldDeleteAllListedIdsFromDb() {
+        dbService.saveAll(asList(jane, john, mary, beck));
+        dbService.deleteAll(asList(john.getId(), mary.getId()));
+        assertThat(dbService.findAll().getContent()).containsExactlyInAnyOrder(jane, beck);
     }
 
     @Test

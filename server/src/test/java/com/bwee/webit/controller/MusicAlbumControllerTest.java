@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -26,6 +27,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.domain.SliceImpl;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,8 +39,9 @@ import static com.bwee.webit.util.TestUtils.om;
 import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -133,5 +136,43 @@ class MusicAlbumControllerTest {
         mvc.perform(get("/music/albums/XYZ"))
                 .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"error\":\"Content is not found. id=XYZ, source=album\"}"));
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUpdateById_shouldUpdateAlbum() {
+        final String jsonPayload = "{\"name\": \"Rock\", \"tags\": [\"paper\"], \"year\": 1992 }";
+
+        mvc.perform(put("/music/albums/ABC")
+                .content(jsonPayload)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":\"ABC\"}"));
+
+        final ArgumentCaptor<Album> captor = ArgumentCaptor.forClass(Album.class);
+        verify(albumService).save(captor.capture());
+
+        assertThat(captor.getValue().getName()).isEqualTo("Rock");
+        assertThat(captor.getValue().getTags()).containsExactly("paper");
+        assertThat(captor.getValue().getYear()).isEqualTo(1992);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testPartialUpdateById_shouldUpdateAlbumPartially() {
+        final String jsonPayload = "{\"name\": \"Rock\"}";
+
+        mvc.perform(put("/music/albums/ABC")
+                .content(jsonPayload)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"id\":\"ABC\"}"));
+
+        final ArgumentCaptor<Album> captor = ArgumentCaptor.forClass(Album.class);
+        verify(albumService).save(captor.capture());
+
+        assertThat(captor.getValue().getName()).isEqualTo("Rock");
+        assertThat(captor.getValue().getTags()).containsExactly("Children", "Happy");
+        assertThat(captor.getValue().getYear()).isEqualTo(2000);
     }
 }

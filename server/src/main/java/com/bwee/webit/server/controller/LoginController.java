@@ -19,9 +19,6 @@ import javax.validation.constraints.NotEmpty;
 public class LoginController {
 
     @Autowired
-    private WebitUserService webitUserService;
-
-    @Autowired
     private AuthenticationService authenticationService;
 
     @PostMapping

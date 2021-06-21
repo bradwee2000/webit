@@ -62,6 +62,11 @@ public abstract class SimpleCrudService<T> implements CrudService<T> {
     }
 
     @Override
+    public void deleteAll(Collection<String> ids) {
+        dbService.deleteAll(ids);
+    }
+
+    @Override
     public Slice<T> findAll(final Pageable pageable) {
         return dbService.findAll(pageable);
     }

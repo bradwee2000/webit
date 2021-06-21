@@ -3,12 +3,13 @@ package com.bwee.webit.datasource;
 import com.bwee.webit.datasource.entity.Entity;
 import com.google.common.collect.Ordering;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.cassandra.core.query.Query;
 import org.springframework.data.cassandra.core.query.Update;
 import org.springframework.data.domain.*;
-import org.springframework.util.StringUtils;
+
 
 import java.util.Collection;
 import java.util.List;
@@ -151,6 +152,11 @@ public abstract class AbstractDbService<T, E extends Entity<E>> implements DbSer
             return false;
         }
         return cassandra.deleteById(id, clazz);
+    }
+
+    @Override
+    public void deleteAll(final Collection<String> ids) {
+        cassandra.delete(query(where("id").in(ids)), clazz);
     }
 
     public boolean updateColumn(final String id,

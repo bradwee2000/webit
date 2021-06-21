@@ -29,16 +29,16 @@ public class AlbumService extends SimpleCrudService<Album> implements Searchable
 
     private final AlbumDbService albumDbService;
     private final AlbumEsService albumEsService;
-    private final TrackDbService trackDbService;
+    private final TrackService trackService;
 
     @Autowired
     public AlbumService(final AlbumDbService albumDbService,
                         final AlbumEsService albumEsService,
-                        final TrackDbService trackDbService) {
+                        final TrackService trackService) {
         super(albumDbService);
         this.albumDbService = albumDbService;
         this.albumEsService = albumEsService;
-        this.trackDbService = trackDbService;
+        this.trackService = trackService;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class AlbumService extends SimpleCrudService<Album> implements Searchable
             final List<String> trackIds = album.getTracks().stream().map(t -> t.getTrackNum()).collect(toList());
 
             // Populate music list and preserve the track numbers
-            final List<Track> trackList = trackDbService.findByIds(trackIds).stream()
+            final List<Track> trackList = trackService.findByIds(trackIds).stream()
                     .sorted(comparing(Track::getTrackNum))
                     .collect(toList());
 
@@ -85,6 +85,9 @@ public class AlbumService extends SimpleCrudService<Album> implements Searchable
     public void deleteById(final String id) {
         albumDbService.deleteById(id);
         albumEsService.deleteById(id);
+
+        final List<String> trackIds = trackService.findByAlbumId(id).stream().map(t -> t.getId()).collect(toList());
+        trackService.deleteAll(trackIds);
     }
 
     @Override

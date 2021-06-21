@@ -35,7 +35,7 @@ public class AlbumEntity implements Entity<AlbumEntity> {
     @CassandraType(type = LIST, typeArguments = TEXT)
     private List<String> artists;
 
-    private int year;
+    private Integer year;
 
     @CassandraType(type = SET, typeArguments = TEXT)
     private List<String> tags = emptyList();

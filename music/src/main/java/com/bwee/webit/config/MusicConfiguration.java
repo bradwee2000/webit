@@ -1,22 +1,16 @@
 package com.bwee.webit.config;
 
-import com.bwee.webit.datasource.entity.MusicUserEntity;
 import com.bwee.webit.file.MusicFileService;
 import com.bwee.webit.search.query.AlbumQueryStrategy;
 import com.bwee.webit.search.query.SimpleAlbumQueryStrategy;
 import com.bwee.webit.search.query.SimpleTrackQueryStrategy;
 import com.bwee.webit.search.query.TrackQueryStrategy;
 import com.bwee.webit.service.*;
-import com.bwee.webit.service.AlbumIdGenerator;
-import com.bwee.webit.service.Mp3Reader;
-import com.bwee.webit.service.PlayCodeGenerator;
-import com.bwee.webit.service.TrackIdGenerator;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
 import java.security.MessageDigest;
 import java.time.Clock;

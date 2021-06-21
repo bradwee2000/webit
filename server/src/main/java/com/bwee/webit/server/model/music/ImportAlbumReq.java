@@ -10,8 +10,9 @@ import java.util.List;
 public class ImportAlbumReq {
     private String path;
     private String name;
-    private boolean userFilenameAsTrackNum = false;
+    private boolean userFilenameAsTrackNum = true;
     private Integer year;
     private List<String> tags;
     private boolean copyFiles = false;
+    private boolean overwriteCache = false;
 }

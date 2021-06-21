@@ -9,6 +9,8 @@ import com.bwee.webit.server.service.MusicUserResFactory;
 import com.bwee.webit.service.AlbumService;
 import com.bwee.webit.service.MusicUserService;
 import com.bwee.webit.service.TrackService;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import static com.bwee.webit.util.Constants.DEFAULT_PAGE_NUM;
@@ -77,9 +80,29 @@ public class MusicAlbumController {
         return ResponseEntity.ok(albumService.findAll(pageable).getContent());
     }
 
+    @PutMapping("/{albumId}")
+    public ResponseEntity update(@PathVariable final String albumId,
+                                 @RequestBody UpdateRequest req) {
+        final Album album = albumService.findByIdStrict(albumId);
+        Optional.ofNullable(req.getName()).ifPresent(name -> album.setName(name));
+        Optional.ofNullable(req.getTags()).ifPresent(tags -> album.setTags(tags));
+        Optional.ofNullable(req.getYear()).ifPresent(year -> album.setYear(year));
+
+        albumService.save(album);
+        return ResponseEntity.ok(albumTrackResFactory.build(album));
+    }
+
     @DeleteMapping("/{albumId}")
     public ResponseEntity delete(@PathVariable final String albumId) {
         albumService.deleteById(albumId);
         return ResponseEntity.noContent().build();
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class UpdateRequest {
+        private String name;
+        private List<String> tags;
+        private Integer year;
     }
 }
