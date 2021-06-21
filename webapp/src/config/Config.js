@@ -1,9 +1,10 @@
-const ConfigDev = {
-  authHost: "http://localhost:8080",
-  heosHost: "http://localhost:8080/heos",
-  musicHost: "http://localhost:8080/music",
-  musicStreamHost: "http://192.168.1.2:8080/music", 
-  imageHost: "http://localhost:8080/images",
+
+const Config = {
+  authHost: process.env.REACT_APP_AUTH_HOST,
+  heosHost: process.env.REACT_APP_HEOS_HOST,
+  musicHost: process.env.REACT_APP_MUSIC_HOST,
+  musicStreamHost: process.env.REACT_APP_MUSIC_STREAM_HOST,
+  imageHost: process.env.REACT_APP_IMAGE_HOST
 }
 
-export default ConfigDev
+export default Config
