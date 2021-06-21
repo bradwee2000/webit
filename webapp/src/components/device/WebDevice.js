@@ -28,7 +28,9 @@ const WebDevice = {
   },
 
   getCurrentTime: () => {
-    return AudioPlayer.getCurrentTime()
+    return new Promise((resolve, reject) => {
+        resolve(AudioPlayer.getCurrentTime())
+    })
   },
 
   setCurrentTime: (deviceId, currentTimeMillis) => {
