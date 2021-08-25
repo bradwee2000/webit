@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 @Data
 @Accessors(chain = true)
 public class Track {
@@ -19,12 +21,13 @@ public class Track {
     private String albumName;
     private String albumId;
     private String imageUrl;
-    private String artist;
-    private List<String> genre = Collections.emptyList();;
+    private List<String> artists = emptyList();
+    private List<String> genre = emptyList();;
+    private String originalAlbumName; // Album name as found in MP3 file. Doesn't change.
     private String originalArtist;
     private String composer;
     private String ext;
-    private List<String> tags = Collections.emptyList();
+    private List<String> tags = emptyList();
     private long size;
     private long durationMillis;
     private Integer year;

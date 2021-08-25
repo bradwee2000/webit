@@ -9,7 +9,7 @@ function SearchTracksPage({isPlaying, userState, eventHandler}) {
   const [tracks, setTracks] = useState([])
 
   useEffect(() => {
-    SearchApi.searchTracks(query).then(res => setTracks(res.tracks))
+    SearchApi.searchTracks(query, 0, 40).then(res => setTracks(res.tracks))
   }, [query])
 
   return (

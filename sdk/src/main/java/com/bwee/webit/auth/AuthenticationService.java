@@ -32,8 +32,9 @@ public class AuthenticationService {
         return authUser.getToken();
     }
 
-    public String login(final String username, final String password) {
-        final WebitUser user = userService.findByUsernameStrict(username);
+    public AuthUser.LoginRes login(final String username, final String password) {
+        final WebitUser user = userService.findByUsername(username)
+                .orElseThrow(() -> new InvalidCredentialsException());
 
         final boolean isValid = passwordEncoder.matches(password, user.getPassword());
 
@@ -41,6 +42,8 @@ public class AuthenticationService {
             throw new InvalidCredentialsException();
         }
 
-        return tokenGenerator.generateToken(user);
+        final String token = tokenGenerator.generateToken(user);
+
+        return new AuthUser.LoginRes().setToken(token).setName(user.getName());
     }
 }

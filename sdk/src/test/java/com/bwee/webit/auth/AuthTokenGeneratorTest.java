@@ -1,8 +1,7 @@
 package com.bwee.webit.auth;
 
-import com.bwee.webit.auth.AuthTokenGenerator;
-import com.bwee.webit.service.IdGenerator;
 import com.bwee.webit.model.WebitUser;
+import com.bwee.webit.service.IdGenerator;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +37,7 @@ class AuthTokenGeneratorTest {
         idGenerator = mock(IdGenerator.class);
         when(idGenerator.generateId(any())).thenReturn("AAA" , "BBB", "CCC");
 
-        tokenGenerator = new AuthTokenGenerator(clock, idGenerator, "testKey");
+        tokenGenerator = new AuthTokenGenerator(clock, idGenerator, "testkey");
     }
 
     @Test
@@ -71,6 +70,7 @@ class AuthTokenGeneratorTest {
     @Test
     public void testGenerateToken_shouldContainIssueDate() {
         final String token = tokenGenerator.generateToken(user);
+        log.info("TOKEN: {}", token);
         final Claims claims = Jwts.parser().setSigningKey("testKey").parseClaimsJws(token).getBody();
 
         assertThat(claims.getIssuedAt().toInstant()).isEqualTo(clock.instant().truncatedTo(ChronoUnit.SECONDS));

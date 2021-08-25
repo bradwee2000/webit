@@ -83,14 +83,15 @@ class MusicAlbumControllerTest {
         littleLamb = new Track().setId("M2").setTitle("Little Lamb");
 
         album = new Album().setId("ABC")
-                .setName("Greatest Kids Hits")
+                .setDisplayName("Greatest Kids Hits")
+                .setOriginalName("Greatest Kids Hits!!")
                 .setYear(2000)
                 .setTags(List.of("Children", "Happy"))
                 .setTracks(List.of(alphabet, littleLamb));
 
         albumTracksRes = new AlbumTracksRes()
                 .setId(album.getId())
-                .setName(album.getName())
+                .setName(album.getDisplayName())
                 .setTags(album.getTags())
                 .setYear(album.getYear())
                 .setTracks(album.getTracks().stream().map(TrackRes::new).collect(Collectors.toList()));
@@ -152,7 +153,7 @@ class MusicAlbumControllerTest {
         final ArgumentCaptor<Album> captor = ArgumentCaptor.forClass(Album.class);
         verify(albumService).save(captor.capture());
 
-        assertThat(captor.getValue().getName()).isEqualTo("Rock");
+        assertThat(captor.getValue().getDisplayName()).isEqualTo("Rock");
         assertThat(captor.getValue().getTags()).containsExactly("paper");
         assertThat(captor.getValue().getYear()).isEqualTo(1992);
     }
@@ -171,7 +172,7 @@ class MusicAlbumControllerTest {
         final ArgumentCaptor<Album> captor = ArgumentCaptor.forClass(Album.class);
         verify(albumService).save(captor.capture());
 
-        assertThat(captor.getValue().getName()).isEqualTo("Rock");
+        assertThat(captor.getValue().getDisplayName()).isEqualTo("Rock");
         assertThat(captor.getValue().getTags()).containsExactly("Children", "Happy");
         assertThat(captor.getValue().getYear()).isEqualTo(2000);
     }

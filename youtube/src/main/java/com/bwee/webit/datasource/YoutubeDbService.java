@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.List;
+
 @Service
-public class YoutubeDbService extends AbstractDbService<YoutubeVideo, YoutubeEntity> {
+public class YoutubeDbService extends AbstractDbService<YoutubeVideo, YoutubeEntity, String> {
 
     private final CassandraOperations cassandra;
 
@@ -15,11 +18,6 @@ public class YoutubeDbService extends AbstractDbService<YoutubeVideo, YoutubeEnt
     public YoutubeDbService(final CassandraOperations cassandra) {
         super(cassandra, YoutubeEntity.class);
         this.cassandra = cassandra;
-    }
-
-    @Override
-    public YoutubeEntity merge(YoutubeEntity existingEntity, YoutubeEntity newEntity) {
-        return newEntity;
     }
 
     @Override
@@ -31,5 +29,4 @@ public class YoutubeDbService extends AbstractDbService<YoutubeVideo, YoutubeEnt
     public YoutubeEntity toEntity(YoutubeVideo model) {
         return new YoutubeEntity(model);
     }
-
 }

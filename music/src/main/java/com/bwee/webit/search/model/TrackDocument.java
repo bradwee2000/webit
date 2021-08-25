@@ -31,7 +31,7 @@ public class TrackDocument implements SearchDocument<Track> {
     private String albumName;
 
     @Field(type = Text)
-    private String artist;
+    private List<String> artists = Collections.emptyList();
 
     @Field(type = Text)
     private String originalArtist;
@@ -55,7 +55,7 @@ public class TrackDocument implements SearchDocument<Track> {
         this.id = track.getId();
         this.title = track.getTitle();
         this.albumName = track.getAlbumName();
-        this.artist = track.getArtist();
+        this.artists = track.getArtists();
         this.composer = track.getComposer();
         this.genre = track.getGenre();
         this.originalArtist = track.getOriginalArtist();
@@ -69,7 +69,7 @@ public class TrackDocument implements SearchDocument<Track> {
         return new Track().setId(id)
                 .setTitle(title)
                 .setAlbumName(albumName)
-                .setArtist(artist)
+                .setArtists(artists == null ? Collections.emptyList() : artists)
                 .setComposer(composer)
                 .setGenre(genre)
                 .setTags(tags)

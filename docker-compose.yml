@@ -24,7 +24,7 @@ services:
       - elastic
     restart: always
     deploy:
-      replicas: 2
+      replicas: 1
       resources:
         limits:
           cpus: "1"
@@ -53,6 +53,11 @@ services:
           memory: 2gb
 #    volumes:
 #      - cassandra:/var/lib/cassandra
+
+  redis:
+    image: redis:6.2.4-alpine
+    ports:
+      - 6379:6379
 
 #volumes:
 #  esdata:

@@ -1,4 +1,5 @@
 import AlbumApi from './music/AlbumApi'
+import AlbumRecommendationsApi from './music/AlbumRecommendationsApi'
 import HeosApi from './music/HeosApi'
 import MusicUserApi from './music/MusicUserApi'
 import TrackApi from './music/TrackApi'
@@ -12,6 +13,7 @@ import SecurityContext from './../security/SecurityContext'
 
 export {
   AlbumApi,
+  AlbumRecommendationsApi,
   Config,
   HeosApi,
   LoginApi,
@@ -21,5 +23,4 @@ export {
   SearchApi,
   SecurityContext,
   TrackApi,
-
 }

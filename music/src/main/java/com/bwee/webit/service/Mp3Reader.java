@@ -1,10 +1,10 @@
 package com.bwee.webit.service;
 
-import com.bwee.webit.exception.ID3V2NotFoundException;
 import com.bwee.webit.exception.InvalidMp3Exception;
 import com.bwee.webit.model.Genre;
 import com.bwee.webit.model.Track;
-import com.bwee.webit.util.ImportUtils;
+import com.bwee.webit.service.strategy.year.YearParser;
+import com.bwee.webit.util.MusicUtils;
 import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
@@ -15,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -24,7 +23,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
-import static com.bwee.webit.util.ImportUtils.padZeros;
+import static com.bwee.webit.util.MusicUtils.splitArtist;
+import static java.lang.Integer.parseInt;
 import static java.nio.file.Files.isDirectory;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
@@ -34,8 +34,10 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class Mp3Reader {
 
-    public Track read(final String filePath) {
-        return read(Path.of(filePath));
+    private final YearParser yearParser;
+
+    public Mp3Reader(final YearParser yearParser) {
+        this.yearParser = yearParser;
     }
 
     @SneakyThrows
@@ -48,7 +50,7 @@ public class Mp3Reader {
             throw new InvalidMp3Exception(path.getFileName().toString(), e.getMessage());
         }
 //        log.info("Path: {}", path);
-//        log.info("Title: {}", file.getId3v2Tag().getTitle());
+//        log.info("Title: {}", file.getId3v1Tag().getTitle());
 //        log.info("Artist: {}", file.getId3v2Tag().getArtist());
 //        log.info("Album Artist: {}", file.getId3v2Tag().getAlbumArtist());
 //        log.info("Genre: {}", file.getId3v2Tag().getGenre());
@@ -69,27 +71,26 @@ public class Mp3Reader {
 //        log.info("Frame Count: {}", file.getFrameCount());
 //        log.info("Size: {}", file.getLength());
 
-        final ID3v2 id3 = Optional.ofNullable(file.getId3v2Tag()).orElseThrow(() -> new ID3V2NotFoundException(file.getFilename()));
-
-        final Genre genre = Genre.of(id3.getGenre());
-        final String genreDescription = genre == Genre.UNKNOWN ? id3.getGenreDescription() : genre.getName();
-        final Integer year = Optional.ofNullable(id3.getYear()).map(Integer::parseInt).orElse(null);
-        final String trackNum = Optional.ofNullable(id3.getTrack())
-                .map(t -> ImportUtils.padZeros(getTrack(id3.getTrack()), 9))
+        final ID3v2 id3v2 = new ID3(file.getId3v2Tag(), file.getId3v1Tag());
+        final Genre genre = Genre.of(id3v2.getGenre());
+        final String genreDescription = genre == Genre.UNKNOWN ? id3v2.getGenreDescription() : genre.getName();
+        final Integer year = Optional.ofNullable(id3v2.getYear()).map(yearParser::parse).orElse(null);
+        final String trackNum = Optional.ofNullable(id3v2.getTrack())
+                .map(t -> MusicUtils.padZeros(getTrack(id3v2.getTrack()), 9))
                 .orElse(null);
 
         final Track track = new Track()
-                .setTitle(formatName(id3.getTitle()))
-                .setArtist(id3.getArtist())
-                .setAlbumName(id3.getAlbum())
+                .setTitle(formatName(id3v2.getTitle()))
+                .setArtists(splitArtist(id3v2.getArtist()))
+                .setAlbumName(id3v2.getAlbum())
                 .setYear(year)
-                .setComposer(id3.getComposer())
+                .setComposer(id3v2.getComposer())
                 .setGenre(genreDescription == null ? emptyList() : singletonList(genreDescription))
                 .setBitRate(file.getBitrate())
                 .setTrackNum(trackNum)
                 .setDurationMillis(file.getLengthInMilliseconds())
                 .setSampleRate(file.getSampleRate())
-                .setOriginalArtist(id3.getOriginalArtist())
+                .setOriginalArtist(id3v2.getOriginalArtist())
                 .setSize(file.getLength())
                 .setChannel(WordUtils.capitalizeFully(file.getChannelMode()))
                 .setSourcePath(path)
@@ -123,7 +124,7 @@ public class Mp3Reader {
     @SneakyThrows
     public List<Track> readDir(final Path path, final Config config, final AtomicInteger trackCounter) {
         if (!isDirectory(path)) {
-            return singletonList(read(path));
+            return Collections.emptyList();
         }
 
         // Process all music from directory
@@ -147,42 +148,13 @@ public class Mp3Reader {
     @SneakyThrows
     private List<Track> readMusicFromPath(final Path path, final Config config, final AtomicInteger trackCounter) {
         Stream<Track> musicStream = Files.list(path)
-                .filter(p -> isMp3(p))
+                .filter(p -> MusicUtils.isMp3(p))
                 .map(p -> read(p).setTags(config.tags()));
 
-            musicStream = musicStream.sorted(comparing(music -> music.getSourcePath().getFileName().toString()))
-                    .map(music -> music.setTrackNum(ImportUtils.padZeros(trackCounter.getAndIncrement(), 9)));
+        musicStream = musicStream.sorted(comparing(music -> music.getSourcePath().getFileName().toString()))
+                .map(music -> music.setTrackNum(MusicUtils.padZeros(trackCounter.getAndIncrement(), 9)));
 
         return musicStream.collect(toList());
-    }
-
-    private boolean isMp3(Path path) {
-        try {
-            return StringUtils.equals("audio/mpeg", Files.probeContentType(path));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SneakyThrows
-    public AlbumCover albumCover(Path path) {
-        final Path coverPath = Files.walk(path)
-            .filter(p -> isImage(p))
-            .findFirst().orElseThrow(() -> new IllegalStateException("No album cover found!"));
-
-//        final byte[] imageBytes = Files.readAllBytes(coverPath);
-
-        return new AlbumCover()
-                .setPath(coverPath);
-    }
-
-    private boolean isImage(Path path) {
-        try {
-            final String contentType = Files.probeContentType(path);
-            return contentType != null && contentType.startsWith("image/jpeg");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private Integer getTrack(final String value) {
@@ -190,9 +162,9 @@ public class Mp3Reader {
             return null;
         }
         if (value.contains("/")) {
-            return Integer.parseInt(value.substring(0, value.indexOf('/')));
+            return parseInt(value.substring(0, value.indexOf('/')));
         }
-        return Integer.parseInt(value);
+        return parseInt(value);
     }
 
     @Data

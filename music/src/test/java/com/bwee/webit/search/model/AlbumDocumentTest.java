@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.Collections;
 
+import static java.util.Collections.singletonList;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AlbumDocumentTest {
@@ -17,14 +18,15 @@ class AlbumDocumentTest {
     @BeforeEach
     public void before() {
         album = new Album().setId("ALBUM1")
-                .setName("A Sample Album")
-                .setArtists(Collections.singletonList("Anonymous"))
+                .setOriginalName("A Sample Album!!")
+                .setDisplayName("A Sample Album")
+                .setArtists(singletonList("Anonymous"))
                 .setYear(2020)
                 .setTags(Arrays.asList("Instrumental", "Classic"))
                 .setTracks(Arrays.asList(
-                        new Track().setId("2").setTrackNum("002").setArtist("Sam").setTitle("Hello"),
-                        new Track().setId("1").setTrackNum("001").setArtist("Sam").setTitle("Beautiful"),
-                        new Track().setId("3").setTrackNum("003").setArtist("Ivy").setTitle("World")
+                        new Track().setId("2").setTrackNum("002").setArtists(singletonList("Sam")).setTitle("Hello"),
+                        new Track().setId("1").setTrackNum("001").setArtists(singletonList("Sam")).setTitle("Beautiful"),
+                        new Track().setId("3").setTrackNum("003").setArtists(singletonList("Ivy")).setTitle("World")
                 ));
     }
 
@@ -43,7 +45,7 @@ class AlbumDocumentTest {
     public void testToModel_shouldCreateModel() {
         final AlbumDocument doc = new AlbumDocument(album);
         final Album model = doc.toModel();
-        assertThat(model.getName()).isEqualTo("A Sample Album");
+        assertThat(model.getDisplayName()).isEqualTo("A Sample Album");
         assertThat(model.getArtists()).containsExactly("Anonymous");
         assertThat(model.getYear()).isEqualTo(2020);
         assertThat(model.getTags()).containsExactly("Instrumental", "Classic");

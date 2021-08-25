@@ -1,8 +1,8 @@
 package com.bwee.webit.datasource.entity;
 
-public interface Entity<E> {
+public interface Entity<E, K> {
 
-    String getId();
+    K getId();
 
-    E setId(String id);
+    E setId(K key);
 }

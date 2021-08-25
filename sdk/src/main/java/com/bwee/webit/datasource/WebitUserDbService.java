@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.springframework.data.cassandra.core.query.Criteria.where;
 
 @Service
-public class WebitUserDbService extends AbstractDbService<WebitUser, WebitUserEntity> {
+public class WebitUserDbService extends AbstractDbService<WebitUser, WebitUserEntity, String> {
 
     private final CassandraOperations cassandra;
 

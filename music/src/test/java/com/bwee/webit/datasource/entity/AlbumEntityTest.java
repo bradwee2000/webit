@@ -17,7 +17,8 @@ class AlbumEntityTest {
     @BeforeEach
     public void before() {
         album = new Album().setId("ALBUM1")
-                .setName("A Sample Album")
+                .setOriginalName("A SAMPLE Album")
+                .setDisplayName("A Sample Album")
                 .setArtists(Collections.singletonList("Anonymous"))
                 .setYear(2020)
                 .setTags(Arrays.asList("Instrumental", "Classic"))
@@ -32,7 +33,8 @@ class AlbumEntityTest {
     public void testCreate_shouldCreateEntity() {
         final AlbumEntity entity = new AlbumEntity(album);
         assertThat(entity.getId()).isEqualTo("ALBUM1");
-        assertThat(entity.getName()).isEqualTo("A Sample Album");
+        assertThat(entity.getOriginalName()).isEqualTo("A SAMPLE Album");
+        assertThat(entity.getDisplayName()).isEqualTo("A Sample Album");
         assertThat(entity.getArtists()).containsExactly("Anonymous");
         assertThat(entity.getYear()).isEqualTo(2020);
         assertThat(entity.getTags()).containsExactly("Instrumental", "Classic");
@@ -43,7 +45,8 @@ class AlbumEntityTest {
         final AlbumEntity entity = new AlbumEntity(album);
         final Album model = entity.toModel();
         assertThat(model.getId()).isEqualTo(album.getId());
-        assertThat(model.getName()).isEqualTo(album.getName());
+        assertThat(model.getDisplayName()).isEqualTo(album.getDisplayName());
+        assertThat(model.getOriginalName()).isEqualTo(album.getOriginalName());
         assertThat(model.getArtists()).isEqualTo(album.getArtists());
         assertThat(model.getYear()).isEqualTo(album.getYear());
         assertThat(model.getTags()).isEqualTo(album.getTags());

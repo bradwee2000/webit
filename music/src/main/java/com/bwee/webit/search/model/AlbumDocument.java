@@ -1,6 +1,7 @@
 package com.bwee.webit.search.model;
 
 import com.bwee.webit.model.Album;
+import com.bwee.webit.util.MusicUtils;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
@@ -49,20 +50,20 @@ public class AlbumDocument implements SearchDocument<Album> {
 
     public AlbumDocument(final Album album) {
         this.id = album.getId();
-        this.name = album.getName();
+        this.name = album.getDisplayName();
         this.artists = album.getArtists();
         this.year = album.getYear();
         this.tags = album.getTags();
         this.artists = album.getArtists();
         this.trackNames = album.getTracks().stream()
-                .map(m -> m.getArtist() + " " + m.getTitle())
+                .map(m -> MusicUtils.joinArtistsToString(m.getArtists()) + " " + m.getTitle())
                 .collect(Collectors.toList());
     }
 
     @Override
     public Album toModel() {
         return new Album().setId(id)
-                .setName(name)
+                .setDisplayName(name)
                 .setArtists(artists == null ? emptyList() : artists)
                 .setTags(tags == null ? emptyList() : tags)
                 .setYear(year);

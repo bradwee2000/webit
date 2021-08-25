@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class YoutubeEntity implements Entity<YoutubeEntity> {
+public class YoutubeEntity implements Entity<YoutubeEntity, String> {
 
     @PrimaryKey
     private String id;

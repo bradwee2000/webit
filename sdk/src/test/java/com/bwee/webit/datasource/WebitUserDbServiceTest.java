@@ -1,7 +1,5 @@
 package com.bwee.webit.datasource;
 
-import com.bwee.webit.datasource.CassandraConfiguration;
-import com.bwee.webit.datasource.WebitUserDbService;
 import com.bwee.webit.model.WebitUser;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +10,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.data.cassandra.port=9142",
         "spring.data.cassandra.schema-action=RECREATE"
 })
-@ContextConfiguration(classes = {WebitUserDbService.class, CassandraConfiguration.class})
+@ContextConfiguration(classes = {
+        WebitUserDbServiceTest.Ctx.class,
+        WebitUserDbService.class,
+        CassandraConfiguration.class })
 class WebitUserDbServiceTest {
 
     @Autowired
@@ -81,5 +86,13 @@ class WebitUserDbServiceTest {
     @Test
     public void testFindByUnknownUsername_shouldReturnEmpty() {
         assertThat(dbService.findByUsername("UNKNOWN")).isEmpty();
+    }
+
+    @Configuration
+    public static class Ctx {
+        @Bean
+        public List<Converter> converters() {
+            return Collections.emptyList();
+        }
     }
 }

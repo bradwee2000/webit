@@ -17,7 +17,7 @@ const LoginApi = {
         .then(res => res.json())
         .then(res => {
           if (res.error) {
-            throw new Error(res.error)
+            throw {error: res.error}
           }
           return res
         })
@@ -25,8 +25,10 @@ const LoginApi = {
           document.cookie = "au=" + res.accessToken + ";max-age=10800;"
           return res;
         })
-        .then(res => SecurityContext.setToken(res.accessToken))
-
+        .then(res => {
+            SecurityContext.setToken(res.accessToken)
+            SecurityContext.setName(res.name)
+        })
   }
 }
 

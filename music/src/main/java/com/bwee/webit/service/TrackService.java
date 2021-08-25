@@ -1,6 +1,7 @@
 package com.bwee.webit.service;
 
 import com.bwee.webit.exception.TrackNotFoundException;
+import com.bwee.webit.model.SearchType;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.datasource.TrackDbService;
 import com.bwee.webit.file.MusicFileService;
@@ -51,16 +52,6 @@ public class TrackService extends SimpleCrudService<Track> implements Searchable
         es.saveAll(saved);
     }
 
-    public void merge(final Track track) {
-        final Track merged = db.merge(track);
-        es.save(merged);
-    }
-
-    public void mergeAll(final Collection<Track> tracks) {
-        final List<Track> saved = db.mergeAll(tracks);
-        es.saveAll(saved);
-    }
-
     @Override
     public void saveAll(final Track track, final Track... more) {
         saveAll(Lists.asList(track, more));
@@ -83,7 +74,7 @@ public class TrackService extends SimpleCrudService<Track> implements Searchable
 
     @Override
     public void deleteAll(Collection<String> ids) {
-        db.deleteAll(ids);
+        db.deleteAllByKeys(ids);
         es.deleteAll(ids);
     }
 
@@ -94,7 +85,11 @@ public class TrackService extends SimpleCrudService<Track> implements Searchable
 
     @Override
     public List<Track> search(final String keywords, final Pageable pageable) {
-        final List<SearchHit<TrackDocument>> docs = es.search(keywords, pageable);
+        return search(keywords, SearchType.allFields, pageable);
+    }
+
+    public List<Track> search(final String keywords, final SearchType searchType, final Pageable pageable) {
+        final List<SearchHit<TrackDocument>> docs = es.search(keywords, searchType, pageable);
 
         final List<String> ids = docs.stream().map(d -> d.getId()).collect(Collectors.toList());
         return db.findByIds(ids).stream()

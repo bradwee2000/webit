@@ -1,9 +1,11 @@
 package com.bwee.webit.search;
 
+import com.bwee.webit.model.SearchType;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.search.model.TrackDocument;
-import com.bwee.webit.search.query.TrackQueryStrategy;
+import com.bwee.webit.search.query.QueryStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -11,33 +13,43 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Comparator.comparing;
+import static java.util.Comparator.reverseOrder;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class TrackEsService extends AbstractEsService<Track, TrackDocument> {
 
-    private TrackEsRepository repository;
     private ElasticsearchOperations es;
-    private TrackQueryStrategy queryStrategy;
+    private final Map<SearchType, QueryStrategy> queryStrategies;
 
     @Autowired
     public TrackEsService(final TrackEsRepository repository,
                           final ElasticsearchOperations es,
-                          final TrackQueryStrategy queryStrategy) {
+                          @Qualifier("trackQueryStrategies")
+                          final Map<SearchType, QueryStrategy> queryStrategies) {
         super(repository, TrackDocument.class);
-        this.repository = repository;
         this.es = es;
-        this.queryStrategy = queryStrategy;
+        this.queryStrategies = queryStrategies;
     }
 
-    public List<SearchHit<TrackDocument>> search(final String keywords, final Pageable pageable) {
+    public List<SearchHit<TrackDocument>> search(final String keywords,
+                                                 final SearchType searchType,
+                                                 final Pageable pageable) {
+        // Get query strategy for the search type
+        final QueryStrategy queryStrategy = Optional.ofNullable(queryStrategies.get(searchType))
+                .orElseThrow(() -> new IllegalStateException("No search strategy found for type: " + searchType));
+
+        // Create query
         final Query query = queryStrategy.buildQuery(keywords, pageable);
 
         return es.search(query, TrackDocument.class).stream()
                 .sorted(comparing(hit -> - hit.getScore()))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     @Override

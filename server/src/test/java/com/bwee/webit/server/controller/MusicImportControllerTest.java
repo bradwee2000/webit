@@ -55,7 +55,8 @@ class MusicImportControllerTest {
         littleLamb = new Track().setId("M2").setTitle("Little Lamb");
 
         album = new Album().setId("ABC")
-                .setName("Greatest Kids Hits")
+                .setOriginalName("Greatest Kids Hits!!")
+                .setDisplayName("Greatest Kids Hits")
                 .setYear(2000)
                 .setTags(List.of("Children", "Happy"))
                 .setTracks(List.of(alphabet, littleLamb));
@@ -64,14 +65,14 @@ class MusicImportControllerTest {
     @Test
     @SneakyThrows
     public void testImport_shouldImportedAlbum() {
-        when(albumImporter.importAlbumFromPath(any())).thenReturn(album);
+        when(albumImporter.importAlbumFromPath(any())).thenReturn(new AlbumImporter.ImportedAlbum().setAlbum(album));
         final ImportAlbumReq req = new ImportAlbumReq().setName("Alphabets 2000").setPath("/x/y/z").setYear(2000);
 
         mvc.perform(post("/music/import")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(om().writeValueAsString(req)))
                 .andExpect(status().isCreated())
-                .andExpect(content().json("{\"id\":\"ABC\",\"name\":\"Greatest Kids Hits\"}"))
+                .andExpect(content().json("{\"id\":\"ABC\",\"displayName\":\"Greatest Kids Hits\",\"originalName\":\"Greatest Kids Hits!!\"}"))
                 .andExpect(header().string("Location", "/music/albums/ABC"));
     }
 }

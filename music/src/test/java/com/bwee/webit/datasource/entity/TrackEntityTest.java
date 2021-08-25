@@ -3,6 +3,7 @@ package com.bwee.webit.datasource.entity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,7 +21,7 @@ class TrackEntityTest {
                 .setAlbumName("XYZ=")
                 .setTrackNum("0001")
                 .setAlbumName("2020 Collection")
-                .setArtist("John Snow")
+                .setArtists(Arrays.asList("John Snow"))
                 .setComposer("Stark")
                 .setExt("mp3")
                 .setGenre(Collections.singletonList("Pop"))
@@ -30,6 +31,7 @@ class TrackEntityTest {
                 .setChannel("Stereo")
                 .setDurationMillis(9_000_000l)
                 .setSampleRate(200_000)
+                .setOriginalAlbumName("2020_collection")
                 .setOriginalArtist("Someone Unknown")
                 .setImageUrl("http://img.com/XYZ")
                 .setTags(List.of("Guitar", "Instrumental"));

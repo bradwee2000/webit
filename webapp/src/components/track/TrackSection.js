@@ -1,11 +1,14 @@
 import TrackList from './TrackList'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 const TrackSection = ({tracks, className='', userState, isPlaying, eventHandler, seeAllLink="", showAlbum=true, showTrackNum=false, title="Tracks"}) => {
+  const search = useLocation().search;
+
   if (tracks === undefined || tracks.length === 0) {
     return <></>;
   }
 
+  const searchType = new URLSearchParams(search).get('type');
   const seeAllLinkComponent = seeAllLink === "" ? <></> : <Link to={seeAllLink} className="link">See All</Link>
 
   return (

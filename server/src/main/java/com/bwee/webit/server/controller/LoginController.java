@@ -1,5 +1,6 @@
 package com.bwee.webit.server.controller;
 
+import com.bwee.webit.auth.AuthUser;
 import com.bwee.webit.auth.AuthenticationService;
 import com.bwee.webit.server.model.LoginRes;
 import com.bwee.webit.service.WebitUserService;
@@ -23,8 +24,8 @@ public class LoginController {
 
     @PostMapping
     public ResponseEntity login(@RequestBody final LoginReq loginReq) {
-        final String token = authenticationService.login(loginReq.getUsername(), loginReq.getPassword());
-        return ResponseEntity.ok(new LoginRes().setAccessToken(token));
+        final AuthUser.LoginRes res = authenticationService.login(loginReq.getUsername(), loginReq.getPassword());
+        return ResponseEntity.ok(new LoginRes().setAccessToken(res.getToken()).setName(res.getName()));
     }
 
     @Data

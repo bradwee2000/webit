@@ -21,7 +21,8 @@ class AlbumDbServiceTest extends EmbeddedCassandraTest {
     @BeforeEach
     public void before() {
         album = new Album()
-                .setName("Greatest Hits 2020")
+                .setOriginalName("Greatest Hits 2020!!")
+                .setDisplayName("Greatest Hits 2020")
                 .setId("ABC")
                 .setYear(2020)
                 .setTags(List.of("Piano", "Instrumental"));
@@ -35,7 +36,8 @@ class AlbumDbServiceTest extends EmbeddedCassandraTest {
 
         assertThat(album.getId()).isEqualTo("ABC");
         assertThat(album.getYear()).isEqualTo(2020);
-        assertThat(album.getName()).isEqualTo("Greatest Hits 2020");
+        assertThat(album.getOriginalName()).isEqualTo("Greatest Hits 2020!!");
+        assertThat(album.getDisplayName()).isEqualTo("Greatest Hits 2020");
         assertThat(album.getTags()).containsExactlyInAnyOrder("Piano", "Instrumental");
     }
 

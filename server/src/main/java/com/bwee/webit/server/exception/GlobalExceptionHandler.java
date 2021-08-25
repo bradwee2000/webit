@@ -3,6 +3,7 @@ package com.bwee.webit.server.exception;
 import com.bwee.webit.exception.InvalidCredentialsException;
 import com.bwee.webit.exception.InvalidTokenException;
 import com.bwee.webit.exception.NotFoundException;
+import com.bwee.webit.exception.UsernameExistsException;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity handleBadRequestException(final BadRequestException e) {
+        final Error error = new Error().setError(e.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(UsernameExistsException.class)
+    public ResponseEntity handleUsernameExistsException(final UsernameExistsException e) {
         final Error error = new Error().setError(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }

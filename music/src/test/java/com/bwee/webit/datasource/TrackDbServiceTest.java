@@ -1,6 +1,5 @@
 package com.bwee.webit.datasource;
 
-import com.bwee.webit.datasource.entity.TrackEntity;
 import com.bwee.webit.model.Track;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +31,7 @@ class TrackDbServiceTest extends EmbeddedCassandraTest {
         track1 = new Track()
                 .setId("ABC")
                 .setTitle("It's My Life")
-                .setArtist("John Snow")
+                .setArtists(Arrays.asList("John Snow"))
                 .setComposer("Stark")
                 .setExt("mp3")
                 .setTrackNum("01")
@@ -44,7 +44,6 @@ class TrackDbServiceTest extends EmbeddedCassandraTest {
 
         track2 = new Track().setId("DEF").setAlbumId("AAA").setTrackNum("02");
         track3 = new Track().setId("GHI").setAlbumId("AAA").setTrackNum("03");
-
         trackA = new Track().setId("JKL").setAlbumId("BBB").setTrackNum("01");
     }
 
@@ -95,25 +94,6 @@ class TrackDbServiceTest extends EmbeddedCassandraTest {
     }
 
     @Test
-    public void testMerge_shouldMergeTagsAndGenre() {
-        final TrackEntity newMusic = new TrackEntity()
-                .setId("ABC")
-                .setTitle("It's My Life!")
-                .setArtist("John de la Snow")
-                .setComposer("Stark")
-                .setExt("mp3")
-                .setGenre(List.of("Pop", "Rock"))
-                .setSize(3_000_000l)
-                .setYear(2000).setTags(List.of("Instrumental", "Snow"));
-
-        final TrackEntity mergedMusic = dbService.merge(new TrackEntity(track1), newMusic);
-        assertThat(mergedMusic.getTitle()).isEqualTo("It's My Life!");
-        assertThat(mergedMusic.getArtist()).isEqualTo("John de la Snow");
-        assertThat(mergedMusic.getGenre()).containsExactlyInAnyOrder("Pop", "Rock");
-        assertThat(mergedMusic.getTags()).containsExactlyInAnyOrder("Guitar", "Instrumental", "Snow");
-    }
-
-    @Test
     public void testFindByAlbumIdWith100Tracks_shouldReturn100Tracks() {
         final List<Track> tracks = IntStream.range(1, 101)
                 .mapToObj(i -> new Track()
@@ -121,7 +101,7 @@ class TrackDbServiceTest extends EmbeddedCassandraTest {
                         .setTrackNum("00" + i)
                         .setAlbumId("AN_ALBUM_ID")
                         .setAlbumName("Greatest Hits of All time")
-                        .setArtist("Anonymous")
+                        .setArtists(Arrays.asList("Anonymous"))
                         .setDurationMillis(180_000)
                         .setYear(2000)
                         .setTitle("Song number: " + i))

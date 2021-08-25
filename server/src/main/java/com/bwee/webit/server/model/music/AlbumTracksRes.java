@@ -12,7 +12,7 @@ public class AlbumTracksRes {
     private String name;
     private List<String> artists;
     private List<TrackRes> tracks;
-    private int year;
+    private Integer year;
     private String imageUrl;
     private List<String> tags;
 }

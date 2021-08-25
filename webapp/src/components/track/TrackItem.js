@@ -19,6 +19,10 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, showTrackNum=fal
     eventHandler.onTrackPause(id);
   }
 
+  const onAlbumClick = (e) => {
+    e.stopPropagation();
+  }
+
   const selectedTrack = userState ? userState.selectedTrack : null
   const isSelected = selectedTrack && item.id === selectedTrack.id;
   const albumLink = "/album/" + item.albumId
@@ -41,20 +45,20 @@ const TrackItem = ({item, userState, isPlaying, showAlbum=true, showTrackNum=fal
         <div className="m-2">
           <h6 className="my-0">{item.title}</h6>
           <small className="text-muted float-start">
-            <ArtistList artists={item.artist} eventHandler={eventHandler} />
+            <ArtistList artists={item.artists} eventHandler={eventHandler} />
           </small>
         </div>
       </div>
 
       { showAlbum &&
-      <div className="col">
+      <div className="col d-none d-md-block">
         <small className="text-muted">
-          <Link to={albumLink} className="link">{item.albumName}</Link>
+          <Link to={albumLink} className="link" onClick={onAlbumClick}>{item.albumName}</Link>
         </small>
       </div>
       }
 
-      <div className="col-1 m-2 text-end mt-3 text-muted">
+      <div className="col-1 m-2 text-end mt-3 text-muted d-none d-md-block">
         <Duration millis={item.durationMillis}/>
       </div>
     </div>

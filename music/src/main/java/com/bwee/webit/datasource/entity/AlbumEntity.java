@@ -17,7 +17,7 @@ import static org.springframework.data.cassandra.core.mapping.CassandraType.Name
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class AlbumEntity implements Entity<AlbumEntity> {
+public class AlbumEntity implements Entity<AlbumEntity, String> {
 
     public static AlbumEntity copyOf(final AlbumEntity e) {
         final AlbumEntity copy = new AlbumEntity();
@@ -28,7 +28,9 @@ public class AlbumEntity implements Entity<AlbumEntity> {
     @PrimaryKey
     private String id;
 
-    private String name;
+    private String originalName;
+
+    private String displayName;
 
     private String imageUrl;
 
@@ -37,25 +39,31 @@ public class AlbumEntity implements Entity<AlbumEntity> {
 
     private Integer year;
 
+    private String sourcePath;
+
     @CassandraType(type = SET, typeArguments = TEXT)
     private List<String> tags = emptyList();
 
     public AlbumEntity(final Album album) {
         this.id = album.getId();
-        this.name = album.getName();
+        this.originalName = album.getOriginalName();
+        this.displayName = album.getDisplayName();
         this.imageUrl = album.getImageUrl();
         this.artists = album.getArtists();
         this.year = album.getYear();
         this.tags = album.getTags();
+        this.sourcePath = album.getSourcePath();
     }
 
     public Album toModel() {
         return new Album()
                 .setId(id)
-                .setName(name)
+                .setOriginalName(originalName)
+                .setDisplayName(displayName)
                 .setImageUrl(imageUrl)
                 .setArtists(artists == null ? emptyList() : artists)
                 .setYear(year)
-                .setTags(tags == null ? emptyList() : tags);
+                .setTags(tags == null ? emptyList() : tags)
+                .setSourcePath(sourcePath);
     }
 }

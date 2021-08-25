@@ -4,11 +4,9 @@ import com.bwee.webit.model.Album;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.util.Base64;
-
-import static org.apache.commons.lang3.StringUtils.lowerCase;
-import static org.apache.commons.lang3.StringUtils.upperCase;
 
 @Slf4j
 public class AlbumIdGenerator implements IdGenerator<Album> {
@@ -21,12 +19,9 @@ public class AlbumIdGenerator implements IdGenerator<Album> {
 
     @SneakyThrows
     public String generateId(final Album album) {
-        final String musicValues = lowerCase(new StringBuilder()
-                .append(album.getName())
-                .append(album.getYear())
-                .toString());
-
-        final byte[] hash = md.digest(musicValues.getBytes());
+        final Path sourcePath = Path.of(album.getSourcePath());
+        final String filename = sourcePath.getFileName().toString();
+        final byte[] hash = md.digest(filename.getBytes());
         return new String(Base64.getUrlEncoder().encode(hash));
     }
 }

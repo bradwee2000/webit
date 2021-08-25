@@ -4,7 +4,7 @@ import { SearchBar } from './common/Commons';
 import SearchAllPage from './SearchAllPage'
 import SearchTracksPage from './SearchTracksPage'
 import SearchAlbumsPage from './SearchAlbumsPage'
-
+import SearchAlbumsByArtistPage from './SearchAlbumsByArtistPage'
 
 function SearchMainPage({isPlaying, userState, eventHandler}) {
   const { query } = useParams()
@@ -22,6 +22,9 @@ function SearchMainPage({isPlaying, userState, eventHandler}) {
         </Route>
         <Route path='/search/:query/albums' exact>
           <SearchAlbumsPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
+        </Route>
+        <Route path='/search/:query/artists/:searchType' exact>
+          <SearchAlbumsByArtistPage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>
         </Route>
       </Switch>
     </>

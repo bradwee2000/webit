@@ -3,16 +3,20 @@ package com.bwee.webit.service;
 import com.bwee.webit.auth.AuthenticationService;
 import com.bwee.webit.datasource.AlbumDbService;
 import com.bwee.webit.datasource.MusicUserDbService;
-import com.bwee.webit.exception.AlbumNotFoundException;
-import com.bwee.webit.model.MusicUser;
-import com.bwee.webit.model.Track;
 import com.bwee.webit.datasource.TrackDbService;
+import com.bwee.webit.exception.AlbumNotFoundException;
 import com.bwee.webit.exception.MusicUserNotFoundException;
 import com.bwee.webit.exception.TrackNotFoundException;
 import com.bwee.webit.model.Album;
-import com.bwee.webit.service.function.GetTrackQueueStrategy;
-import com.bwee.webit.service.function.ShuffleSortStrategy;
-import com.bwee.webit.service.function.TrackNumSortStrategy;
+import com.bwee.webit.model.MusicUser;
+import com.bwee.webit.model.Track;
+import com.bwee.webit.service.strategy.GetTrackQueueStrategy;
+import com.bwee.webit.service.strategy.sort.ShuffleSortStrategy;
+import com.bwee.webit.service.strategy.sort.TrackNumSortStrategy;
+import com.bwee.webit.stats.CollectStat;
+import com.bwee.webit.stats.processor.AlbumPlayProcessor;
+import com.bwee.webit.stats.processor.AlbumTrackPlayProcessor;
+import com.bwee.webit.stats.processor.TrackPlayProcessor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -136,6 +140,7 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
         return playTrack(trackId, false);
     }
 
+    @CollectStat(TrackPlayProcessor.class)
     public MusicUser playTrack(final String trackId) {
         return playTrack(trackId, true);
     }
@@ -159,15 +164,12 @@ public class MusicUserService extends SimpleCrudService<MusicUser> {
         return user;
     }
 
-    public MusicUser playAlbum(final String albumId) {
-        return playAlbum(albumDbService.findById(albumId)
-                .orElseThrow(() -> new AlbumNotFoundException(albumId)));
-    }
-
+    @CollectStat(AlbumPlayProcessor.class)
     public MusicUser playAlbum(final Album album) {
         return playAlbum(album, Optional.empty());
     }
 
+    @CollectStat(AlbumTrackPlayProcessor.class)
     public MusicUser playAlbum(final Album album, final Track track) {
         return playAlbum(album, Optional.of(track));
     }

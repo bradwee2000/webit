@@ -51,6 +51,13 @@ services:
     volumes:
       - cassandra:/var/lib/cassandra
 
+  redis:
+    image: pi1.wee:443/arm64v8/redis:6.2.5-alpine
+    ports:
+      - 6379:6379
+    networks:
+      - redis
+
   webit-server:
     image: pi1.wee:443/arm64v8/webit-server-pi:latest
     ports:
@@ -62,6 +69,7 @@ services:
       - webit
       - cassandra
       - elasticsearch
+      - redis
     restart: always
     volumes:
       - /media/music/unprocessed:/media/music/unprocessed
@@ -88,6 +96,8 @@ networks:
   elasticsearch:
     driver: bridge
   cassandra:
+    driver: bridge
+  redis:
     driver: bridge
   webit:
     driver: bridge

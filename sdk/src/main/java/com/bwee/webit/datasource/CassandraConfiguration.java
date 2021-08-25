@@ -1,19 +1,27 @@
 package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.Entity;
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.cassandra.config.AbstractCassandraConfiguration;
-import org.springframework.data.cassandra.config.CqlSessionFactoryBean;
-import org.springframework.data.cassandra.config.SchemaAction;
-import org.springframework.data.cassandra.config.SessionBuilderConfigurer;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.cassandra.config.*;
+import org.springframework.data.cassandra.core.convert.CassandraConverter;
+import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
+import org.springframework.data.cassandra.core.convert.MappingCassandraConverter;
 import org.springframework.data.cassandra.core.cql.keyspace.CreateKeyspaceSpecification;
 import org.springframework.data.cassandra.core.cql.keyspace.DataCenterReplication;
+import org.springframework.data.cassandra.core.mapping.BasicCassandraMappingContext;
+import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -44,6 +52,9 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
 
     @Value("${spring.data.cassandra.request.timeout.millis:15000}")
     private long requestTimeoutMillis;
+
+    @Autowired
+    private List<Converter> converters;
 
     @Override
     protected String getKeyspaceName() {
@@ -98,5 +109,10 @@ public class CassandraConfiguration extends AbstractCassandraConfiguration {
     @Override
     protected String getLocalDataCenter() {
         return dataCenter;
+    }
+
+    @Override
+    public CassandraCustomConversions customConversions() {
+        return new CassandraCustomConversions(converters);
     }
 }

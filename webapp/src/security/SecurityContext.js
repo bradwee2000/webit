@@ -5,18 +5,22 @@ class SecurityContext {
   static isLoggedIn() {
     const token = SecurityContext.getToken()
     return token !== null && token !== ''
-    // return SecurityContext.authToken !== undefined
-    //   && SecurityContext.authToken !== '';
   }
 
   static setToken(authToken) {
     localStorage.setItem("au", authToken)
-    // SecurityContext.authToken = authToken;
   }
 
   static getToken() {
     return localStorage.getItem("au")
-    // return SecurityContext.authToken;
+  }
+
+  static setName(name) {
+    localStorage.setItem("name", name)
+  }
+
+  static getName(name) {
+    return localStorage.getItem("name")
   }
 
   static setPlayTrackCode(playTrackCode) {
@@ -30,6 +34,10 @@ class SecurityContext {
   static getPlayTokenHash(trackId) {
     const hash = SecurityContext.hash(SecurityContext.playTrackCode + ":" + trackId);
     return hash;
+  }
+
+  static logout() {
+    localStorage.clear()
   }
 
   static hash(value) {

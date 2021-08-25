@@ -2,6 +2,8 @@ package com.bwee.webit.datasource;
 
 import com.bwee.webit.datasource.entity.PersonEntity;
 import com.bwee.webit.model.Person;
+import com.datastax.oss.driver.api.core.DriverException;
+import com.datastax.oss.driver.api.core.cql.Row;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.cassandraunit.spring.EmbeddedCassandra;
@@ -13,14 +15,18 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.cassandra.core.CassandraOperations;
+import org.springframework.data.cassandra.core.cql.RowMapper;
+import org.springframework.data.convert.ReadingConverter;
+import org.springframework.data.convert.WritingConverter;
 import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -38,9 +44,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AbstractDbServiceTest {
 
     @Autowired
-    private AbstractDbService<Person, PersonEntity> dbService;
+    private AbstractDbService<Person, PersonEntity, String> dbService;
+
+    @Autowired
+    private CassandraOperations cassandra;
 
     private Person john, mary, jane, beck;
+
+    private final LocalDateTime now = LocalDateTime.of(2021, 1, 1, 12, 30, 40);
 
     @BeforeAll
     @SneakyThrows
@@ -53,10 +64,10 @@ class AbstractDbServiceTest {
     @BeforeEach
     public void before() {
         EmbeddedCassandraServerHelper.cleanEmbeddedCassandra();
-        john = new Person().setId("123").setName("John Doe").setTags(List.of("Bookworm", "Military"));
-        mary = new Person().setId("456").setName("Mary Jay").setTags(List.of("CEO", "GoForIt"));
-        jane = new Person().setId("789").setName("Jane Tan");
-        beck = new Person().setId("034").setName("Beck Lee");
+        john = new Person().setId("123").setName("John Doe").setTags(List.of("Bookworm", "Military")).setGender(Person.Gender.Male).setCreateTime(now);
+        mary = new Person().setId("456").setName("Mary Jay").setTags(List.of("CEO", "GoForIt")).setCreateTime(now);
+        jane = new Person().setId("789").setName("Jane Tan").setCreateTime(now);
+        beck = new Person().setId("034").setName("Beck Lee").setCreateTime(now);
 
         dbService.deleteById(john.getId());
         dbService.deleteById(mary.getId());
@@ -74,7 +85,17 @@ class AbstractDbServiceTest {
     public void testFind_shouldReturnSavedPerson() {
         dbService.save(jane);
         dbService.save(john);
+
+        cassandra.getCqlOperations().query("select * from person", new RowMapper<>() {
+            @Override
+            public String mapRow(Row row, int rowNum) throws DriverException {
+                log.info("ROW: {}", row.getFormattedContents());
+                return row.get("gender", String.class);
+            }
+        });
+
         assertThat(dbService.findById("123")).hasValue(john);
+        assertThat(dbService.findById("123").get().getGender()).isEqualTo(Person.Gender.Male);
         assertThat(dbService.findById("789")).hasValue(jane);
     }
 
@@ -104,7 +125,7 @@ class AbstractDbServiceTest {
     @Test
     public void testDeleteAllByIds_shouldDeleteAllListedIdsFromDb() {
         dbService.saveAll(asList(jane, john, mary, beck));
-        dbService.deleteAll(asList(john.getId(), mary.getId()));
+        dbService.deleteAll(john, mary);
         assertThat(dbService.findAll().getContent()).containsExactlyInAnyOrder(jane, beck);
     }
 
@@ -153,7 +174,7 @@ class AbstractDbServiceTest {
     @Configuration
     public static class Ctx {
         @Bean
-        public AbstractDbService<Person, PersonEntity> dbService(final CassandraOperations cassandraOperations) {
+        public AbstractDbService<Person, PersonEntity, String> dbService(final CassandraOperations cassandraOperations) {
             return new AbstractDbService<>(cassandraOperations, PersonEntity.class) {
 
                 @Override
@@ -166,6 +187,37 @@ class AbstractDbServiceTest {
                     return new PersonEntity(model);
                 }
             };
+        }
+
+        @Bean
+        public Converter<Person.Gender, String> genderToStringConverter() {
+            return new GenderToStringConverter();
+        }
+
+        @Bean
+        public Converter<String, Person.Gender> stringToGenderConverter() {
+            return new StringToGenderConverter();
+        }
+    }
+
+
+    @WritingConverter
+    public static class GenderToStringConverter implements Converter<Person.Gender, String> {
+        @Override
+        public String convert(Person.Gender gender) {
+            return gender.getCode();
+        }
+    }
+
+    @ReadingConverter
+    public static class StringToGenderConverter implements Converter<String, Person.Gender> {
+        @Override
+        public Person.Gender convert(String code) {
+            switch (code) {
+                case "M": return Person.Gender.Male;
+                case "F": return Person.Gender.Female;
+            }
+            return null;
         }
     }
 }

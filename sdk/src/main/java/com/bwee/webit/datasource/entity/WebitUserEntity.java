@@ -19,7 +19,7 @@ import static org.springframework.data.cassandra.core.mapping.CassandraType.Name
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class WebitUserEntity implements Entity<WebitUserEntity> {
+public class WebitUserEntity implements Entity<WebitUserEntity, String> {
 
     @PrimaryKey
     private String id;

@@ -1,11 +1,15 @@
 package com.bwee.webit.config;
 
 import com.bwee.webit.file.MusicFileService;
-import com.bwee.webit.search.query.AlbumQueryStrategy;
-import com.bwee.webit.search.query.SimpleAlbumQueryStrategy;
-import com.bwee.webit.search.query.SimpleTrackQueryStrategy;
-import com.bwee.webit.search.query.TrackQueryStrategy;
+import com.bwee.webit.model.Album;
+import com.bwee.webit.model.SearchType;
+import com.bwee.webit.search.query.*;
 import com.bwee.webit.service.*;
+import com.bwee.webit.service.strategy.year.MultiYearParser;
+import com.bwee.webit.service.strategy.year.StringToDateParser;
+import com.bwee.webit.service.strategy.year.StringToIntYearParser;
+import com.bwee.webit.service.strategy.year.YearParser;
+import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -14,6 +18,11 @@ import org.springframework.context.annotation.Configuration;
 
 import java.security.MessageDigest;
 import java.time.Clock;
+import java.time.ZoneOffset;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Configuration
 public class MusicConfiguration {
@@ -41,17 +50,11 @@ public class MusicConfiguration {
 
     @Bean
     public Mp3Reader mp3Reader() {
-        return new Mp3Reader();
-    }
-
-    @Bean
-    public AlbumQueryStrategy searchAlbumQueryStrategy() {
-        return new SimpleAlbumQueryStrategy();
-    }
-
-    @Bean
-    public TrackQueryStrategy searchMusicQueryStrategy() {
-        return new SimpleTrackQueryStrategy();
+        final List<YearParser> yearParsers = Collections.unmodifiableList(Arrays.asList(
+                new StringToIntYearParser(),
+                new StringToDateParser()
+        ));
+        return new Mp3Reader(new MultiYearParser(yearParsers));
     }
 
     @Bean
@@ -68,12 +71,49 @@ public class MusicConfiguration {
     @Bean
     @ConditionalOnMissingBean(Clock.class)
     public Clock clock() {
-        return Clock.systemDefaultZone();
+        return Clock.system(ZoneOffset.UTC);
     }
 
     @Bean
     @ConditionalOnMissingBean(FileService.class)
     public FileService fileService() {
         return new FileService();
+    }
+
+    @Bean("albumQueryStrategies")
+    public Map<SearchType, QueryStrategy> albumQueryStrategies(
+            final AlbumQueryStrategy albumQueryStrategy,
+            final ArtistQueryStrategy artistQueryStrategy
+    ) {
+        return ImmutableMap.<SearchType, QueryStrategy>builder()
+                .put(SearchType.allFields, albumQueryStrategy)
+                .put(SearchType.artist, artistQueryStrategy)
+                .build();
+    }
+
+    @Bean("trackQueryStrategies")
+    public Map<SearchType, QueryStrategy> trackQueryStrategies(
+            final TrackQueryStrategy trackQueryStrategy,
+            final ArtistQueryStrategy artistQueryStrategy
+    ) {
+        return ImmutableMap.<SearchType, QueryStrategy>builder()
+                .put(SearchType.allFields, trackQueryStrategy)
+                .put(SearchType.artist, artistQueryStrategy)
+                .build();
+    }
+
+    @Bean
+    public AlbumQueryStrategy albumQueryStrategy() {
+        return new AlbumQueryStrategy();
+    }
+
+    @Bean
+    public ArtistQueryStrategy artistQueryStrategy() {
+        return new ArtistQueryStrategy();
+    }
+
+    @Bean
+    public TrackQueryStrategy trackQueryStrategy() {
+        return new TrackQueryStrategy();
     }
 }

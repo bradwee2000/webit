@@ -4,7 +4,8 @@ import com.bwee.webit.file.MusicFileService;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.image.ImageService;
 import com.bwee.webit.model.Album;
-import com.bwee.webit.util.ImportUtils;
+import com.bwee.webit.service.strategy.cover.AlbumCoverProvider;
+import com.bwee.webit.util.MusicUtils;
 import lombok.Data;
 import lombok.SneakyThrows;
 import lombok.experimental.Accessors;
@@ -17,13 +18,10 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.*;
 
-import static com.bwee.webit.util.ImportUtils.padZeros;
+import static com.bwee.webit.util.MusicUtils.padZeros;
+import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
@@ -32,9 +30,6 @@ public class AlbumImporter {
 
     @Autowired
     private TrackService trackService;
-
-    @Autowired
-    private AlbumService albumService;
 
     @Autowired
     private Mp3Reader mp3Reader;
@@ -54,8 +49,14 @@ public class AlbumImporter {
     @Autowired
     private MusicFileService musicFileService;
 
+    @Autowired
+    private List<AlbumCoverProvider> albumCoverProviders;
+
     @Value("${music.storage.unprocessed.path:~/Downloads/Music}")
     private String unprocessedMusicPath;
+
+    @Autowired
+    private AlbumImportCacheService albumCacheService;
 
     public List<Path> listUnprocessedMusicPaths() {
         return listUnprocessedMusicPaths(null);
@@ -66,23 +67,45 @@ public class AlbumImporter {
             final Path path = Optional.ofNullable(subPath)
                     .map(s -> Path.of(unprocessedMusicPath, s))
                     .orElse(Path.of(unprocessedMusicPath));
-
-            return Files.list(path).collect(toList());
+            return Files.list(path)
+                    .sorted(comparing(Path::getFileName))
+                    .collect(toList());
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public List<Album> importAllAlbums() {
+    public List<Album> importAllAlbums(final Integer limit) {
         return listUnprocessedMusicPaths().stream()
                 .map(path -> AlbumImporter.ImportConfig.defaults().path(path))
-                .map(config -> importAlbumFromPath(config))
+                .map(config -> {
+                    try {
+                        return importAlbumFromPath(config);
+                    } catch (Exception e) {
+                        log.error("Failed to load album from " + config.path, e);
+                        return null;
+                    }
+                })
+                .filter(importedAlbum -> importedAlbum != null)
+                .filter(importedAlbum -> !importedAlbum.isExisting())
+                .map(importedAlbum -> importedAlbum.getAlbum())
+                .filter(album -> !album.getTracks().isEmpty())
+                .limit(limit)
                 .collect(toList());
     }
 
     @SneakyThrows
-    public Album importAlbumFromPath(final ImportConfig importConfig) {
-        log.info("Import music from: path={}, config={}", importConfig.path(), importConfig);
+    public ImportedAlbum importAlbumFromPath(final ImportConfig importConfig) {
+        log.info("Import music from: path={}", importConfig.path());
+
+        final String albumId = albumIdGenerator.generateId(new Album().setSourcePath(importConfig.path().toAbsolutePath().toString()));
+        final Optional<Album> existingAlbum = albumCacheService.get(albumId);
+
+        // Ignore if album is existing
+        if (!importConfig.overwriteExisting() && existingAlbum.isPresent()) {
+            log.info("Album exists. Skipping: {}", importConfig.path());
+            return new ImportedAlbum().setAlbum(existingAlbum.get()).setExisting(true);
+        }
 
         final Mp3Reader.Config config = Mp3Reader.Config.defaults()
                 .tags(importConfig.albumTags())
@@ -91,36 +114,40 @@ public class AlbumImporter {
 
         final List<Track> importedTrackList = mp3Reader.readDir(importConfig.path(), config);
 
-        final List<String> artists = importedTrackList.stream()
-                .map(m -> m.getArtist())
-                .filter(artist -> !StringUtils.isEmpty(artist))
-                .distinct()
-                .collect(toList());
+        final List<String> artists = extractArtists(importedTrackList);
 
-        final String finalAlbumName = StringUtils.isEmpty(config.albumName()) ?
-                importedTrackList.stream().findFirst().map(t -> t.getAlbumName()).orElse(null) :
+        final String originalAlbumName = importedTrackList.stream()
+                .findFirst()
+                .map(t -> t.getAlbumName())
+                .orElse(null);
+        final String displayAlbumName = StringUtils.isEmpty(config.albumName()) ?
+                originalAlbumName :
                 config.albumName();
-        final int finalYear = importConfig.albumYear() == null ?
-                importedTrackList.stream().findFirst().map(t -> t.getYear()).orElse(0) :
+
+        final Integer finalYear = importConfig.albumYear() == null ?
+                importedTrackList.stream().findFirst().map(t -> t.getYear()).orElse(null) :
                 importConfig.albumYear();
 
         final Album album = new Album()
-                .setName(finalAlbumName)
+                .setId(albumId)
+                .setOriginalName(originalAlbumName)
+                .setDisplayName(displayAlbumName)
                 .setArtists(artists)
                 .setTags(importConfig.albumTags())
-                .setYear(finalYear);
-
-        // Generate album ID based on its unique fields
-        album.setId(albumIdGenerator.generateId(album));
+                .setYear(finalYear)
+                .setSourcePath(importConfig.path.toAbsolutePath().toString());
 
         // Assign album details to music and generate ID based on its unique fields
         final int numOfDigits = String.valueOf(importedTrackList.size()).length();
         final List<Track> trackList = importedTrackList.stream()
-                .map(m -> m.setAlbumId(album.getId()))
-                .map(m -> m.setAlbumName(finalAlbumName))
-                .map(m -> m.setId(trackIdGenerator.generateId(m)))
-                .map(m -> m.setTrackNum(ImportUtils.padZeros(m.getTrackNum(), numOfDigits)))
-                .sorted(Comparator.comparing(Track::getTrackNum))
+                .map(m -> m.setAlbumId(album.getId())
+                        .setAlbumName(displayAlbumName)
+                        .setOriginalAlbumName(originalAlbumName)
+                        .setYear(finalYear)
+                        .setTrackNum(MusicUtils.padZeros(m.getTrackNum(), numOfDigits))
+                        .setId(trackIdGenerator.generateId(m))
+                )
+                .sorted(comparing(Track::getTrackNum))
                 .collect(toList());
 
         album.setTracks(trackList);
@@ -133,17 +160,30 @@ public class AlbumImporter {
         }
 
         trackService.saveAll(trackList);
-        albumService.save(album);
+        albumCacheService.put(album);
 
-        log.info("Saved album: {}", album);
-        return album;
+        log.info("Saved album: {}", album.getDisplayName());
+        return new ImportedAlbum().setAlbum(album).setExisting(existingAlbum.isPresent());
+    }
+
+    private List<String> extractArtists(final Collection<Track> tracks) {
+        return tracks.stream()
+                .flatMap(m -> m.getArtists().stream())
+                .filter(artist -> !StringUtils.isEmpty(artist))
+                .distinct()
+                .collect(toList());
     }
 
     @SneakyThrows
     private String copyAlbumCover(final ImportConfig importConfig) {
-        // Store and set album image
-        final Mp3Reader.AlbumCover albumCover = mp3Reader.albumCover(importConfig.path());
-        final String imageUrl = imageService.put("music", Files.readAllBytes(albumCover.getPath()));
+        byte[] albumCoverBytes = albumCoverProviders.stream()
+                .map(p -> p.provide(importConfig.path))
+                .filter(bytes -> bytes.isPresent())
+                .map(bytes -> bytes.get())
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No album cover found!"));
+
+        final String imageUrl = imageService.put("music", albumCoverBytes);
         return imageUrl;
     }
 
@@ -152,7 +192,7 @@ public class AlbumImporter {
         for (final Track track : tracks) {
             final Path destPath = musicFileService.put(track.getSourcePath(), track);
             track.setSourcePath(destPath);
-            log.info("Copied from {} to {}", track.getSourcePath(), destPath);
+            log.info("Copied {}", destPath);
         }
     }
 
@@ -168,7 +208,14 @@ public class AlbumImporter {
         private List<String> albumTags = Collections.emptyList();
         private Integer albumYear;
         private boolean useFilenameAsTrackNum = true;
-        private boolean copyFiles;
-        private boolean overwriteCache;
+        private boolean copyFiles = true;
+        private boolean overwriteExisting = false;
+    }
+
+    @Data
+    @Accessors(chain = true)
+    public static class ImportedAlbum {
+        private boolean isExisting;
+        private Album album;
     }
 }

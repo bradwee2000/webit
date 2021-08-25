@@ -24,7 +24,7 @@ public class AlbumTrackResFactory {
         return new AlbumTracksRes()
                 .setId(album.getId())
                 .setArtists(album.getArtists())
-                .setName(album.getName())
+                .setName(album.getDisplayName())
                 .setImageUrl(album.getImageUrl())
                 .setYear(album.getYear()).setTags(album.getTags())
                 .setTracks(tracks);

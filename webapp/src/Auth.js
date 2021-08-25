@@ -7,16 +7,17 @@ function Auth({children, loginPage}) {
 
   const history = useHistory()
 
+  const [isLoggedIn, setIsLoggedIn] = useState(SecurityContext.isLoggedIn())
+
   const onLoginSuccess = () => {
-    
+    setIsLoggedIn(SecurityContext.isLoggedIn());
   }
 
   useEffect(() => {
-    if (!SecurityContext.isLoggedIn()) {
+    if (!isLoggedIn) {
       history.push({pathname: '/login'})
     }
-  }, [SecurityContext.isLoggedIn(), history]);
-
+  }, [isLoggedIn, history]);
 
   if (!SecurityContext.isLoggedIn()) {
     return <><LoginPage onLoginSuccess={onLoginSuccess}/></>

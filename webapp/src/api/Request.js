@@ -23,8 +23,9 @@ const doFetch = (url, requestOptions) => {
   return fetch(url, requestOptions)
     .then(res => res.json())
     .then(res => {
+    console.log("HAHAHA ", res)
       if (res.error) {
-        throw new Error(res.error)
+        throw {error: res.error}
       }
       return res
     })

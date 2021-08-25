@@ -1,6 +1,5 @@
 package com.bwee.webit.heos.service;
 
-import com.bwee.webit.heos.connect.HeosClient;
 import com.google.common.base.Charsets;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

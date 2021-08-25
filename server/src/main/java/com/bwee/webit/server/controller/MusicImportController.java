@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -50,22 +51,8 @@ public class MusicImportController {
     }
 
     @PostMapping("/all")
-    public ResponseEntity importAllAlbums() {
-        final List<Album> albums = albumImporter.listUnprocessedMusicPaths().stream()
-                .map(path -> AlbumImporter.ImportConfig.defaults().path(path))
-                .map(config -> {
-                    try {
-                        return albumImporter.importAlbumFromPath(config);
-                    } catch (final Exception e) {
-                        log.warn("Skipping album {}. Error: {}", config.path(), e.getMessage());
-                        return null;
-                    }
-                })
-                .filter(album -> album != null)
-                .filter(album -> !album.getTracks().isEmpty())
-                .collect(toList());
-
-        return ResponseEntity.ok(albums);
+    public ResponseEntity importAllAlbums(@RequestParam Optional<Integer> limit) {
+        return ResponseEntity.ok(albumImporter.importAllAlbums(limit.orElse(10)));
     }
 
     @PostMapping
@@ -76,11 +63,13 @@ public class MusicImportController {
                 .albumTags(req.getTags())
                 .albumYear(req.getYear())
                 .useFilenameAsTrackNum(req.isUserFilenameAsTrackNum())
-                .copyFiles(req.isCopyFiles());
+                .copyFiles(req.isCopyFiles())
+                .overwriteExisting(req.isOverwriteCache());
 
         log.info("Request: {} {}", req.getPath(), importConfig);
 
-        final Album album = albumImporter.importAlbumFromPath(importConfig);
+        final AlbumImporter.ImportedAlbum importedAlbum = albumImporter.importAlbumFromPath(importConfig);
+        final Album album = importedAlbum.getAlbum();
 
         final URI uri = UriComponentsBuilder.fromUriString(request.getRequestURI())
                 .replacePath("/music/albums")

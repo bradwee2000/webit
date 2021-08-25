@@ -3,8 +3,11 @@ package com.bwee.webit.file;
 
 import com.bwee.webit.model.Track;
 import com.bwee.webit.service.FileService;
+import com.google.common.base.Joiner;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class MusicFileService {
 
@@ -23,13 +26,18 @@ public class MusicFileService {
     }
 
     public Path toStoragePath(final Track track) {
-        return Path.of(musicStorePath, String.valueOf(track.getYear()), track.getAlbumName(), toFilename(track));
+        return Path.of(musicStorePath, track.getOriginalAlbumName(), track.getAlbumId(), toFilename(track));
     }
 
     private String toFilename(final Track track) {
+        // Limit to 6 artists
+        final String artists = Joiner.on(", ").join(track.getArtists().stream()
+                .limit(6)
+                .collect(Collectors.toList()));
+
         return new StringBuilder()
-                .append(track.getTrackNum()).append(" - ")
-                .append(track.getArtist()).append(" - ")
+                .append(track.getTrackNum()).append(". ")
+                .append(artists).append(" - ")
                 .append(track.getTitle()).append(".")
                 .append(track.getExt())
                 .toString();

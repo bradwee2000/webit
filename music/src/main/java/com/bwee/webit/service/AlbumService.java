@@ -1,9 +1,9 @@
 package com.bwee.webit.service;
 
 import com.bwee.webit.datasource.AlbumDbService;
-import com.bwee.webit.datasource.TrackDbService;
 import com.bwee.webit.exception.AlbumNotFoundException;
 import com.bwee.webit.model.Album;
+import com.bwee.webit.model.SearchType;
 import com.bwee.webit.model.Track;
 import com.bwee.webit.search.AlbumEsService;
 import com.google.common.collect.Lists;
@@ -102,7 +102,11 @@ public class AlbumService extends SimpleCrudService<Album> implements Searchable
 
     @Override
     public List<Album> search(final String keywords, final Pageable pageable) {
-        final List<String> ids = albumEsService.search(keywords, pageable);
+        return search(keywords, SearchType.allFields, pageable);
+    }
+
+    public List<Album> search(final String keywords, final SearchType searchType, final Pageable pageable) {
+        final List<String> ids = albumEsService.search(keywords, searchType, pageable);
 
         return albumDbService.findByIds(ids).stream()
                 .sorted(Ordering.explicit(ids).onResultOf(Album::getId))

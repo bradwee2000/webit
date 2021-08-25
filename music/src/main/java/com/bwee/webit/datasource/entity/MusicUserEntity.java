@@ -20,7 +20,7 @@ import static org.springframework.data.cassandra.core.mapping.CassandraType.Name
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class MusicUserEntity implements Entity<MusicUserEntity> {
+public class MusicUserEntity implements Entity<MusicUserEntity, String> {
 
     public static MusicUserEntity copyOf(final MusicUserEntity e) {
         final MusicUserEntity copy = new MusicUserEntity();

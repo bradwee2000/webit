@@ -126,7 +126,7 @@ function App() {
     },
 
     onArtistClick(artist) {
-      history.push({pathname: '/artist/' + artist})
+      history.push({pathname: '/search/' + artist + "/artists/all"})
     },
 
     onNextClick() {
@@ -208,9 +208,11 @@ function App() {
 
   return (
     <>
-    <Link to="/" className="link">Home</Link>
+
     <div className="h-100 overflow-auto">
       <div className="container">
+
+        <Header/>
         <Switch>
           <Route path='/' exact>
             <HomePage userState={userState} isPlaying={isPlaying} eventHandler={eventHandler}/>

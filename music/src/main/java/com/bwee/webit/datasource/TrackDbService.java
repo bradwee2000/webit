@@ -19,7 +19,7 @@ import static org.springframework.data.cassandra.core.query.Criteria.where;
 
 @Slf4j
 @Service
-public class TrackDbService extends AbstractDbService<Track, TrackEntity> {
+public class TrackDbService extends AbstractDbService<Track, TrackEntity, String> {
 
     private final CassandraOperations cassandra;
 
@@ -35,20 +35,6 @@ public class TrackDbService extends AbstractDbService<Track, TrackEntity> {
                 .map(e -> e.toModel())
                 .sorted(comparing(Track::getTrackNum))
                 .collect(toList());
-    }
-
-    @Override
-    protected TrackEntity merge(TrackEntity existingEntity, TrackEntity newEntity) {
-        if (newEntity.equals(existingEntity)) {
-            return newEntity;
-        }
-
-        final List<String> genre = Stream.concat(existingEntity.getGenre().stream(), newEntity.getGenre().stream())
-                .distinct().collect(toList());
-        final List<String> tags = Stream.concat(existingEntity.getTags().stream(), newEntity.getTags().stream())
-                .distinct().collect(toList());
-
-        return TrackEntity.copyOf(newEntity).setGenre(genre).setTags(tags);
     }
 
     @Override

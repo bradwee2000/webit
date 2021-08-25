@@ -84,7 +84,7 @@ public class MusicAlbumController {
     public ResponseEntity update(@PathVariable final String albumId,
                                  @RequestBody UpdateRequest req) {
         final Album album = albumService.findByIdStrict(albumId);
-        Optional.ofNullable(req.getName()).ifPresent(name -> album.setName(name));
+        Optional.ofNullable(req.getName()).ifPresent(name -> album.setDisplayName(name));
         Optional.ofNullable(req.getTags()).ifPresent(tags -> album.setTags(tags));
         Optional.ofNullable(req.getYear()).ifPresent(year -> album.setYear(year));
 

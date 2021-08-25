@@ -17,7 +17,7 @@ import static org.springframework.data.cassandra.core.mapping.CassandraType.Name
 @Data
 @Accessors(chain = true)
 @NoArgsConstructor
-public class TrackEntity implements Entity<TrackEntity> {
+public class TrackEntity implements Entity<TrackEntity, String> {
 
     public static TrackEntity copyOf(final TrackEntity e) {
         final TrackEntity copy = new TrackEntity();
@@ -33,10 +33,13 @@ public class TrackEntity implements Entity<TrackEntity> {
 
     private String title;
     private String albumName;
-    private String artist;
+    private String originalAlbumName;
     private String originalArtist;
     private String composer;
     private String trackNum;
+
+    @CassandraType(type = LIST, typeArguments = TEXT)
+    private List<String> artists;
 
     @CassandraType(type = LIST, typeArguments = TEXT)
     private List<String> genre = emptyList();
@@ -59,7 +62,8 @@ public class TrackEntity implements Entity<TrackEntity> {
         this.albumId = track.getAlbumId();
         this.trackNum = track.getTrackNum();
         this.albumName = track.getAlbumName();
-        this.artist = track.getArtist();
+        this.originalAlbumName = track.getOriginalAlbumName();
+        this.artists = track.getArtists();
         this.originalArtist = track.getOriginalArtist();
         this.composer = track.getComposer();
         this.genre = track.getGenre();
@@ -81,7 +85,8 @@ public class TrackEntity implements Entity<TrackEntity> {
                 .setTrackNum(trackNum)
                 .setAlbumId(albumId)
                 .setAlbumName(albumName)
-                .setArtist(artist)
+                .setArtists(artists == null ? emptyList() : artists)
+                .setOriginalAlbumName(originalAlbumName)
                 .setOriginalArtist(originalArtist)
                 .setComposer(composer)
                 .setGenre(genre == null ? emptyList() : genre)

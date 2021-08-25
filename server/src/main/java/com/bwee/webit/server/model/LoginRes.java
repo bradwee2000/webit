@@ -8,4 +8,5 @@ import lombok.experimental.Accessors;
 public class LoginRes {
 
     private String accessToken;
+    private String name;
 }

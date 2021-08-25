@@ -12,11 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.springframework.data.cassandra.core.query.Criteria.where;
-import static org.springframework.data.cassandra.core.query.Query.query;
-
 @Service
-public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEntity> {
+public class MusicUserDbService extends AbstractDbService<MusicUser, MusicUserEntity, String> {
 
     private final CassandraOperations cassandra;
 

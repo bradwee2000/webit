@@ -57,6 +57,9 @@ public abstract class AbstractEsService<T, D extends SearchDocument<T>> {
     }
 
     public void deleteAll(final Collection<String> ids) {
+        if (ids.isEmpty()) {
+            return;
+        }
         es.deleteAll(es.findAllById(ids));
     }
 

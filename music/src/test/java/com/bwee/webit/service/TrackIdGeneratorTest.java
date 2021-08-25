@@ -31,10 +31,12 @@ public class TrackIdGeneratorTest {
     @Before
     public void before() {
         track = new Track()
+                .setAlbumId("ABC")
                 .setTitle("This is the LIFE")
-                .setArtist("Big Hero")
+                .setArtists(singletonList("Big Hero"))
                 .setComposer("John Snow")
                 .setExt("mp3")
+                .setTrackNum("0001")
                 .setGenre(singletonList(Genre.POP.getName()));
     }
 
@@ -54,9 +56,11 @@ public class TrackIdGeneratorTest {
     @Test
     public void testGenerateIdForDuplicateObjects_shouldGenerateEqualId() {
         final Track duplicate = new Track()
+                .setAlbumId("ABC")
                 .setTitle("This is the LIFE")
-                .setArtist("Big Hero")
+                .setArtists(singletonList("Big Hero"))
                 .setComposer("John Snow")
+                .setTrackNum("0001")
                 .setExt("mp3")
                 .setGenre(singletonList(Genre.POP.getName()));
 
@@ -64,13 +68,23 @@ public class TrackIdGeneratorTest {
     }
 
     @Test
-    public void testGenerateIdsForMusicWithDiffTitle_shouldGenerateUniqueIds() {
-        assertThat(generator.generateId(track)).isNotEqualTo(generator.generateId(track.setTitle("This is the LIFE!")));
+    public void testGenerateIdsForMusicWithDiffAlbumId_shouldGenerateUniqueIds() {
+        assertThat(generator.generateId(track)).isNotEqualTo(generator.generateId(track.setAlbumId("XYZ")));
     }
 
     @Test
-    public void testGenerateIdsForMusicWithDiffArtist_shouldGenerateUniqueIds() {
-        assertThat(generator.generateId(track)).isNotEqualTo(generator.generateId(track.setArtist("Big Hero 6")));
+    public void testGenerateIdsForMusicWithDiffTrackNum_shouldGenerateUniqueIds() {
+        assertThat(generator.generateId(track)).isNotEqualTo(generator.generateId(track.setTrackNum("0002")));
+    }
+
+    @Test
+    public void testGenerateIdsForMusicWithDiffTitle_shouldGenerateEqualIds() {
+        assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setTitle("This is the LIFE!")));
+    }
+
+    @Test
+    public void testGenerateIdsForMusicWithDiffArtist_shouldGenerateEqualIds() {
+        assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setArtists(singletonList("Big Hero 6"))));
     }
 
     @Test
@@ -81,7 +95,7 @@ public class TrackIdGeneratorTest {
     @Test
     public void testGenerateIdsForMusicWithDiffCharacterCase_shouldGenerateEqualIds() {
         assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setTitle("This is the life")));
-        assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setArtist("BIG HERO")));
+        assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setArtists(singletonList("BIG HERO"))));
         assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setComposer("John SNOW")));
         assertThat(generator.generateId(track)).isEqualTo(generator.generateId(track.setExt("MP3")));
     }
@@ -92,8 +106,8 @@ public class TrackIdGeneratorTest {
         final int size = 100_000;
 
         for (int i=0; i< size; i++) {
-            track.setTitle(RandomStringUtils.randomAlphanumeric(3, 10));
-            track.setArtist(RandomStringUtils.randomAlphanumeric(5, 10));
+            track.setAlbumId(RandomStringUtils.randomAlphanumeric(5, 10));
+            track.setTrackNum("0" + i % 40);
             final String id = generator.generateId(track);
             if (i % 100_000 == 0){
                 assertThat(keys).hasSize(i);

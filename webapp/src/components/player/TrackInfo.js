@@ -10,14 +10,12 @@ const TrackInfo = ({userState, eventHandler}) => {
 
   return (
     <>
-      <div className="m-2">
-        <img src={selectedTrack.imageUrl} className="thumbnail" alt=""/>
-      </div>
-      <div className="row">
-        <div className="col my-auto">
-            <h6 className="my-0">{selectedTrack.title}</h6>
-            <small className="text-muted float-start">
-              <ArtistList artists={selectedTrack.artist} eventHandler={eventHandler} />
+      <img src={selectedTrack.imageUrl} className="thumbnail m-2" alt=""/>
+      <div className="d-flex flex-column text-truncate">
+        <div className="text-truncate">{selectedTrack.title}</div>
+        <div>
+            <small className="text-muted">
+              <ArtistList artists={selectedTrack.artists} eventHandler={eventHandler} />
             </small>
         </div>
       </div>

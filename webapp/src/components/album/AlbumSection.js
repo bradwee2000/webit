@@ -2,7 +2,7 @@ import AlbumList from './AlbumList'
 import { Link } from 'react-router-dom'
 
 
-const AlbumSection = ({albums, userState, className='', isPlaying, eventHandler, seeAllLink=""}) => {
+const AlbumSection = ({albums, userState, className='', isPlaying, eventHandler, seeAllLink="", title='Albums'}) => {
   if (albums === undefined || albums.length === 0) {
     return <></>;
   }
@@ -12,7 +12,7 @@ const AlbumSection = ({albums, userState, className='', isPlaying, eventHandler,
   return (
     <section className={className}>
       <div className="d-flex justify-content-between">
-        <h4>Albums</h4>
+        <h4>{title}</h4>
         <div className="mt-1">{seeAllLinkComponent}</div>
       </div>
       <AlbumList albums={albums} userState={userState} eventHandler={eventHandler} isPlaying={isPlaying}/>

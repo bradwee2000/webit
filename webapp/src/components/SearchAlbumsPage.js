@@ -9,7 +9,7 @@ function SearchAlbumsPage({isPlaying, userState, eventHandler}) {
   const [albums, setAlbums] = useState([])
 
   useEffect(() => {
-    SearchApi.searchAlbums(query).then(res => setAlbums(res.albums))
+    SearchApi.searchAlbums(query, 0, 40).then(res => setAlbums(res.albums))
   }, [query])
 
   return (

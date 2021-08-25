@@ -22,10 +22,8 @@ public class TrackIdGenerator implements IdGenerator<Track> {
     @SneakyThrows
     public String generateId(final Track track) {
         final String musicValues = lowerCase(new StringBuilder()
-                .append(track.getTitle())
-                .append(track.getAlbumName())
-                .append(track.getArtist())
-                .append(track.getExt())
+                .append(track.getAlbumId())
+                .append(track.getTrackNum())
                 .toString());
 
         final byte[] hash = md.digest(musicValues.getBytes());
