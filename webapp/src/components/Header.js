@@ -19,7 +19,7 @@ const Header = () => {
     }
 
     return (
-        <header className="mt-2">
+        <header className="my-3">
             <nav className="d-flex justify-content-between">
                 <div>
                     <Link to="/" className="link pt-3">Home</Link>
