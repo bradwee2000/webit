@@ -60,16 +60,24 @@ function AlbumPage({isPlaying, userState, eventHandler}) {
   return (
     <div className="album-page">
       <div className="mb-4">
-        <div className="d-flex flex-row align-items-end">
-          <div><img src={album.imageUrl} width="200" height="200"/></div>
-          <div className="px-4">
-            <h1>{album.name}</h1>
-            <small><ArtistList artists={album.artists} eventHandler={eventHandler}/></small> &#9702; <small>{album.year}</small> &#9702; <small>{numOfSongs} songs</small>
+        <div className="row">
+          <div className="col-12 col-md-auto">
+            <img src={album.imageUrl} width="200" height="200" alt={album.name}/>
+          </div>
+          <div className="col-12 col-md-auto px-md-4 pt-2 d-flex flex-column align-items-start">
+            <h1 className="mt-auto">{album.name}</h1>
+            <div>
+              <small>
+                <ArtistList artists={album.artists} eventHandler={eventHandler}/>
+              </small> &#9702;
+              <small>{album.year}</small> &#9702;
+              <small>{numOfSongs} songs</small>
+            </div>
           </div>
         </div>
       </div>
       <PlayPauseButton onPlay={onAlbumPlay} onPause={onAlbumPause} isPlaying={isThisAlbumPlaying} className="large primary mb-3"/>
-      <TrackSection tracks={album.tracks} userState={userState} isPlaying={isPlaying} showAlbum={false} showTrackNum={true} eventHandler={localEventhandler} className="mb-4" title=""/>
+      <TrackSection tracks={album.tracks} userState={userState} isPlaying={isPlaying} showAlbum={false} showTrackNum={true} eventHandler={localEventhandler} className="mb-5" title=""/>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Route, Switch, Link, useHistory } from 'react-router-dom';
+import { Route, Switch, useHistory } from 'react-router-dom';
 import Header from './components/Header';
 import { AlbumApi, MusicUserApi, TrackApi } from './api/Apis';
 import PlayerSection from './components/player/PlayerSection';

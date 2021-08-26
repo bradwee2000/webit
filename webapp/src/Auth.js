@@ -1,10 +1,9 @@
-import { useHistory } from 'react-router-dom';
+import { useHistory, withRouter } from 'react-router-dom';
 import { useState, useEffect } from 'react'
 import LoginPage from './components/LoginPage'
 import SecurityContext from './security/SecurityContext'
 
 function Auth({children, loginPage}) {
-
   const history = useHistory()
 
   const [isLoggedIn, setIsLoggedIn] = useState(SecurityContext.isLoggedIn())
@@ -26,4 +25,4 @@ function Auth({children, loginPage}) {
   return <>{children}</>;
 }
 
-export default Auth;
+export default withRouter(Auth);

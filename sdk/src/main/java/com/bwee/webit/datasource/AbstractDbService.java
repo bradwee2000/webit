@@ -101,7 +101,10 @@ public abstract class AbstractDbService<T, E extends Entity<E, K>, K> implements
 
     @Override
     public Slice<T> findAll(final Pageable pageable) {
-        final CassandraPageRequest req = pageable instanceof CassandraPageRequest ? (CassandraPageRequest) pageable : CassandraPageRequest.first(2);
+        final CassandraPageRequest req = pageable instanceof CassandraPageRequest ?
+                (CassandraPageRequest) pageable :
+                CassandraPageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+
         final Query query = query().pageRequest(req);
 
         final Slice<T> slice =  cassandra.slice(query, clazz).map(e -> toModel(e));

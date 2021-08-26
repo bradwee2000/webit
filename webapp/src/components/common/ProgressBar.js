@@ -17,7 +17,7 @@ const ProgressBar = ({onProgressChange, progress}) => {
 
   return (
     <>
-    <div className="progress-wrapper d-flex flex-wrap align-content-center position-relative" onClick={onProgressClick}>
+    <div className="progress-wrapper d-flex flex-wrap align-content-center position-relative mt-1" onClick={onProgressClick}>
       <div className="progress thin">
           <div className="progress-bar no-transition" style={{width: progressPcnt + "%"}} role="progressbar" aria-valuenow={progressPcnt} aria-valuemin="0" aria-valuemax="100"></div>
       </div>

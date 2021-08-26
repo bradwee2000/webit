@@ -72,16 +72,16 @@ const PlayerControl = ({userState, deviceService, selectedDevice, isPlaying, eve
       <div><LoopButton userState={userState} onClick={eventHandler.onLoopClick}/></div>
     </div>
 
-    <div className="row">
-        <div className="col-1">
+    <div className="d-flex px-2">
+        <div className="text-center p-2">
           <small className="text-muted">
             <Duration millis={currentTime * 1000}/>
           </small>
         </div>
-        <div className="col-10">
+        <div className="flex-grow-1 p-2">
           <ProgressBar onProgressChange={onProgressChange} progress={progress}/>
         </div>
-        <div className="col-1">
+        <div className="text-center p-2">
           <small className="text-muted">
             <Duration millis={durationMillis}/>
           </small>
