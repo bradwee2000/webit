@@ -126,7 +126,7 @@ function App() {
     },
 
     onArtistClick(artist) {
-      history.push({pathname: '/search/' + artist + "/artists/all"})
+      history.push({pathname: '/search/' + artist + "/artists"})
     },
 
     onNextClick() {

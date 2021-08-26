@@ -72,7 +72,7 @@ services:
       - redis
     restart: always
     volumes:
-      - /media/music/unprocessed:/media/music/unprocessed
+      - /media/music:/media/music
       - /media/music/albums:/media/music/albums
       - /media/images:/media/images
 
